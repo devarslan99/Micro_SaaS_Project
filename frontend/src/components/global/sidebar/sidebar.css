@@ -1,0 +1,33 @@
+.closemenu {
+    /* z-index: 9999 !important; */
+    font-weight: bold;
+    font-size: 22px;
+    cursor: pointer;
+  }
+  .ps-sidebar-container {
+    background-color: transparent !important;
+    z-index: 99999 !important;
+    outline: none !important;
+    border: transparent !important;  ;
+  }
+  .ps-sidebar-container .ps-menu-root ul {
+    padding: 0 4px !important  ;
+  }
+  .ps-sidebar-container .ps-menu-root ul .ps-menu-button {
+    margin: 5px 0px;
+  }
+  .ps-menu-button:hover {
+    color: #e8e8e8 !important;
+    background-color: transparent !important;
+  }
+  .ps-menu-root .ps-active {
+    color: #FF464D !important;
+    background-color: aliceblue !important; ;  
+    border-radius: 10px;
+  }
+  
+  @media only screen and (max-width: 1200px) {
+    #header {
+      display: none;
+    }
+  }
