@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
+const { authenticateAndFetchClients } = require('../api/smartleadclient');
 
 // Check if user has API key for selected software
 exports.checkSoftware = async (req, res) => {
@@ -14,7 +15,7 @@ exports.checkSoftware = async (req, res) => {
     }
 
     // Check if the user has the software
-    const softwareData = user.softwareKeys.find(
+    const softwareData =user.softwareKeys.find(
       (item) => item.software === software
     );
 
@@ -23,7 +24,7 @@ exports.checkSoftware = async (req, res) => {
       if (softwareData.apiKey) {
         // Create a JWT token with user ID and software name
         const token = jwt.sign(
-          { userId: user._id, software },
+          { userId: user._id, software},
           process.env.JWT_SECRET, // Use the JWT secret from .env file
           { expiresIn: '1h' } // Adjust the token expiration as needed
         );
@@ -63,26 +64,17 @@ exports.addApiKey = async (req, res) => {
 
     user.softwareKeys.push({ software, apiKey });
     await user.save();
-
-    res.json({ message: 'API key added successfully' });
+    if (software === 'smartlead.ai') {
+      try {
+        const clients = await authenticateAndFetchClients(apiKey,user);
+        return res.status(200).json({ message: 'API key added successfully', clients });
+      } catch (apiError){
+        return res.status(500).json({ message: apiError.message });
+      }
+    } 
+    return res.status(200).json({ message: 'API key added successfully' });
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server Error');
-  }
-};
-
-// Fetch user stats
-exports.getUserStats = async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id);
-    const stats = {
-      softwareKeys: user.softwareKeys,
-      // Add other stats information as needed
-    };
-
-    res.json(stats);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server Error');
+    return res.status(500).send('Server Error');
   }
 };

@@ -1,0 +1,11 @@
+{
+  "version": "1.0",
+  "apis": [
+    {
+      "identifier": "smartlead",
+      "source": "@smartlead/v1.0#186kv4r33almw1oggs",
+      "integrity": "sha512-MI3vODBWFdU5jySUCLXeWSkaCtqqZ34P5NrygIP+FaBcpMvvVmmOzfR3HxVIhN6Y+2XSTR8H4z6SFjaBXUDh7Q==",
+      "installerVersion": "6.1.2"
+    }
+  ]
+}
