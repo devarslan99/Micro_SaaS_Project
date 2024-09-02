@@ -66,7 +66,7 @@ exports.addApiKey = async (req, res) => {
     await user.save();
     if (software === 'smartlead.ai') {
       try {
-        const clients = await authenticateAndFetchClients(apiKey,user);
+        const clients = await authenticateAndFetchClients(apiKey,user,software);
         return res.status(200).json({ message: 'API key added successfully', clients });
       } catch (apiError){
         return res.status(500).json({ message: apiError.message });
