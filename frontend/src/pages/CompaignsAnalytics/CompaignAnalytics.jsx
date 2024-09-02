@@ -42,47 +42,41 @@ const CompaignAnalytics = ({ menuCollapse }) => {
       spacing={2}
     >
       <Grid item xs={12}>
-        <Box
-          display="flex"
-          justifyContent="space-between"
-          alignItems="center"
-          bgcolor="white"
-          borderColor="#F0F0F0"
-          borderRadius={2}
-          p={3}
-          mt={4}
-        >
+        <Box className="flex sm:flex-row flex-col justify-between sm:items-center items-start sm:gap-0 gap-5 bg-white border-0 p-3 mt-4">
           {!showDailyLevel ? (
-            <Box className="flex gap-3 items-center">
-              <CustomDateInput
-                id="start-date"
-                label="Start Date"
-                value={startDate}
-                onChange={(e) => {
-                  setStartDate(e.target.value);
-                  handleDateChange();
-                }}
-              />
-              <CustomDateInput
-                id="end-date"
-                label="End Date"
-                value={endDate}
-                onChange={(e) => {
-                  setEndDate(e.target.value);
-                  handleDateChange();
-                }}
-
-              />
-              <CustomCheckBtn
-                showOpenCount={showOpenCount}
-                setShowOpenCount={setShowOpenCount}
-                label="Open Count"
-              />
-              <CustomCheckBtn
-                showOpenCount={showClickCount}
-                setShowOpenCount={setShowClickCount}
-                label="Click Count"
-              />
+            <Box className="flex md:flex-row flex-col gap-3 md:items-center">
+              <Box className="flex gap-3">
+                <CustomDateInput
+                  id="start-date"
+                  label="Start Date"
+                  value={startDate}
+                  onChange={(e) => {
+                    setStartDate(e.target.value);
+                    handleDateChange();
+                  }}
+                />
+                <CustomDateInput
+                  id="end-date"
+                  label="End Date"
+                  value={endDate}
+                  onChange={(e) => {
+                    setEndDate(e.target.value);
+                    handleDateChange();
+                  }}
+                />
+              </Box>
+              <Box className="flex">
+                <CustomCheckBtn
+                  showOpenCount={showOpenCount}
+                  setShowOpenCount={setShowOpenCount}
+                  label="Open Count"
+                />
+                <CustomCheckBtn
+                  showOpenCount={showClickCount}
+                  setShowOpenCount={setShowClickCount}
+                  label="Click Count"
+                />
+              </Box>
             </Box>
           ) : (
             <Box className="flex gap-2">
