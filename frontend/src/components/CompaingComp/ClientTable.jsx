@@ -52,13 +52,14 @@ const ClientTable = ({ showOpenCount, showClickCount, showDailyLevel, data }) =>
             headerName: "Open Count",
             width: 150,
           },
-          {
-            field: "unique_open_count",
-            headerName: "Unique Open Count",
-            width: 150,
-          },
+        
         ]
       : []),
+      {
+        field: "unique_open_count",
+        headerName: "Unique Open Count",
+        width: 150,
+      },
     ...(showClickCount
       ? [
           {
@@ -66,13 +67,14 @@ const ClientTable = ({ showOpenCount, showClickCount, showDailyLevel, data }) =>
             headerName: "Click Count",
             width: 150,
           },
-          {
-            field: "unique_click_count",
-            headerName: "Unique Click Count",
-            width: 150,
-          },
+         
         ]
       : []),
+      {
+        field: "unique_click_count",
+        headerName: "Unique Click Count",
+        width: 150,
+      },
     {
       field: "reply_count",
       headerName: "Reply Count",
