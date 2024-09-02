@@ -55,6 +55,7 @@ const Home = ({ menuCollapse }) => {
             backgroundColor: "transparent",
             border: "1px solid white",
             width: "100%",
+            height: "50px",
             "& .MuiSelect-icon": {
               color: "white",
             },
@@ -72,7 +73,7 @@ const Home = ({ menuCollapse }) => {
           <MenuItem value="" disabled>
             Select Software
           </MenuItem>
-          <MenuItem value="Smart lead.ai">Smart lead.ai</MenuItem>
+          <MenuItem value="Smart lead.ai"><img src="./src/assets/Smart_Lead_logo.svg" className='h-8 w-40' alt="" /></MenuItem>
           {/* Add more options here */}
         </Select>
         <Link to="/compaigns">

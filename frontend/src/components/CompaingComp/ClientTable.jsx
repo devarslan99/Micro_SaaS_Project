@@ -8,14 +8,14 @@ import {
 import { DataGrid } from "@mui/x-data-grid";
 import { FaPlusCircle } from "react-icons/fa";
 import React from "react";
-import { clientData } from "../../data/mockData";
+// import { clientData } from "../../data/mockData";
 
-const ClientTable = ({ onInviteClick }) => {
+const ClientTable = ({ showOpenCount, showClickCount, showDailyLevel, data }) => {
   const columns = [
     {
       field: "name",
       headerName: "Name",
-      width: 250,
+      width: 190,
       renderCell: ({ row }) => (
         <Box display="flex" alignItems="center">
           <Avatar src={row.avatar} alt={row.name} />
@@ -25,52 +25,91 @@ const ClientTable = ({ onInviteClick }) => {
         </Box>
       ),
     },
+    ...(!showDailyLevel ? 
+       [
+        {
+          field: "date",
+          headerName: "Date",
+          width: 150,
+        },
+        ]
+      : []),
+
     {
-        field: "email",
-        headerName: "Email",
-        width: 250  ,
-      },
-    {
-      field: "created_at",
-      headerName: "Creates At",
-      width: 170,
-    },
-    {
-      field: "user_id",
-      headerName: "User Id",
-      width: 180,
-    },
-    
-    {
-      field: "logout",
-      headerName: "Logout",
-      headerAlign: "center",
-      align: "center",
+      field: "sent_count",
+      headerName: "Sent Count",
       width: 150,
-      renderCell: ({ row }) => {
-        const { logout } = row;
-        console.log("Stage:", status);
-        return (
-          <Box display="flex" justifyContent="center" alignItems={"center"}>
-            <Typography
-              variant="caption"
-              px={0.5}
-              borderRadius={2}
-              sx={{
-                backgroundColor: "#198754",
-                color: "white",
-              }}
-            >
-              {logout}
-            </Typography>
-          </Box>
-        );
-      },
     },
+    {
+      field: "unique_sent_count",
+      headerName: "Unique Sent Count",
+      width: 150,
+    },
+    ...(showOpenCount
+      ? [
+          {
+            field: "open_count",
+            headerName: "Open Count",
+            width: 150,
+          },
+          {
+            field: "unique_open_count",
+            headerName: "Unique Open Count",
+            width: 150,
+          },
+        ]
+      : []),
+    ...(showClickCount
+      ? [
+          {
+            field: "click_count",
+            headerName: "Click Count",
+            width: 150,
+          },
+          {
+            field: "unique_click_count",
+            headerName: "Unique Click Count",
+            width: 150,
+          },
+        ]
+      : []),
+    {
+      field: "reply_count",
+      headerName: "Reply Count",
+      width: 150,
+    },
+    {
+      field: "bounce_count",
+      headerName: "Bounce Count",
+      width: 150,
+    },
+    ...(showDailyLevel ? 
+      [
+        {
+          field: "total",
+          headerName: "Total",
+          width: 150,
+        },
+        {
+          field: "inprogress",
+          headerName: "InProgress",
+          width: 150,
+        },
+        {
+          field: "notStarted",
+          headerName: "Not started",
+          width: 150,
+        },
+        {
+          field: "interested",
+          headerName: "Interested",
+          width: 150,
+        },
+      ] : [])
+
   ];
   return (
     <Box
-      m="30px 0 0 0"
       p={2}
       border={1}
       borderColor="#F0F0F0"
@@ -90,7 +129,7 @@ const ClientTable = ({ onInviteClick }) => {
       }}
     >
       <DataGrid
-        rows={clientData}
+        rows={data}
         columns={columns}
         initialState={{
           pagination: {
