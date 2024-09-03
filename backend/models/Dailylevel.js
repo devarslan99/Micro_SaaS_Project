@@ -13,7 +13,7 @@ const DailylevelSchema = new mongoose.Schema({
     },
     name: { type: String, required: true },
     start_date: { type: Date },
-    end_date: { type: Date },
+    date: { type: Date },
     sent_count: { type: Number},
     unique_sent_count: { type: Number}, // represents leads reached
     open_count: { type: Number },
