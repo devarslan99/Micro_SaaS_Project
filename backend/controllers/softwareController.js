@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const { authenticateAndFetchClients } = require('../api/smartleadclient');
+const { FetchAllCampaigns } = require('../api/fetchAllCompaigns');
 
 // Check if user has API key for selected software
 exports.checkSoftware = async (req, res) => {
@@ -67,7 +68,18 @@ exports.addApiKey = async (req, res) => {
     if (software === 'smartlead.ai') {
       try {
         const clients = await authenticateAndFetchClients(apiKey,user,software);
-        return res.status(200).json({ message: 'API key added successfully', clients });
+        const campaigns=await FetchAllCampaigns(apiKey,user,software)
+        const token = jwt.sign(
+          { userId: user._id, software},
+          process.env.JWT_SECRET, // Use the JWT secret from .env file
+          { expiresIn: '1h' } // Adjust the token expiration as needed
+        );
+
+        return res.status(200).json({ 
+          message: 'API key added successfully', 
+          apiKey:apiKey,
+          softwareToken: token
+        });
       } catch (apiError){
         return res.status(500).json({ message: apiError.message });
       }
