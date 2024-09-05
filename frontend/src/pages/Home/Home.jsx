@@ -1,17 +1,21 @@
-import { Box, Grid, Typography ,   MenuItem,
+import {
+  Box,
+  Grid,
+  Typography,
+  MenuItem,
   Select,
   Modal,
   TextField,
   Button,
-  } from '@mui/material'
-import React, { useState } from 'react'
-import ClientTable from '../../components/CompaingComp/ClientTable'
-import { Link } from 'react-router-dom';
+} from "@mui/material";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 const Home = ({ menuCollapse }) => {
   const [selectedOption, setSelectedOption] = useState("");
   const [openModal, setOpenModal] = useState(false);
   const [secretKey, setSecretKey] = useState("");
+  const [isAccountImported, setIsAccountImported] = useState(false);
 
   const handleSelectChange = (event) => {
     setSelectedOption(event.target.value);
@@ -32,105 +36,141 @@ const Home = ({ menuCollapse }) => {
     console.log("Secret Key:", secretKey);
     handleCloseModal();
   };
-    
+
+  const handleImportAccount = () => {
+    setIsAccountImported(true);
+  };
+
   return (
     <Grid
-    container
-    mb={2}
-    sx={{ pl: { xs: 0, lg: menuCollapse ? 14 : 36 } }}
-    // spacing={2}
-  >
-     <Grid item xs={12}>
-     <Box className="flex items-center justify-center mt-36">
-      <Box className="bg-gradient-to-r from-[#FF4B2B] to-[#FF416C] w-2/5 h-2/5 p-10 rounded-lg shadow-md justify-center flex flex-col gap-5 items-center">
-        <Typography variant="" className="text-3xl font-bold text-white">
-          Please select Your Software
-        </Typography>
-        <Select
-          value={selectedOption}
-          onChange={handleSelectChange}
-          displayEmpty
-          sx={{
-            color: "white",
-            backgroundColor: "transparent",
-            border: "1px solid white",
-            width: "100%",
-            height: "50px",
-            "& .MuiSelect-icon": {
-              color: "white",
-            },
-            "& .MuiOutlinedInput-notchedOutline": {
-              borderColor: "transparent",
-            },
-            "&:hover .MuiOutlinedInput-notchedOutline": {
-              borderColor: "transparent",
-            },
-            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-              borderColor: "transparent",
-            },
-          }}
-        >
-          <MenuItem value="" disabled>
-            Select Software
-          </MenuItem>
-          <MenuItem value="Smart lead.ai"><img src="./src/assets/Smart_Lead_logo.svg" className='h-8 w-40' alt="" /></MenuItem>
-          {/* Add more options here */}
-        </Select>
-        <Link to="/compaigns">
+      container
+      mb={2}
+      sx={{ pl: { xs: 0, lg: menuCollapse ? 14 : 36 } }}
+    >
+      {/* Top Bar with Import Account Button */}
+      <Grid item xs={12} className="flex justify-end p-4">
+        {!isAccountImported && (
           <Button
-            sx={{
-              px: 10,
-              mt: 1,
-              borderRadius: "20px",
-              borderColor: "white",
-              color: "white",
-              textTransform: "uppercase",
-            }}
-            variant="outlined"
-            disabled={selectedOption === ""}
+            onClick={handleImportAccount}
+            variant="contained"
+            className="bg-gradient-to-r from-[#FF4B2B] to-[#FF416C] text-white"
           >
-            Next
+            Import Account
           </Button>
-        </Link>
+        )}
+      </Grid>
 
-        {/* Modal */}
-        <Modal
-          open={openModal}
-          onClose={handleCloseModal}
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Box className="w-1/2 bg-white p-10 rounded-md shadow-md">
-            <Typography variant="" className="mb-2 text-2xl font-semibold">
-              Enter your Secret Key
-            </Typography>
-            <TextField
-              fullWidth
-              label="Secret Key"
-              value={secretKey}
-              onChange={handleSecretKeyChange}
-              variant="outlined"
-              margin="normal"
-            />
-            <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
-              <Button
-                onClick={handleSave}
-                variant="contained"
-                className="w-1/4 bg-gradient-to-r from-[#FF4B2B] to-[#FF416C]"
-              >
-                Save
-              </Button>
-            </Box>
+      <Grid item xs={12}>
+        <Box className="flex items-center justify-center mt-36">
+          <Box className="bg-gradient-to-r from-[#FF4B2B] to-[#FF416C] w-2/5 h-2/5 p-10 rounded-lg shadow-md justify-center flex flex-col gap-5 items-center">
+            {!isAccountImported ? (
+              <Typography variant="" className="text-3xl font-bold text-white text-center">
+                Click on the Import Account button to import your account
+              </Typography>
+            ) : selectedOption === "" ? (
+              <>
+                <Typography variant="" className="text-3xl font-bold text-white">
+                  Please select Your Software
+                </Typography>
+                <Select
+                  value={selectedOption}
+                  onChange={handleSelectChange}
+                  displayEmpty
+                  sx={{
+                    color: "white",
+                    backgroundColor: "transparent",
+                    border: "1px solid white",
+                    width: "100%",
+                    height: "50px",
+                    "& .MuiSelect-icon": {
+                      color: "white",
+                    },
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "transparent",
+                    },
+                    "&:hover .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "transparent",
+                    },
+                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "transparent",
+                    },
+                  }}
+                >
+                  <MenuItem value="" disabled>
+                    Select Software
+                  </MenuItem>
+                  <MenuItem value="Smart lead.ai">
+                    <img
+                      src="./src/assets/Smart_Lead_logo.svg"
+                      className="h-8 w-40"
+                      alt=""
+                    />
+                  </MenuItem>
+                  {/* Add more options here */}
+                </Select>
+                <Link to="/compaigns">
+                  <Button
+                    sx={{
+                      px: 10,
+                      mt: 1,
+                      borderRadius: "20px",
+                      borderColor: "white",
+                      color: "white",
+                      textTransform: "uppercase",
+                    }}
+                    variant="outlined"
+                    disabled={selectedOption === ""}
+                  >
+                    Next
+                  </Button>
+                </Link>
+              </>
+            ) : (
+              <Typography variant="" className="text-3xl font-bold text-white">
+                {selectedOption}
+              </Typography>
+            )}
           </Box>
-        </Modal>
-      </Box>
-    </Box>
-        </Grid>
-  </Grid>
-  )
-}
+        </Box>
+      </Grid>
 
-export default Home
+      {/* Modal */}
+      <Modal
+        open={openModal}
+        onClose={handleCloseModal}
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Box className="w-1/2 bg-white p-10 rounded-md shadow-md">
+          <Typography variant="" className="mb-2 text-2xl font-semibold">
+            Enter your Secret Key
+          </Typography>
+          <TextField
+            fullWidth
+            label="Secret Key"
+            value={secretKey}
+            onChange={handleSecretKeyChange}
+            variant="outlined"
+            margin="normal"
+          />
+          <Box
+            sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}
+          >
+            <Button
+              onClick={handleSave}
+              variant="contained"
+              className="w-1/4 bg-gradient-to-r from-[#FF4B2B] to-[#FF416C]"
+            >
+              Save
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
+    </Grid>
+  );
+};
+
+export default Home;

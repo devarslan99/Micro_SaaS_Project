@@ -86,7 +86,7 @@ export const clientData = [
       avatar:
       "https://pixelwibes.com/template/my-task/html/dist/assets/images/xs/avatar4.jpg",
       date: "13/01/21",
-      sent_count: 2343,
+      statname: 2343,
       unique_sent_count: 23453,
       open_count: 23453,
       unique_open_count: 23453,
@@ -138,5 +138,102 @@ export const clientData = [
       inprogress: 23453,
       notStarted: 23453,
       interested: 23453,
+    },
+  ];
+
+
+  export const statItems = [
+    {
+      title: "Sent Count",
+      subtitle: "Total # of Sent Count",
+      value: 2312,
+      gradient: "bg-gradient-to-r from-[#1c92d2] to-[#6dd5ed]",
+    },
+    {
+      title: "Unique Sent Count",
+      subtitle: "Total # of Unique Sent Count",
+      value: 2312,
+      gradient: "bg-gradient-to-r from-[#CB356B] to-[#BD3F32]",
+    },
+    {
+      title: "Open Count",
+      subtitle: "Total # of Open Count",
+      value: 2343,
+      gradient: "bg-gradient-to-r from-[#F2994A] to-[#F2C94C]",
+      show: "showOpenCount", // Will only show if `showOpenCount` is true
+    },
+    {
+      title: "Unique Open Count",
+      subtitle: "Total # of Unique Open Count",
+      value: 2343,
+      gradient: "bg-gradient-to-r from-[#E44D26] to-[#F16529]",
+    },
+    {
+      title: "Click Count",
+      subtitle: "Total # of Click Count",
+      value: 2343,
+      gradient: "bg-gradient-to-r from-[#44a08d] to-[#093637]",
+      show: "showClickCount", // Will only show if `showClickCount` is true
+    },
+    {
+      title: "Unique Click Count",
+      subtitle: "Total # of Unique Click Count",
+      value: 2343,
+      gradient: "bg-gradient-to-r from-[#fd746c] to-[#fd746c]",
+    },
+    {
+      title: "Reply Count",
+      subtitle: "Total # of Reply Count",
+      value: 2343,
+      gradient: "bg-gradient-to-r from-[#4b79a1] to-[#283e51]",
+    },
+    {
+      title: "Bounce Count",
+      subtitle: "Total # of Bounce Count",
+      value: 2343,
+      gradient: "bg-gradient-to-r from-[#ba8b02] to-[#181818]",
+    },
+  ];
+
+  export const statGraphItems = [
+    {
+      title: "Sent Count",
+      subtitle: "Total # of Sent Count",
+      color: "#1c92d2",
+    },
+    {
+      title: "Unique Sent Count",
+      subtitle: "Total # of Unique Sent Count",
+      color: "#CB356B",
+    },
+    {
+      title: "Open Count",
+      subtitle: "Total # of Open Count",
+      color: "#F2994A",
+    },
+    {
+      title: "Unique Open Count",
+      subtitle: "Total # of Unique Open Count",
+      color: "#E44D26",
+    },
+    {
+      title: "Click Count",
+      subtitle: "Total # of Click Count",
+      color: "#44a08d",
+    },
+    {
+      title: "Unique Click Count",
+      subtitle: "Total # of Unique Click Count",
+      color: "#fd746c",
+    },
+    {
+      title: "Reply Count",
+      subtitle: "Total # of Reply Count",
+      color: "#4b79a1",
+    },
+    {
+      title: "Bounce Count",
+      subtitle: "Total # of Bounce Count",
+      color: "#ba8b02",
     },
   ];

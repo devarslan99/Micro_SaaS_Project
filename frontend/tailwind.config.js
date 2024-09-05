@@ -6,6 +6,9 @@ export default {
       backgroundImage: {
         'hero-pattern': "url('https://img.freepik.com/free-photo/2d-wallpaper-with-graphic-grainy-gradient-colors_23-2151001576.jpg')",
         // 'footer-texture': "url('/img/footer-texture.png')",
+      },
+      fontFamily:{
+        'Poppins': ['Poppins', 'Arial', 'sans-serif'],
       }
     },
   },
