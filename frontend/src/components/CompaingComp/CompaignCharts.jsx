@@ -22,7 +22,7 @@ const CompaignCharts = ({color}) => {
   return (
     <div>
       {" "}
-      <div className="row object-fill" >
+      <div className="row object-cover" >
         <div className="mixed-chart">
           <Chart
             options={chartData.options}

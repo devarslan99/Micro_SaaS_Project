@@ -5,18 +5,17 @@ import {
   MenuItem,
   SubMenu,
 } from "react-pro-sidebar";
-import { FaList, FaQrcode, FaUsers } from "react-icons/fa";
+import {  FaQrcode } from "react-icons/fa";
 import {
   LuArrowBigRightDash,
   LuArrowBigLeftDash,
-  LuClipboardSignature,
 } from "react-icons/lu";
 import { AiFillHome } from "react-icons/ai";
 import { Box, IconButton, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 import "./sidebar.css";
-import {  FaToolbox } from "react-icons/fa6";
-import { IoCalculatorOutline } from "react-icons/io5";
+import { ImStatsBars } from "react-icons/im";
+import { RiMailSendLine } from "react-icons/ri";
 
 
 const Sidebar = ({ menuCollapse, setMenuCollapse,onPageSelect }) => {
@@ -88,7 +87,7 @@ const Sidebar = ({ menuCollapse, setMenuCollapse,onPageSelect }) => {
               <Link to="/compaigns">
             <MenuItem
               active={isMenuItemActive("/compaigns")}
-              icon={<FaToolbox fontSize="22px" />}
+              icon={<ImStatsBars fontSize="22px" />}
               onClick={() => handleMenuItemClick("Campaign Analytics", "/compaigns")}
             >
               Compaign Analytics
@@ -97,7 +96,7 @@ const Sidebar = ({ menuCollapse, setMenuCollapse,onPageSelect }) => {
               <Link to="/email_stats">
             <MenuItem
               active={isMenuItemActive("/email_stats")}
-              icon={<FaList fontSize="22px" />}
+              icon={<RiMailSendLine fontSize="22px" />}
               onClick={() => handleMenuItemClick("Email Stats", "/email_stats")}
             >
               Email Stats

@@ -42,11 +42,7 @@ const Home = ({ menuCollapse }) => {
   };
 
   return (
-    <Grid
-      container
-      mb={2}
-      sx={{ pl: { xs: 0, lg: menuCollapse ? 14 : 36 } }}
-    >
+    <Grid container mb={2} sx={{ pl: { xs: 0, lg: menuCollapse ? 14 : 36 } }}>
       {/* Top Bar with Import Account Button */}
       <Grid item xs={12} className="flex justify-end p-4">
         {!isAccountImported && (
@@ -61,15 +57,21 @@ const Home = ({ menuCollapse }) => {
       </Grid>
 
       <Grid item xs={12}>
-        <Box className="flex items-center justify-center mt-36">
-          <Box className="bg-gradient-to-r from-[#FF4B2B] to-[#FF416C] w-2/5 h-2/5 p-10 rounded-lg shadow-md justify-center flex flex-col gap-5 items-center">
+        <Box className="flex items-center justify-center sm:mt-36 mt-16">
+          <Box className="bg-gradient-to-r from-[#FF4B2B] to-[#FF416C] sm:w-2/5 w-10/12 h-2/5 sm:p-10 p-5 rounded-lg shadow-md justify-center flex flex-col gap-5 items-center">
             {!isAccountImported ? (
-              <Typography variant="" className="text-3xl font-bold text-white text-center">
+              <Typography
+                variant=""
+                className="sm:text-3xl text-xl font-bold text-white text-center"
+              >
                 Click on the Import Account button to import your account
               </Typography>
             ) : selectedOption === "" ? (
               <>
-                <Typography variant="" className="text-3xl font-bold text-white">
+                <Typography
+                  variant=""
+                  className="sm:text-3xl text-2xl font-bold text-white"
+                >
                   Please select Your Software
                 </Typography>
                 <Select
@@ -144,7 +146,7 @@ const Home = ({ menuCollapse }) => {
           justifyContent: "center",
         }}
       >
-        <Box className="w-1/2 bg-white p-10 rounded-md shadow-md">
+        <Box className="sm:w-1/2 w-4/5   bg-white sm:p-10 p-5 rounded-md shadow-md">
           <Typography variant="" className="mb-2 text-2xl font-semibold">
             Enter your Secret Key
           </Typography>
@@ -156,9 +158,7 @@ const Home = ({ menuCollapse }) => {
             variant="outlined"
             margin="normal"
           />
-          <Box
-            sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}
-          >
+          <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
             <Button
               onClick={handleSave}
               variant="contained"

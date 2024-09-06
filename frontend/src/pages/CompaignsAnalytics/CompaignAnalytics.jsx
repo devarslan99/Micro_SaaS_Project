@@ -6,15 +6,15 @@ import {
   Select,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
-import { clientData, statGraphItems, statItems } from "../../data/mockData";
+import React, { useEffect, useState } from "react";
+import { clientData, gradients, statGraphItems } from "../../data/mockData";
 import { format, parse } from "date-fns";
 import CustomCheckBtn from "../../components/CompaingComp/CustomCheckBtn";
 import DropdownCalendar from "../../components/CompaingComp/DatePicker";
 import CompaignCharts from "../../components/CompaingComp/CompaignCharts";
 
 const CompaignAnalytics = ({ menuCollapse }) => {
-  const [selectedClient, setSelectedClient] = useState(""); // Dropdown client selection
+  const [selectedClient, setSelectedClient] = useState(clientData[0].name); // Dropdown client selection
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [showOpenCount, setShowOpenCount] = useState(false);
@@ -27,29 +27,52 @@ const CompaignAnalytics = ({ menuCollapse }) => {
     return parse(dateString, "dd/MM/yy", new Date());
   };
 
-  const handleDateChange = () => {
-    if (startDate && endDate) {
-      const filtered = clientData.filter((item) => {
-        const itemDate = parseDate(item.date);
-        return itemDate >= new Date(startDate) && itemDate <= new Date(endDate);
-      });
-      setFilteredData(filtered);
-    } else {
-      setFilteredData(clientData);
-    }
+  const handleDateChange = ({ startDate, endDate }) => {
+    setStartDate(startDate);
+    setEndDate(endDate);
   };
+
+  const handleDateFilter = () => {
+    const filtered = clientData
+      .filter((client) => client.name === selectedClient) // First, filter by selected client
+      .map((client) => {
+        // Then filter the client's stats by date
+        const filteredStats = client.stats.filter((stat) => {
+          const itemDate = parseDate(stat.date);
+          // console.log(itemDate);
+          return (
+            (!startDate || itemDate >= new Date(startDate)) &&
+            (!endDate || itemDate <= new Date(endDate))
+          );
+        });
+
+        // Return the client with filtered stats
+        return { ...client, stats: filteredStats };
+      })
+      .filter((client) => client.stats.length > 0); // Only keep clients with stats in the date range
+
+    setFilteredData(filtered);
+  };
+
+  useEffect(() => {
+    handleDateFilter();
+  }, [startDate, endDate, selectedClient]);
 
   return (
     <Grid
       container
       mb={2}
-      sx={{ pl: { xs: 0, lg: menuCollapse ? 14 : 36 } }}
+      sx={{ pl: { xs: 2, lg: menuCollapse ? 14 : 36 } }}
       spacing={3}
-      pr={3}
+      pr={2}
     >
+      {/* Daily Level */}
       <Grid item xs={12}>
-        <Box className="mt-4"> 
-          <Typography variant="" className="text-3xl font-bold font-Poppins">
+        <Box className="mt-4">
+          <Typography
+            variant=""
+            className="sm:text-3xl text-2xl font-bold font-Poppins"
+          >
             Daily Level
           </Typography>
           <Box className="flex sm:flex-row flex-col justify-between sm:items-center items-start sm:gap-0 gap-5 bg-white border-0 py-3">
@@ -66,8 +89,12 @@ const CompaignAnalytics = ({ menuCollapse }) => {
                   label="Click Count"
                 />
               </Box>
-              <Box className="flex gap-3">
-                <DropdownCalendar />
+              <Box className="flex gap-3 sm:flex-row flex-col">
+                <DropdownCalendar
+                  startDate={startDate}
+                  endDate={endDate}
+                  onDateChange={handleDateChange} // Pass down the date change handler
+                />
                 <Select
                   value={selectedClient}
                   onChange={(e) => setSelectedClient(e.target.value)}
@@ -93,9 +120,6 @@ const CompaignAnalytics = ({ menuCollapse }) => {
                     },
                   }}
                 >
-                  <MenuItem value="" disabled>
-                    Select Client
-                  </MenuItem>
                   {clientData.map((client) => (
                     <MenuItem key={client.id} value={client.name}>
                       {client.name}
@@ -108,27 +132,56 @@ const CompaignAnalytics = ({ menuCollapse }) => {
         </Box>
       </Grid>
       {/* Stats Section */}
-      {statItems.map((item, index) => {
-        // Conditionally render if `show` property exists
-        if (
-          (item.title === "Open Count" && !showOpenCount) ||
-          (item.title === "Click Count" && !showClickCount)
-        ) {
-          return null; // Skip rendering if not toggled
-        }
+      {filteredData.length > 0 &&
+        filteredData.map((client, clientIndex) => {
+          // Initialize an object to store the aggregated values for each stat
+          const aggregatedStats = {};
 
-        return (
-          <Grid item md={4} sm={6} xs={12} key={index}>
-            <Box
-              className={`${item.gradient} p-5 rounded-md shadow-md text-white`}
-            >
-              <Typography variant="h6">{item.title}</Typography>
-              <Typography variant="subtitle2">{item.subtitle}</Typography>
-              <Typography variant="h4">{item.value}</Typography>
-            </Box>
-          </Grid>
-        );
-      })}
+          client.stats.forEach((stat) => {
+            stat.statsName.forEach((statName, index) => {
+              // If stat is not yet added, initialize it
+              if (!aggregatedStats[statName]) {
+                aggregatedStats[statName] = 0;
+              }
+              // Sum the values for the current stat across all dates
+              aggregatedStats[statName] += stat.values[index];
+            });
+          });
+
+          // Now render the boxes with aggregated values
+          return Object.keys(aggregatedStats).map((statName, index) => {
+            // Conditionally render Open Count and Click Count
+            if (
+              (statName === "Open Count" && !showOpenCount) ||
+              (statName === "Click Count" && !showClickCount) ||
+              statName === "Total" ||
+              statName === "Inprogress" ||
+              statName === "Not Interested" ||
+              statName === "Interested"
+            ) {
+              return null; // Skip rendering if toggled off
+            }
+            const gradient = gradients[index % gradients.length];
+
+            return (
+              <Grid item md={4} sm={6} xs={12} key={`${clientIndex}-${index}`}>
+                <Box
+                  className={`p-5 rounded-md shadow-md text-white ${gradient}`}
+                >
+                  <Typography variant="h6">{statName}</Typography>
+                  <Typography variant="subtitle2">
+                    {" "}
+                    Total # of {statName}
+                    {/* {`Client: ${client.name}`} */}
+                  </Typography>
+                  <Typography variant="h4">
+                    {aggregatedStats[statName]}
+                  </Typography>
+                </Box>
+              </Grid>
+            );
+          });
+        })}
 
       <Grid item xs={12}>
         <Grid container spacing={3}>
@@ -136,14 +189,18 @@ const CompaignAnalytics = ({ menuCollapse }) => {
             // Hide "Open Count" and "Click Count"
             if (
               (item.title === "Open Count" && !showOpenCount) ||
-              (item.title === "Click Count" && !showClickCount)
+              (item.title === "Click Count" && !showClickCount) ||
+              item.title === "Total" ||
+              item.title === "Inprogress" ||
+              item.title === "Not Interested" ||
+              item.title === "Interested"
             ) {
               return null; // Skip rendering if not toggled
             }
 
             return (
-              <Grid item md={4} xs={12} key={index}>
-                <Box className="border border-red-500 p-5 rounded-md shadow-md">
+              <Grid item md={4} sm={6} xs={12} key={index}>
+                <Box className="border border-red-500 sm:p-5 p-3 rounded-md shadow-md">
                   <Typography variant="h6" className="text-2xl font-semibold">
                     {item.title}
                   </Typography>
@@ -160,9 +217,14 @@ const CompaignAnalytics = ({ menuCollapse }) => {
           })}
         </Grid>
       </Grid>
+
+      {/* Top Level */}
       <Grid item xs={12}>
-        <Box className="mt-4"> 
-          <Typography variant="" className="text-3xl font-bold font-Poppins">
+        <Box className="mt-4">
+          <Typography
+            variant=""
+            className="sm:text-3xl text-2xl font-bold font-Poppins"
+          >
             Top Level
           </Typography>
           <Box className="flex sm:flex-row flex-col justify-between sm:items-center items-start sm:gap-0 gap-5 bg-white border-0 py-3">
@@ -184,27 +246,52 @@ const CompaignAnalytics = ({ menuCollapse }) => {
         </Box>
       </Grid>
       {/* Stats Section */}
-      {statItems.map((item, index) => {
-        // Conditionally render if `show` property exists
-        if (
-          (item.title === "Open Count" && !showTopOpenCount) ||
-          (item.title === "Click Count" && !showTopClickCount)
-        ) {
-          return null; // Skip rendering if not toggled
-        }
+      {filteredData.length > 0 &&
+        filteredData.map((client, clientIndex) => {
+          // Initialize an object to store the aggregated values for each stat
+          const aggregatedStats = {};
 
-        return (
-          <Grid item md={4} sm={6} xs={12} key={index}>
-            <Box
-              className={`${item.gradient} p-5 rounded-md shadow-md text-white`}
-            >
-              <Typography variant="h6">{item.title}</Typography>
-              <Typography variant="subtitle2">{item.subtitle}</Typography>
-              <Typography variant="h4">{item.value}</Typography>
-            </Box>
-          </Grid>
-        );
-      })}
+          client.stats.forEach((stat) => {
+            stat.statsName.forEach((statName, index) => {
+              // If stat is not yet added, initialize it
+              if (!aggregatedStats[statName]) {
+                aggregatedStats[statName] = 0;
+              }
+              // Sum the values for the current stat across all dates
+              aggregatedStats[statName] += stat.values[index];
+            });
+          });
+
+          // Now render the boxes with aggregated values
+          return Object.keys(aggregatedStats).map((statName, index) => {
+            // Conditionally render Open Count and Click Count
+            if (
+              (statName === "Open Count" && !showTopOpenCount) ||
+              (statName === "Click Count" && !showTopClickCount)
+            ) {
+              return null; // Skip rendering if toggled off
+            }
+            const gradient = gradients[index % gradients.length];
+
+            return (
+              <Grid item md={4} sm={6} xs={12} key={`${clientIndex}-${index}`}>
+                <Box
+                  className={`p-5 rounded-md shadow-md text-white ${gradient}`}
+                >
+                  <Typography variant="h6">{statName}</Typography>
+                  <Typography variant="subtitle2">
+                    {" "}
+                    Total # of {statName}
+                    {/* {`Client: ${client.name}`} */}
+                  </Typography>
+                  <Typography variant="h4">
+                    {aggregatedStats[statName]}
+                  </Typography>
+                </Box>
+              </Grid>
+            );
+          });
+        })}
 
       <Grid item xs={12}>
         <Grid container spacing={3}>
@@ -218,8 +305,8 @@ const CompaignAnalytics = ({ menuCollapse }) => {
             }
 
             return (
-              <Grid item md={4} xs={12} key={index}>
-                <Box className="border border-red-500 p-5 rounded-md shadow-md">
+              <Grid item md={4} sm={6} xs={12} key={index}>
+                <Box className="border border-red-500 sm:p-5 p-3 rounded-md shadow-md">
                   <Typography variant="h6" className="text-2xl font-semibold">
                     {item.title}
                   </Typography>

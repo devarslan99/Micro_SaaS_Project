@@ -14,7 +14,7 @@ const Layout = ({ menuCollapse, setMenuCollapse,children }) => {
     <>
       <Sidebar menuCollapse={menuCollapse} setMenuCollapse={setMenuCollapse} onPageSelect={handlePageSelect} />
       <div className="">
-        <Topbar menuCollapse={menuCollapse}  pageTitle={pageTitle} />
+        <Topbar menuCollapse={menuCollapse}  pageTitle={pageTitle} onPageSelect={handlePageSelect} />
         {children}
       </div>
     </>

@@ -5,11 +5,11 @@ import "react-date-range/dist/theme/default.css"; // theme css file
 import { addDays } from "date-fns";
 import { Button, Popover } from "@mui/material";
 
-const DropdownCalendar = () => {
+const DropdownCalendar = ({ startDate, endDate, onDateChange }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectionRange, setSelectionRange] = useState({
-    startDate: new Date(),
-    endDate: addDays(new Date(), 7),
+    startDate: startDate || new Date(),
+    endDate: endDate || new Date(),
     key: "selection",
   });
 
@@ -26,6 +26,9 @@ const DropdownCalendar = () => {
 
   const handleSelect = (ranges) => {
     setSelectionRange(ranges.selection);
+    if (onDateChange) {
+      onDateChange(ranges.selection); // Call the parent-provided onDateChange
+    }
   };
 
   return (
