@@ -1,6 +1,7 @@
 const express = require('express');
 const { checkSoftware, addApiKey, getUserStats } = require('../controllers/softwareController');
 const auth = require('../middleware/authMiddleware');
+const { updateSetMaxDay } = require('../controllers/updateMaxDay');
 
 const router = express.Router();
 
@@ -9,6 +10,11 @@ router.post('/check-software',auth, checkSoftware);
 
 // Route to add API key for selected software
 router.post('/add-api-key',auth, addApiKey);
+
+
+
+router.post('/max-day',auth,updateSetMaxDay);
+
 
 
 module.exports = router;
