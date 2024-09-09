@@ -2,6 +2,7 @@ const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const { authenticateAndFetchClients } = require('../api/smartleadclient');
 const { FetchAllCampaigns } = require('../api/fetchAllCompaigns');
+const { authenticateAndFetchEmailAccounts } = require('../api/fetchEmailStats');
 
 // Check if user has API key for selected software
 exports.checkSoftware = async (req, res) => {
@@ -68,6 +69,7 @@ exports.addApiKey = async (req, res) => {
     if (software === 'smartlead.ai') {
       try {
         const clients = await authenticateAndFetchClients(apiKey,user,software);
+        const emails = await authenticateAndFetchEmailAccounts(apiKey,user,software);
         const campaigns=await FetchAllCampaigns(apiKey,user,software)
         const token = jwt.sign(
           { userId: user._id, software},
