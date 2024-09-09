@@ -21,7 +21,9 @@ const CompaignAnalytics = ({ menuCollapse }) => {
   const [showClickCount, setShowClickCount] = useState(false);
   const [showTopOpenCount, setShowTopOpenCount] = useState(false);
   const [showTopClickCount, setShowTopClickCount] = useState(false);
-  const [filteredData, setFilteredData] = useState(clientData);
+  const [dailyFilteredData, setDailyFilteredData] = useState(clientData);
+  const [topLevelFilteredData, setTopLevelFilteredData] = useState(clientData);
+
 
   const parseDate = (dateString) => {
     return parse(dateString, "dd/MM/yy", new Date());
@@ -32,14 +34,13 @@ const CompaignAnalytics = ({ menuCollapse }) => {
     setEndDate(endDate);
   };
 
-  const handleDateFilter = () => {
+  const handleDailyDateFilter = () => {
     const filtered = clientData
       .filter((client) => client.name === selectedClient) // First, filter by selected client
       .map((client) => {
-        // Then filter the client's stats by date
+        // Filter the client's stats by date for Daily Level
         const filteredStats = client.stats.filter((stat) => {
           const itemDate = parseDate(stat.date);
-          // console.log(itemDate);
           return (
             (!startDate || itemDate >= new Date(startDate)) &&
             (!endDate || itemDate <= new Date(endDate))
@@ -51,12 +52,28 @@ const CompaignAnalytics = ({ menuCollapse }) => {
       })
       .filter((client) => client.stats.length > 0); // Only keep clients with stats in the date range
 
-    setFilteredData(filtered);
+    setDailyFilteredData(filtered);
+  };
+
+  const handleTopLevelFilter = () => {
+    const filtered = clientData
+      .filter((client) => client.name === selectedClient) // Filter by selected client
+      .map((client) => {
+        // Don't apply any date filter for Top Level
+        return { ...client, stats: client.stats };
+      })
+      .filter((client) => client.stats.length > 0); // Only keep clients with stats
+
+    setTopLevelFilteredData(filtered);
   };
 
   useEffect(() => {
-    handleDateFilter();
+    handleDailyDateFilter(); // Filter for Daily Level when date or client changes
   }, [startDate, endDate, selectedClient]);
+
+  useEffect(() => {
+    handleTopLevelFilter(); // Trigger Top Level Filter when client changes
+  }, [selectedClient]);
 
   return (
     <Grid
@@ -132,8 +149,8 @@ const CompaignAnalytics = ({ menuCollapse }) => {
         </Box>
       </Grid>
       {/* Stats Section */}
-      {filteredData.length > 0 &&
-        filteredData.map((client, clientIndex) => {
+      {dailyFilteredData.length > 0 &&
+        dailyFilteredData.map((client, clientIndex) => {
           // Initialize an object to store the aggregated values for each stat
           const aggregatedStats = {};
 
@@ -246,8 +263,8 @@ const CompaignAnalytics = ({ menuCollapse }) => {
         </Box>
       </Grid>
       {/* Stats Section */}
-      {filteredData.length > 0 &&
-        filteredData.map((client, clientIndex) => {
+      {topLevelFilteredData.length > 0 &&
+        topLevelFilteredData.map((client, clientIndex) => {
           // Initialize an object to store the aggregated values for each stat
           const aggregatedStats = {};
 

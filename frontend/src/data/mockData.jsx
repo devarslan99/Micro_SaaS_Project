@@ -54,19 +54,6 @@ export const clientData = [
 
         },
       ],
-      // date: "14/01/21",
-      // sent_count: 42323,
-      // unique_sent_count: 23453,
-      // open_count: 23453,
-      // unique_open_count: 23453,
-      // click_count: 23453,
-      // unique_click_count: 23453,
-      // reply_count: 23453,
-      // bounce_count: 23453,
-      // total: 23453,
-      // inprogress: 23453,
-      // notStarted: 23453,
-      // interested: 23453,
     },
     {
       id: 3,
@@ -94,19 +81,6 @@ export const clientData = [
 
         },
       ],
-      // date: "14/04/21",
-      // sent_count: 8689,
-      // unique_sent_count: 23453,
-      // open_count: 23453,
-      // unique_open_count: 23453,
-      // click_count: 23453,
-      // unique_click_count: 23453,
-      // reply_count: 23453,
-      // bounce_count: 23453,
-      // total: 23453,
-      // inprogress: 23453,
-      // notStarted: 23453,
-      // interested: 23453,
     },
     {
       id: 4,
@@ -134,19 +108,6 @@ export const clientData = [
 
         },
       ],
-      // date: "13/01/21",
-      // sent_count: 7868,
-      // unique_sent_count: 23453,
-      // open_count: 23453,
-      // unique_open_count: 23453,
-      // click_count: 23453,
-      // unique_click_count: 23453,
-      // reply_count: 23453,
-      // bounce_count: 23453,
-      // total: 23453,
-      // inprogress: 23453,
-      // notStarted: 23453,
-      // interested: 23453,
     },
     {
       id: 5,
@@ -174,19 +135,6 @@ export const clientData = [
 
         },
       ],
-      // date: "13/01/21",
-      // statname: 2343,
-      // unique_sent_count: 23453,
-      // open_count: 23453,
-      // unique_open_count: 23453,
-      // click_count: 23453,
-      // unique_click_count: 23453,
-      // reply_count: 23453,
-      // bounce_count: 23453,
-      // total: 23453,
-      // inprogress: 23453,
-      // notStarted: 23453,
-      // interested: 23453,
     },
     {
       id: 6,
@@ -214,19 +162,6 @@ export const clientData = [
 
         },
       ],
-      // date: "	18/06/21",
-      // sent_count: 23423,
-      // unique_sent_count: 23453,
-      // open_count: 23453,
-      // unique_open_count: 23453,
-      // click_count: 23453,
-      // unique_click_count: 23453,
-      // reply_count: 23453,
-      // bounce_count: 23453,
-      // total: 23453,
-      // inprogress: 23453,
-      // notStarted: 23453,
-      // interested: 23453,
     },
     {
       id: 7,
@@ -254,19 +189,6 @@ export const clientData = [
 
         },
       ],
-      // date: "23/02/21",
-      // sent_count: 23423,
-      // unique_sent_count: 23453,
-      // open_count: 23453,
-      // unique_open_count: 23453,
-      // click_count: 23453,
-      // unique_click_count: 23453,
-      // reply_count: 23453,
-      // bounce_count: 23453,
-      // total: 23453,
-      // inprogress: 23453,
-      // notStarted: 23453,
-      // interested: 23453,
     },
   ];
 
@@ -396,5 +318,71 @@ export const clientData = [
     "bg-gradient-to-r from-[#fd746c] to-[#fd746c]",
     "bg-gradient-to-r from-[#4b79a1] to-[#283e51]",
     "bg-gradient-to-r from-[#ba8b02] to-[#181818]",
-  ];
+  ]
+
+  export const email_stats = [
+    {
+      id:1,
+      warmup_status: "email@example.com",
+      warmup_reputation : "100%",
+      warmup_reputation_bar :100,
+      email_health: "Excellent",
+      msg_per_day: 20,
+      daily_sent_count:13
+    },
+    {
+      id:2,
+      warmup_status: "email@example.com",
+      warmup_reputation : "98%",
+      warmup_reputation_bar :98,
+      email_health: "Decent",
+      msg_per_day: 8,
+      daily_sent_count:3
+    },
+    {
+      id:3,
+      warmup_status: "email@example.com",
+      warmup_reputation : "96%",
+      warmup_reputation_bar :96,
+      email_health: "Okay",
+      msg_per_day: 1,
+      daily_sent_count:1
+    },
+    {
+      id:4,
+      warmup_status: "email@example.com",
+      warmup_reputation : "92%",
+      warmup_reputation_bar :92,
+      email_health: "Bad",
+      msg_per_day: 8,
+      daily_sent_count:3
+    },
+    {
+      id:5,
+      warmup_status: "email@example.com",
+      warmup_reputation : "90%",
+      warmup_reputation_bar :90,
+      email_health: "Very Bad",
+      msg_per_day: 20,
+      daily_sent_count:9
+    },
+    {
+      id:6,
+      warmup_status: "email@example.com",
+      warmup_reputation : "92%",
+      warmup_reputation_bar :92,
+      email_health: "Bad",
+      msg_per_day: 8,
+      daily_sent_count:5
+    },
+    {
+      id:7,
+      warmup_status: "email@example.com",
+      warmup_reputation : "96%",
+      warmup_reputation_bar :96,
+      email_health: "Okay",
+      msg_per_day: 1  ,
+      daily_sent_count:1
+    },
+  ]
   
