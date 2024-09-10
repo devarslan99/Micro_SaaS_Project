@@ -4,6 +4,7 @@ import { HiRefresh } from "react-icons/hi";
 import CustomInput from "../../components/EmailStatComp/CustomInput";
 import EmailTable from "../../components/EmailStatComp/EmailsTable";
 import { email_stats } from "../../data/mockData";
+import { useNavigate } from "react-router-dom";
 
 const EmailStats = ({ menuCollapse }) => {
   const [recovery, setRecovery] = useState(1);
@@ -12,6 +13,16 @@ const EmailStats = ({ menuCollapse }) => {
   const [selectedClient, setSelectedClient] = useState(email_stats[0].email);
   const [emailHealth, setEmailHealth] = useState("All");
   const [filteredData, setFilteredData] = useState(email_stats);
+
+  const navigate = useNavigate();  
+
+
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      navigate("/"); // Redirect to /home if token exists
+    }
+  }, []);
 
   const handleFilter = () => {
     const filtered = email_stats

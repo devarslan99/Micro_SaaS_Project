@@ -19,18 +19,25 @@ connectDB();
 
 // Init Middleware
 app.use(express.json());
+
+// Middleware to parse URL-encoded bodies (for form submissions)
+app.use(express.urlencoded({ extended: true }));
+
 app.use(session({
   secret: config.KEY,
   resave: false,
   saveUninitialized: true
 }));
+app.get('/test',(req,res)=>{
+    console.log('test')
+})
 // Initialize Passport
 app.use(passport.initialize());
 app.use(passport.session())
 app.use(cors());
 //auth  Routes
 app.use('/api/auth',auth);
-app.use('/', oauth);
+app.use('/googleauth', oauth);
 ////Api and software routes
 app.use('/api/software', softwareRoutes);
 // otp routes

@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const config=require('./../config.json')
 
 // Register a new user
 const registerUser = async (req, res) => {
@@ -9,7 +10,7 @@ const registerUser = async (req, res) => {
   try {
     let user = await User.findOne({ email });
     if (user) {
-      return res.status(400).json({ msg: 'User already exists' });
+      return res.json({ msg: 'User already exists.Please SignIn' });
     }
 
     user = new User({
@@ -31,7 +32,7 @@ const registerUser = async (req, res) => {
 
     jwt.sign(
       payload,
-      process.env.JWT_SECRET,
+      config.JWT_SECRET,
       { expiresIn: '1h' },
       (err, token) => {
         if (err) throw err;
@@ -40,23 +41,32 @@ const registerUser = async (req, res) => {
     );
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.send({msg:'Server error'});
   }
 };
 
 // Login a user
 const loginUser = async (req, res) => {
-  const { email, password } = req.body;
+  const {email, password } = req.body;
+console.log(req.body);
+if (!email || !password) {
+  return res.json({ msg: "Email and password are required." });
+}
 
+// Email format validation
+const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+if (!emailRegex.test(email)) {
+  return res.json({ msg: "Invalid email format." });
+}
   try {
     let user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({ msg: 'Invalid credentials' });
+      return res.json({ msg: 'Invalid credentials' });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ msg: 'Invalid credentials' });
+      return res.json({ msg: 'Invalid credentials' });
     }
 
     const payload = {
@@ -67,7 +77,7 @@ const loginUser = async (req, res) => {
 
     jwt.sign(
       payload,
-      process.env.JWT_SECRET,
+      config.JWT_SECRET,
       { expiresIn: '1h' },
       (err, token) => {
         if (err) throw err;
@@ -76,7 +86,7 @@ const loginUser = async (req, res) => {
     );
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.json({ msg:'Server error'});
   }
 };
 

@@ -2,14 +2,15 @@ import {
   Box,
   Button,
   IconButton,
-//   Link,
+  //   Link,
   TextField,
   Typography,
 } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Signin = ({ rightPanelActive }) => {
   const {
@@ -18,8 +19,43 @@ const Signin = ({ rightPanelActive }) => {
     formState: { errors },
   } = useForm();
 
-  const onSubmitSignIn = (data) => {
+  const navigate = useNavigate();
+  const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (token) {
+      navigate("/home"); // Redirect to /home if token exists
+    }
+  }, []);
+
+  const onSubmitSignIn = async (data) => {
     console.log("Sign In Data: ", data);
+    console.log(data.signInEmail, data.signInPassword);
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/auth/login",
+        {
+          email: data.signInEmail,
+          password: data.signInPassword,
+        }
+      );
+      console.log("Server Response: ", response.data);
+      setErrorMessage(
+        response?.data?.msg || "An error occurred during sign up."
+      );
+
+      const token = response.data.token;
+      if (token) {
+        localStorage.setItem("authToken", token); // Store the token in localStorage
+        console.log("Token saved to localStorage.");
+        navigate("/home");
+      }
+
+      // Optionally redirect the user to another page after sign up
+    } catch (error) {
+      console.error("Error during sign in:", error);
+    }
   };
 
   return (
@@ -47,17 +83,17 @@ const Signin = ({ rightPanelActive }) => {
           Sign In
         </Typography>
         {/* <Box sx={{ my: 2, display: "flex", gap: 1 }}> */}
-          {/* <IconButton>
+        {/* <IconButton>
           <FacebookIcon />
         </IconButton> */}
-          {/* <IconButton>
+        <IconButton>
             <FcGoogle />
-          </IconButton> */}
-          {/* <IconButton>
+          </IconButton>
+        {/* <IconButton>
           <LinkedInIcon />
         </IconButton> */}
         {/* </Box> */}
-        {/* <Typography variant="body2">or use your account</Typography> */}
+        <Typography variant="body2">or use your account</Typography>
         <TextField
           label="Email"
           variant="outlined"
@@ -96,7 +132,6 @@ const Signin = ({ rightPanelActive }) => {
         >
           Forgot your password?
         </Link>
-        <Link to={'/home'}>
         <Button
           type="submit"
           variant="contained"
@@ -110,7 +145,9 @@ const Signin = ({ rightPanelActive }) => {
         >
           Sign In
         </Button>
-        </Link>
+        <Typography className="pt-4 italic text-red-500">
+          {errorMessage}
+        </Typography>
       </Box>
     </Box>
   );

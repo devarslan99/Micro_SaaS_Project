@@ -12,6 +12,7 @@ import { format, parse } from "date-fns";
 import CustomCheckBtn from "../../components/CompaingComp/CustomCheckBtn";
 import DropdownCalendar from "../../components/CompaingComp/DatePicker";
 import CompaignCharts from "../../components/CompaingComp/CompaignCharts";
+import { useNavigate } from "react-router-dom";
 
 const CompaignAnalytics = ({ menuCollapse }) => {
   const [selectedClient, setSelectedClient] = useState(clientData[0].name); // Dropdown client selection
@@ -23,6 +24,15 @@ const CompaignAnalytics = ({ menuCollapse }) => {
   const [showTopClickCount, setShowTopClickCount] = useState(false);
   const [dailyFilteredData, setDailyFilteredData] = useState(clientData);
   const [topLevelFilteredData, setTopLevelFilteredData] = useState(clientData);
+  const navigate = useNavigate();  
+
+
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      navigate("/"); // Redirect to /home if token exists
+    }
+  }, []);
 
 
   const parseDate = (dateString) => {

@@ -19,7 +19,7 @@ import {
 import React, { useState } from "react";
 import Grid from "@mui/material/Grid";
 import MenuIcon from "@mui/icons-material/Menu";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import TemporaryDrawer from "../Drawer/Drawer";
 //   import NotificationModal from "./NotificationModal";
 //   import ProfileModal from "./ProfileModal";
@@ -29,6 +29,17 @@ const Topbar = ({ menuCollapse, pageTitle, onPageSelect }) => {
   // const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false)
   // const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
   const [isDrawerOpen, setDrawerOpen] = useState(false);
+
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    // Remove the token from localStorage
+    localStorage.removeItem("authToken");
+    console.log("Token removed from localStorage.");
+
+    // Redirect to the sign-in page
+    navigate("/");
+  };
 
   const open = Boolean(anchorEl);
 
@@ -178,14 +189,14 @@ const Topbar = ({ menuCollapse, pageTitle, onPageSelect }) => {
                 </MenuItem>
               </Link>
               <Divider />
-              <Link to="/signin">
-                <MenuItem onClick={handleClose}>
+              {/* <Link to="/signin"> */}
+                <MenuItem onClick={() => {handleLogout(), handleClose()}}>
                   <ListItemIcon>
                     <Logout fontSize="small" />
                   </ListItemIcon>
                   Signout
                 </MenuItem>
-              </Link>
+              {/* </Link> */}
             </Menu>
             <IconButton
               sx={{
