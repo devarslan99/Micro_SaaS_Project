@@ -16,10 +16,24 @@ const TemporaryDrawer = ({ isOpen, toggleDrawer, onPageSelect }) => {
   const isMenuItemActive = (path) => {
     return location.pathname === path;
   };
-  const handleMenuItemClick = (title, path) => {
-    onPageSelect(title);
-    // Assuming you have routing handled via react-router-dom
+  const getPageTitle = (path) => {
+    switch (path) {
+      case "/home":
+        return "Select Software";
+      case "/compaigns":
+        return "Compaign Analytics";
+      case "/email_stats":
+        return "Email Stats";
+      default:
+        return "Unknown Page";
+    }
   };
+
+  React.useEffect(() => {
+    const currentPath = location.pathname;
+    const title = getPageTitle(currentPath);
+    onPageSelect(title);
+  }, [location, onPageSelect]);
 
   return (
     <div>
@@ -44,12 +58,12 @@ const TemporaryDrawer = ({ isOpen, toggleDrawer, onPageSelect }) => {
             <Box
               role="presentation"
               className="bg-gradient-to-tr from-[#FF4B2B] to-[#FF416C]"
-            //   bgcolor="#4C3575"
+              //   bgcolor="#4C3575"
               sx={{
                 width: "200px",
                 height: "100%",
                 color: "white",
-                px:{xs: 1, sm: 0},
+                px: { xs: 1, sm: 0 },
                 display: { lg: "none", xs: "block" },
               }}
               onKeyDown={() => toggleDrawer(false)}
@@ -69,7 +83,7 @@ const TemporaryDrawer = ({ isOpen, toggleDrawer, onPageSelect }) => {
                   p={1}
                 >
                   <IconButton>
-                  <FaQrcode fontSize="30px" className="text-red-500"/>
+                    <FaQrcode fontSize="30px" className="text-red-500" />
                   </IconButton>
                 </Box>
                 <Box>
@@ -79,40 +93,33 @@ const TemporaryDrawer = ({ isOpen, toggleDrawer, onPageSelect }) => {
                 </Box>
               </Box>
               <Menu className="text-lg h-[280px] overflow-y-auto">
-                  <Link to="/home">
-                <MenuItem
-                  active={isMenuItemActive("/home")}
-                  icon={<AiFillHome fontSize="22px" />}
-                  onClick={() => {toggleDrawer(false);
-                    handleMenuItemClick("Select Software", "/home")
-                  }}
-                >
-                  Home
-                </MenuItem>
-                  </Link>
-                  <Link to="/compaigns">
-                <MenuItem
-                  active={isMenuItemActive("/compaigns")}
-                  icon={<ImStatsBars fontSize="22px" />}
-                  onClick={() => {
-                    toggleDrawer(false);
-                    handleMenuItemClick("Campaign Analytics", "/compaigns");
-                  }}
-                >
-                  Compaigns Analytics
-                </MenuItem> 
-                  </Link>
-                  <Link to="/email_stats">
-                <MenuItem
-                  active={isMenuItemActive("/email_stats")}
-                  icon={<RiMailSendLine fontSize="22px" />}
-                  onClick={() => {toggleDrawer(false);
-                    handleMenuItemClick("Email Stats", "/email_stats")
-                  }}
-                >
-                  Email Stats
-                </MenuItem>
-                  </Link>
+                <Link to="/home">
+                  <MenuItem
+                    active={isMenuItemActive("/home")}
+                    icon={<AiFillHome fontSize="22px" />}
+                    onClick={() => toggleDrawer(false)}
+                  >
+                    Home
+                  </MenuItem>
+                </Link>
+                <Link to="/compaigns">
+                  <MenuItem
+                    active={isMenuItemActive("/compaigns")}
+                    icon={<ImStatsBars fontSize="22px" />}
+                    onClick={() => toggleDrawer(false)}
+                  >
+                    Compaigns Analytics
+                  </MenuItem>
+                </Link>
+                <Link to="/email_stats">
+                  <MenuItem
+                    active={isMenuItemActive("/email_stats")}
+                    icon={<RiMailSendLine fontSize="22px" />}
+                    onClick={() => toggleDrawer(false)}
+                  >
+                    Email Stats
+                  </MenuItem>
+                </Link>
                 {/* <SubMenu label="Members" icon={<FaUsers fontSize="22px" />}>
                   <Link to="/leaders">
                     <MenuItem

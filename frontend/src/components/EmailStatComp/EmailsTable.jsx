@@ -11,17 +11,42 @@ import { clientData, email_stats } from "../../data/mockData";
 import CustomCheckBtn from "./CustomCheckBtn";
 //   import './table.css'
 
-const EmailTable = () => {
+const EmailTable = ({ data, recovery, moderate, maxeffort, setData }) => {
+  const handleCheckboxChange = (rowId, field) => {
+    // Find the current row data and update the msg_per_day based on the selected checkbox
+    const updatedData = data.map((row) => {
+      if (row.id === rowId) {
+        if (field === "set_recovery") {
+          return { ...row, msg_per_day: recovery };
+        } else if (field === "set_moderate") {
+          return { ...row, msg_per_day: moderate };
+        } else if (field === "set_max_effort") {
+          return { ...row, msg_per_day: maxeffort };
+        }
+      }
+      return row;
+    });
+    // Update the data state
+    setData(updatedData);
+  };
+
   const columns = [
+    {
+      field: "email",
+      headerName: "Emails",
+      headerClassName: "super-app-theme-header",  
+      headerAlign: 'center',
+      width: 190,
+    },
     {
       field: "warmup_status",
       headerName: "Warmup Status",
       headerClassName: "super-app-theme-header",
-      width: 190,
+      width: 150,
     },
     {
-      field: "warmup_reputation",
-      headerName: "Warmup Reputation %",
+      field: "email_health",
+      headerName: "Email Health",
       headerClassName: "super-app-theme-header",
       width: 150,
     },
@@ -40,7 +65,15 @@ const EmailTable = () => {
               borderRadius: 5,
               "& .MuiLinearProgress-bar": {
                 backgroundColor:
-                  row.warmup_reputation_bar >= 90 ? "#FF4A2E" : "#FF4A2E",
+                  row.warmup_reputation_bar >= 100
+                    ? "#28A745"
+                    : row.warmup_reputation_bar >= 98
+                    ? "#007BFF"
+                    : row.warmup_reputation_bar >= 96
+                    ? "#FFC107"
+                    : row.warmup_reputation_bar >= 91
+                    ? "#FD7E14"
+                    : "#DC3545",
               },
             }}
           />
@@ -48,8 +81,8 @@ const EmailTable = () => {
       ),
     },
     {
-      field: "email_health",
-      headerName: "Email Health",
+      field: "warmup_reputation",
+      headerName: "Warmup Reputation %",
       headerClassName: "super-app-theme-header",
       width: 150,
     },
@@ -72,9 +105,9 @@ const EmailTable = () => {
         if (sentCount <= 1) {
           displayValue = `${sentCount}/1`;
         } else if (sentCount > 1 && sentCount <= 8) {
-          displayValue = `${sentCount}/${ msgPerDay}`;
+          displayValue = `${sentCount}/${msgPerDay}`;
         } else if (sentCount > 8 && sentCount <= 20) {
-          displayValue = `${sentCount}/${ msgPerDay}`;
+          displayValue = `${sentCount}/${msgPerDay}`;
         }
 
         return <Typography className="pt-4">{displayValue}</Typography>;
@@ -85,36 +118,42 @@ const EmailTable = () => {
       headerName: "Set Recovery",
       headerClassName: "super-app-theme-header",
       width: 150,
-      renderCell: ({ row }) => {
-        const sentCount = row.msg_per_day;
-        return <CustomCheckBtn checked={sentCount <= 1} />;
-      },
+      renderCell: ({ row }) => (
+        <CustomCheckBtn
+          checked={row.msg_per_day == recovery} // Check if msg_per_day matches the recovery value
+          onChange={() => handleCheckboxChange(row.id, "set_recovery")}
+        />
+      ),
     },
     {
       field: "set_moderate",
       headerName: "Set Moderate",
       headerClassName: "super-app-theme-header",
       width: 150,
-      renderCell: ({ row }) => {
-        const sentCount = row.msg_per_day;
-        return <CustomCheckBtn checked={sentCount > 1 && sentCount <= 8} />;
-      },
+      renderCell: ({ row }) => (
+        <CustomCheckBtn
+          checked={row.msg_per_day == moderate} // Check if msg_per_day matches the moderate value
+          onChange={() => handleCheckboxChange(row.id, "set_moderate")}
+        />
+      ),
     },
     {
       field: "set_max_effort",
       headerName: "Set Max Effort",
       headerClassName: "super-app-theme-header",
       width: 150,
-      renderCell: ({ row }) => {
-        const sentCount = row.msg_per_day;
-        return <CustomCheckBtn checked={sentCount > 8 && sentCount <= 20} />;
-      },
+      renderCell: ({ row }) => (
+        <CustomCheckBtn
+          checked={row.msg_per_day == maxeffort} // Check if msg_per_day matches the maxeffort value
+          onChange={() => handleCheckboxChange(row.id, "set_max_effort")}
+        />
+      ),
     },
   ];
 
   return (
     <Box
-    mt={4}
+      mt={4}
       sx={{
         bgcolor: "transparent",
         "& .MuiDataGrid-columnHeaders": {
@@ -145,11 +184,21 @@ const EmailTable = () => {
       }}
     >
       <Box className="flex justify-around mb-4">
-        <Typography variant="" className="sm:text-3xl text-xl font-bold font-Poppins">Warmup Section</Typography>
-        <Typography variant="" className="sm:text-3xl text-xl font-bold font-Poppins">Sending Section</Typography>
+        <Typography
+          variant=""
+          className="sm:text-3xl text-xl font-bold font-Poppins"
+        >
+          Warmup Section
+        </Typography>
+        <Typography
+          variant=""
+          className="sm:text-3xl text-xl font-bold font-Poppins"
+        >
+          Sending Section
+        </Typography>
       </Box>
       <DataGrid
-        rows={email_stats}
+        rows={data}
         columns={columns}
         initialState={{
           pagination: {

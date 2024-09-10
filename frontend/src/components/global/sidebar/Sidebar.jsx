@@ -16,6 +16,7 @@ import { Link } from "react-router-dom";
 import "./sidebar.css";
 import { ImStatsBars } from "react-icons/im";
 import { RiMailSendLine } from "react-icons/ri";
+import { useEffect } from "react";
 
 
 const Sidebar = ({ menuCollapse, setMenuCollapse,onPageSelect }) => {
@@ -25,10 +26,26 @@ const Sidebar = ({ menuCollapse, setMenuCollapse,onPageSelect }) => {
     setMenuCollapse((prevMenuCollapse) => !prevMenuCollapse);
   };
 
-  const handleMenuItemClick = (title, path) => {
-    onPageSelect(title);
-    // Assuming you have routing handled via react-router-dom
+  const getPageTitle = (path) => {
+    switch (path) {
+      case "/home":
+        return "Select Software";
+      case "/compaigns":
+        return "Compaign Analytics";
+      case "/email_stats":
+        return "Email Stats";
+      default:
+        return "Unknown Page"; 
+    }
   };
+
+  useEffect(() => {
+    const currentPath = location.pathname;
+    const title = getPageTitle(currentPath);
+    onPageSelect(title); 
+  }, [location, onPageSelect]); 
+
+
 
   const isMenuItemActive = (path) => {
     return location.pathname === path;
@@ -79,7 +96,6 @@ const Sidebar = ({ menuCollapse, setMenuCollapse,onPageSelect }) => {
             <MenuItem
               active={isMenuItemActive("/home")}
               icon={<AiFillHome fontSize="22px" />}
-              onClick={() => handleMenuItemClick("Select Software", "/home")}
             >
               Home
             </MenuItem>
@@ -88,7 +104,6 @@ const Sidebar = ({ menuCollapse, setMenuCollapse,onPageSelect }) => {
             <MenuItem
               active={isMenuItemActive("/compaigns")}
               icon={<ImStatsBars fontSize="22px" />}
-              onClick={() => handleMenuItemClick("Campaign Analytics", "/compaigns")}
             >
               Compaign Analytics
             </MenuItem>
@@ -97,7 +112,6 @@ const Sidebar = ({ menuCollapse, setMenuCollapse,onPageSelect }) => {
             <MenuItem
               active={isMenuItemActive("/email_stats")}
               icon={<RiMailSendLine fontSize="22px" />}
-              onClick={() => handleMenuItemClick("Email Stats", "/email_stats")}
             >
               Email Stats
             </MenuItem>

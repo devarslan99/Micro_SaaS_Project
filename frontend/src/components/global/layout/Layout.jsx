@@ -4,7 +4,7 @@ import Sidebar from "../sidebar/Sidebar";
 import Topbar from "../topbar/Topbar";
 
 const Layout = ({ menuCollapse, setMenuCollapse,children }) => {
-  const [pageTitle, setPageTitle] = useState("Select Software");
+  const [pageTitle, setPageTitle] = useState("");
 
   const handlePageSelect = (title) => {
     setPageTitle(title);

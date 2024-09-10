@@ -323,7 +323,8 @@ export const clientData = [
   export const email_stats = [
     {
       id:1,
-      warmup_status: "email@example.com",
+      email: "email@example.com",
+      warmup_status: "Active",
       warmup_reputation : "100%",
       warmup_reputation_bar :100,
       email_health: "Excellent",
@@ -332,7 +333,8 @@ export const clientData = [
     },
     {
       id:2,
-      warmup_status: "email@example.com",
+      email: "email@example.com",
+      warmup_status: "Inactive",
       warmup_reputation : "98%",
       warmup_reputation_bar :98,
       email_health: "Decent",
@@ -341,7 +343,8 @@ export const clientData = [
     },
     {
       id:3,
-      warmup_status: "email@example.com",
+      email: "email3@example.com",
+      warmup_status: "Active",
       warmup_reputation : "96%",
       warmup_reputation_bar :96,
       email_health: "Okay",
@@ -350,7 +353,8 @@ export const clientData = [
     },
     {
       id:4,
-      warmup_status: "email@example.com",
+      email: "email@example.com",
+      warmup_status: "Inactive",
       warmup_reputation : "92%",
       warmup_reputation_bar :92,
       email_health: "Bad",
@@ -359,7 +363,8 @@ export const clientData = [
     },
     {
       id:5,
-      warmup_status: "email@example.com",
+      email: "email@example.com",
+      warmup_status: "active",
       warmup_reputation : "90%",
       warmup_reputation_bar :90,
       email_health: "Very Bad",
@@ -368,7 +373,8 @@ export const clientData = [
     },
     {
       id:6,
-      warmup_status: "email@example.com",
+      email: "email@example.com",
+      warmup_status: "active",
       warmup_reputation : "92%",
       warmup_reputation_bar :92,
       email_health: "Bad",
@@ -377,7 +383,8 @@ export const clientData = [
     },
     {
       id:7,
-      warmup_status: "email@example.com",
+      email: "email@example.com",
+      warmup_status: "Inactive",
       warmup_reputation : "96%",
       warmup_reputation_bar :96,
       email_health: "Okay",
