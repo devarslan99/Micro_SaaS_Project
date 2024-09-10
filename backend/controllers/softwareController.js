@@ -28,7 +28,7 @@ exports.checkSoftware = async (req, res) => {
         const token = jwt.sign(
           { userId: user._id, software},
           process.env.JWT_SECRET, // Use the JWT secret from .env file
-          { expiresIn: '1h' } // Adjust the token expiration as needed
+          { expiresIn: '24h' } // Adjust the token expiration as needed
         );
 
         return res.status(200).json({ 
@@ -56,6 +56,9 @@ exports.addApiKey = async (req, res) => {
 
   try {
     const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
     const existingSoftware = user.softwareKeys.find(
       (item) => item.software === software
     );
@@ -74,7 +77,7 @@ exports.addApiKey = async (req, res) => {
         const token = jwt.sign(
           { userId: user._id, software},
           process.env.JWT_SECRET, // Use the JWT secret from .env file
-          { expiresIn: '1h' } // Adjust the token expiration as needed
+          { expiresIn: '24h' } // Adjust the token expiration as needed
         );
 
         return res.status(200).json({ 

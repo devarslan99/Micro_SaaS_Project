@@ -8,7 +8,7 @@ const authenticateAndFetchEmailAccounts = async (apiKey, user, software) => {
     // Make the HTTP request to fetch email accounts
     const response = await axios.get(url, { headers: { accept: 'application/json' } });
     const emailAccountsData = response.data;
-    console.log(emailAccountsData);
+    // console.log(emailAccountsData);
 
     for (const account of emailAccountsData) {
       const newEmailAccount = new Email({
