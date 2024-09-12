@@ -180,15 +180,15 @@ const Topbar = ({ menuCollapse, pageTitle, onPageSelect }) => {
                 </Box>
               </MenuItem>
               <Divider />
-              <Link to="/tasks">
+              {/* <Link to="/tasks">
                 <MenuItem onClick={handleClose}>
                   <ListItemIcon>
                     <List fontSize="small" />
                   </ListItemIcon>{" "}
                   My Task
                 </MenuItem>
-              </Link>
-              <Divider />
+              </Link> */}
+              {/* <Divider /> */}
               {/* <Link to="/signin"> */}
                 <MenuItem onClick={() => {handleLogout(), handleClose()}}>
                   <ListItemIcon>

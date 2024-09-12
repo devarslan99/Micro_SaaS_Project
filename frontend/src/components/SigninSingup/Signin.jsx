@@ -58,6 +58,14 @@ const Signin = ({ rightPanelActive }) => {
     }
   };
 
+  const handleGoogleSignIn = async () => {
+    try {
+        // This will redirect the user to the Google OAuth page via your backend
+        window.location.href = 'http://localhost:5000/auth/google';
+    } catch (error) {
+        console.error("Error during Google Sign-Up: ", error);
+    }
+};
   return (
     <Box
       className={`absolute top-0 h-full w-1/2 z-20 flex justify-center items-center flex-col transition-all duration-[0.6s] ease-in-out ${
@@ -86,7 +94,7 @@ const Signin = ({ rightPanelActive }) => {
         {/* <IconButton>
           <FacebookIcon />
         </IconButton> */}
-        <IconButton>
+        <IconButton onClick={handleGoogleSignIn}>
             <FcGoogle />
           </IconButton>
         {/* <IconButton>

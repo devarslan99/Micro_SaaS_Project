@@ -13,18 +13,56 @@ import CustomCheckBtn from "../../components/CompaingComp/CustomCheckBtn";
 import DropdownCalendar from "../../components/CompaingComp/DatePicker";
 import CompaignCharts from "../../components/CompaingComp/CompaignCharts";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const CompaignAnalytics = ({ menuCollapse }) => {
-  const [selectedClient, setSelectedClient] = useState(clientData[0].name); // Dropdown client selection
+  const [selectedClient, setSelectedClient] = useState(""); // Dropdown client selection
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [showOpenCount, setShowOpenCount] = useState(false);
   const [showClickCount, setShowClickCount] = useState(false);
   const [showTopOpenCount, setShowTopOpenCount] = useState(false);
   const [showTopClickCount, setShowTopClickCount] = useState(false);
-  const [dailyFilteredData, setDailyFilteredData] = useState(clientData);
-  const [topLevelFilteredData, setTopLevelFilteredData] = useState(clientData);
+  const [dailyFilteredData, setDailyFilteredData] = useState([]);
+  const [topLevelFilteredData, setTopLevelFilteredData] = useState([]);
+  const [clientData, setClientData] = useState([]);
   const navigate = useNavigate();  
+
+
+  useEffect(() => {
+    const fetchClients = async () => {
+      try {
+        // const token = localStorage.getItem("authToken");
+        const softwareToken = localStorage.getItem("softwareToken");
+        console.log(softwareToken);
+
+        if ( !softwareToken) {
+          navigate("/home"); // Redirect if no authToken or softwareToken found
+          return;
+        }
+
+        const response = await axios.get('http://localhost:5000/clients', {
+          headers: {
+            // "Authorization": `${token}`,
+            softwareToken: `${softwareToken}`,
+          },
+        });
+
+        console.log(response.data);
+
+        if (response.status === 200) {
+          setClientData(response.data); // Set the fetched clients to state
+          setSelectedClient(response.data[0]?.name); // Set default selected client
+        } else {
+          console.log("Failed to fetch clients");
+        }
+      } catch (error) {
+        console.error("Error fetching clients:", error);
+      }
+    };
+
+    fetchClients();
+  }, [navigate]);
 
 
   useEffect(() => {
@@ -44,42 +82,42 @@ const CompaignAnalytics = ({ menuCollapse }) => {
     setEndDate(endDate);
   };
 
-  const handleDailyDateFilter = () => {
-    const filtered = clientData
-      .filter((client) => client.name === selectedClient) // First, filter by selected client
-      .map((client) => {
-        // Filter the client's stats by date for Daily Level
-        const filteredStats = client.stats.filter((stat) => {
-          const itemDate = parseDate(stat.date);
-          return (
-            (!startDate || itemDate >= new Date(startDate)) &&
-            (!endDate || itemDate <= new Date(endDate))
-          );
-        });
+  // const handleDailyDateFilter = () => {
+  //   const filtered = clientData
+  //     .filter((client) => client.name === selectedClient) // First, filter by selected client
+  //     .map((client) => {
+  //       // Filter the client's stats by date for Daily Level
+  //       const filteredStats = client.stats.filter((stat) => {
+  //         const itemDate = parseDate(stat.date);
+  //         return (
+  //           (!startDate || itemDate >= new Date(startDate)) &&
+  //           (!endDate || itemDate <= new Date(endDate))
+  //         );
+  //       });
 
-        // Return the client with filtered stats
-        return { ...client, stats: filteredStats };
-      })
-      .filter((client) => client.stats.length > 0); // Only keep clients with stats in the date range
+  //       // Return the client with filtered stats
+  //       return { ...client, stats: filteredStats };
+  //     })
+  //     .filter((client) => client.stats.length > 0); // Only keep clients with stats in the date range
 
-    setDailyFilteredData(filtered);
-  };
+  //   setDailyFilteredData(filtered);
+  // };
 
   const handleTopLevelFilter = () => {
     const filtered = clientData
       .filter((client) => client.name === selectedClient) // Filter by selected client
-      .map((client) => {
-        // Don't apply any date filter for Top Level
-        return { ...client, stats: client.stats };
-      })
-      .filter((client) => client.stats.length > 0); // Only keep clients with stats
+      // .map((client) => {
+      //   // Don't apply any date filter for Top Level
+      //   return { ...client, stats: client.stats };
+      // })
+      // .filter((client) => client.stats.length > 0); // Only keep clients with stats
 
-    setTopLevelFilteredData(filtered);
+    // setTopLevelFilteredData(filtered);
   };
 
-  useEffect(() => {
-    handleDailyDateFilter(); // Filter for Daily Level when date or client changes
-  }, [startDate, endDate, selectedClient]);
+  // useEffect(() => {
+  //   handleDailyDateFilter(); // Filter for Daily Level when date or client changes
+  // }, [startDate, endDate, selectedClient]);
 
   useEffect(() => {
     handleTopLevelFilter(); // Trigger Top Level Filter when client changes

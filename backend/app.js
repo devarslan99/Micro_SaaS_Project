@@ -11,6 +11,7 @@ const oauth=require("./routes/oauth")
 const softwareRoutes = require('./routes/software');
 const resetPassRouter=require('./routes/resetPass')
 const userUpdateRoute=require('./routes/updateUser')
+const clientsRouter = require('./routes/clients')
 const config=require('./config.json')
 const app = express();
 
@@ -37,14 +38,14 @@ app.use(passport.session())
 app.use(cors());
 //auth  Routes
 app.use('/api/auth',auth);
-app.use('/googleauth', oauth);
+app.use('/', oauth);
 ////Api and software routes
 app.use('/api/software', softwareRoutes);
 // otp routes
 app.use('/api/otp', otpRoutes);
 app.use('/',resetPassRouter)
 app.use('/',userUpdateRoute)
-
+app.use('/', clientsRouter)
 // Start the server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

@@ -49,10 +49,14 @@ const Signup = ({ rightPanelActive }) => {
     }
   };
 
-  const handleGoogleSignUp = () => {
-    // Redirect user to the Google OAuth route
-    window.location.href = "http://localhost:5000/googleauth/auth/google";
-  };
+  const handleGoogleSignUp = async () => {
+    try {
+        // This will redirect the user to the Google OAuth page via your backend
+        window.location.href = 'http://localhost:5000/auth/google';
+    } catch (error) {
+        console.error("Error during Google Sign-Up: ", error);
+    }
+};
 
   return (
     <Box

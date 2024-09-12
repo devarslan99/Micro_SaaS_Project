@@ -3,14 +3,21 @@ const jwt = require('jsonwebtoken');
 const { authenticateAndFetchClients } = require('../api/smartleadclient');
 const { FetchAllCampaigns } = require('../api/fetchAllCompaigns');
 const { authenticateAndFetchEmailAccounts } = require('../api/fetchEmailStats');
+const config = require('./../config.json');
 
 // Check if user has API key for selected software
 exports.checkSoftware = async (req, res) => {
   const { software } = req.body;
 
+  console.log(software, req.body);
+  
+
   try {
     // Find user by ID
     const user = await User.findById(req.user.id);
+
+console.log(user);
+
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
@@ -21,13 +28,16 @@ exports.checkSoftware = async (req, res) => {
       (item) => item.software === software
     );
 
+    console.log(softwareData);
+    
+
     if (softwareData) {
       // Check if the API key is present for the software
       if (softwareData.apiKey) {
         // Create a JWT token with user ID and software name
         const token = jwt.sign(
           { userId: user._id, software},
-          process.env.JWT_SECRET, // Use the JWT secret from .env file
+          config.JWT_SECRET, // Use the JWT secret from .env file
           { expiresIn: '24h' } // Adjust the token expiration as needed
         );
 
@@ -54,37 +64,47 @@ exports.checkSoftware = async (req, res) => {
 exports.addApiKey = async (req, res) => {
   const { software, apiKey } = req.body;
 
+  console.log(software, apiKey);
+  
+
   try {
     const user = await User.findById(req.user.id);
+    console.log(user);
+    
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-    const existingSoftware = user.softwareKeys.find(
-      (item) => item.software === software
-    );
+    // const existingSoftware = user.softwareKeys.find(
+    //   (item) => item.software === software
+    // );
 
-    if (existingSoftware) {
-      return res.status(400).json({ message: 'API key already exists for this software' });
-    }
+    // if (existingSoftware) {
+    //   return res.status(400).json({ message: 'API key already exists for this software' });
+    // }
+
+    //  console.log(existingSoftware);
+     
 
     user.softwareKeys.push({ software, apiKey });
     await user.save();
-    if (software === 'smartlead.ai') {
+    if (software === 'Smart lead.ai') {
       try {
         const clients = await authenticateAndFetchClients(apiKey,user,software);
         const emails = await authenticateAndFetchEmailAccounts(apiKey,user,software);
         const campaigns=await FetchAllCampaigns(apiKey,user,software)
         const token = jwt.sign(
           { userId: user._id, software},
-          process.env.JWT_SECRET, // Use the JWT secret from .env file
+          config.JWT_SECRET, // Use the JWT secret fr om .env file
           { expiresIn: '24h' } // Adjust the token expiration as needed
         );
-
+        
+        console.log(token);
         return res.status(200).json({ 
           message: 'API key added successfully', 
-          apiKey:apiKey,
+          software:software,
           softwareToken: token
         });
+        
       } catch (apiError){
         return res.status(500).json({ message: apiError.message });
       }

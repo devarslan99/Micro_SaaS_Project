@@ -8,45 +8,87 @@ import {
   TextField,
   Button,
 } from "@mui/material";
+import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 const Home = ({ menuCollapse }) => {
-  const [selectedOption, setSelectedOption] = useState("");
-  const [openModal, setOpenModal] = useState(false);
-  const [secretKey, setSecretKey] = useState("");
-  const [isAccountImported, setIsAccountImported] = useState(false);
+    const [selectedOption, setSelectedOption] = useState("");
+    const [openModal, setOpenModal] = useState(false);
+    const [secretKey, setSecretKey] = useState("");
+    const [isAccountImported, setIsAccountImported] = useState(false);
 
-  const navigate = useNavigate();  
+    const navigate = useNavigate();
 
+    // useEffect(() => {
+    //   const token = localStorage.getItem("authToken");
+    //   if (!token) {
+    //     navigate("/"); // Redirect to /home if token exists
+    //   }
+    // }, []);
 
-  useEffect(() => {
-    const token = localStorage.getItem("authToken");
-    if (!token) {
-      navigate("/"); // Redirect to /home if token exists
+    const handleSelectChange = (event) => {
+      setSelectedOption(event.target.value);
+      if (event.target.value === "Smart lead.ai") {
+        setOpenModal(true);
+      }
+    };
+
+    const handleCloseModal = () => {
+      setOpenModal(false);
+    };
+
+    const handleSecretKeyChange = (event) => {
+      setSecretKey(event.target.value);
+    };
+
+    const handleSave = async () => {
+      const data = {
+        software: selectedOption,
+        apiKey: secretKey,
+      };
+    
+      try {
+        // Check if apiKey exists in the data object
+        // const url = data.apiKey
+        //   ? "http://localhost:5000/api/software/add-api-key"
+        //   : "http://localhost:5000/api/software/check-software";
+    
+        const response = await axios.post("http://localhost:5000/api/software/add-api-key", data, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `${localStorage.getItem("authToken")}`,
+          },
+        });
+
+        console.log("Server Response",response.data);
+
+        const token = response.data.softwareToken;
+        if (token) {
+          localStorage.setItem("softwareToken", token); // Store the token in localStorage
+          console.log("Software Token saved to localStorage.");
+          navigate("/compaigns");
+        }
+
+        
+      
+  
+      if (response.status === 200) {
+        if (data.apiKey) {
+          console.log("API Key added successfully!");
+        } else {
+          console.log("Software selected and secret key sent successfully!");
+        }
+      } else {
+        console.log("Failed to send data");
+      }
+    } catch (error) {
+      console.error("Error:", error);
     }
-  }, []);
-
-  const handleSelectChange = (event) => {
-    setSelectedOption(event.target.value);
-    if (event.target.value === "Smart lead.ai") {
-      setOpenModal(true);
-    }
-  };
-
-  const handleCloseModal = () => {
-    setOpenModal(false);
-  };
-
-  const handleSecretKeyChange = (event) => {
-    setSecretKey(event.target.value);
-  };
-
-  const handleSave = () => {
-    console.log("Secret Key:", secretKey);
+  
     handleCloseModal();
   };
-
+  
   const handleImportAccount = () => {
     setIsAccountImported(true);
   };
