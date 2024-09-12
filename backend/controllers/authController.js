@@ -6,7 +6,7 @@ const config=require('./../config.json')
 // Register a new user
 const registerUser = async (req, res) => {
   const { name, email, password } = req.body;
-
+//Checking If user Already Exist
   try {
     let user = await User.findOne({ email });
     if (user) {
@@ -33,7 +33,7 @@ const registerUser = async (req, res) => {
     jwt.sign(
       payload,
       config.JWT_SECRET,
-      { expiresIn: '1h' },
+      { expiresIn: '24h' },
       (err, token) => {
         if (err) throw err;
         res.json({ token });

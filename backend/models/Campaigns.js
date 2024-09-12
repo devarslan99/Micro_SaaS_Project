@@ -29,7 +29,7 @@ const CampaignSchema = new mongoose.Schema({
         
     },
     unsubscribe_text: { type: String },
-    client_id: { type: Number,  }
+    client_id: { type: Number}
 });
 
 // Create and export the model

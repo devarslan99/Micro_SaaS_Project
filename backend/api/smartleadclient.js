@@ -8,7 +8,7 @@ const authenticateAndFetchClients = async (apiKey,user,software) => {
     // Make the HTTP request to fetch clients
     const response = await axios.get(url, { headers: { accept: 'application/json' } });
        const clientsData=response.data;
-       console.log(clientsData);
+       console.log('Fetched Clients',clientsData);
      
 
       for (const client of clientsData) {

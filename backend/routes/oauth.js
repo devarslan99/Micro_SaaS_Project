@@ -16,7 +16,6 @@ router.get('/auth/google/callback', passport.authenticate('google', {
   console.log(token)
   res.cookie('google_token', token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
     expires: new Date(Date.now() + 3600000), // Expire the token after 1 hour
   });
   res.redirect('http://localhost:5173/home'); 
