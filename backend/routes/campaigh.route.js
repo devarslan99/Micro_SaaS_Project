@@ -39,7 +39,7 @@ try {
     ]);
 
     // Return or log the result
-    console.log("Aggregated Stats: ", {...result});
+    console.log("Aggregated Stats: ", result[0]);
     res.status(200).json(result);
      result;
 
