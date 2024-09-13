@@ -21,10 +21,10 @@ try {
         {
             $group: {
                 _id: null, // We are grouping all documents, so _id is null
+                sent_count: { $sum: "$sent_count" },
+                unique_sent_count: { $sum: "$unique_sent_count" },
             open_count: { $sum: "$open_count" },
             unique_open_count: { $sum: "$unique_open_count" },
-            sent_count: { $sum: "$sent_count" },
-            unique_sent_count: { $sum: "$unique_sent_count" },
             click_count: { $sum: "$click_count" },
             unique_click_count: { $sum: "$unique_click_count" },
             reply_count: { $sum: "$reply_count" },
