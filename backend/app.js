@@ -15,7 +15,7 @@ const clientsRouter = require('./routes/clients.js')
 const campaighsRoutes = require('./routes/campaigh.route.js')
 const emailRoutes = require('./routes/email.route.js')
 const {refreshData} = require('./controllers/refreshData.js')
-const auth = require('../middleware/authMiddleware');
+const authMiddleware = require('./middleware/authMiddleware.js');
 const config=require('./config.json')
 const app = express();
 
@@ -56,7 +56,7 @@ app.use('/',userUpdateRoute)
 app.use('/', clientsRouter)
 
 //Refresh Button Route
-app.get('/refreshData', refreshData)
+app.get('/refreshData', authMiddleware,refreshData)
 // Start the server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
