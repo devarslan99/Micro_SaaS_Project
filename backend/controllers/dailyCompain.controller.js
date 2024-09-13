@@ -5,17 +5,7 @@ const axios = require('axios');
 const Campaign = require('../models/Campaigns'); // Assuming Campaign model is in models folder
 
 exports.dailyCompaighs = async (req, res) => {
-  const token = req.header('token');
-  const clientID = req.header('clientID');
-  const startDate = req.header('startDate');
-  const endDate = req.header('endDate');
-  
-  console.log("Daily request received: " );
-  console.log(token);
-  console.log(clientID);
-  console.log(startDate);
-  console.log(endDate);
-  
+  const { token, clientID,startDate, endDate} = req.body;
   const decoded = jwt.verify(token, config.JWT_SECRET);
   let userID = decoded.user;
   const user = await User.findById(userID.id);

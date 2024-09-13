@@ -5,6 +5,7 @@ const { FetchAllCampaigns } = require('../api/fetchAllCompaigns');
 const { authenticateAndFetchEmailAccounts } = require('../api/fetchEmailStats');
 const config = require('./../config.json');
 
+let token=''
 // Check if user has API key for selected software
 exports.checkSoftware = async (req, res) => {
   const { software } = req.body;
@@ -35,7 +36,7 @@ console.log(user);
       // Check if the API key is present for the software
       if (softwareData.apiKey) {
         // Create a JWT token with user ID and software name
-        const token = jwt.sign(
+         token = jwt.sign(
           { userId: user._id, software},
           config.JWT_SECRET, // Use the JWT secret from .env file
           { expiresIn: '24h' } // Adjust the token expiration as needed
@@ -83,7 +84,7 @@ exports.addApiKey = async (req, res) => {
       // return res.status(200).json({ message: 'API key already exists for this software' });
       return res.status(200).json({ 
         message: 'API key Already Exist', 
-        software:software,
+        softwareToken: token
       });
     }
 
