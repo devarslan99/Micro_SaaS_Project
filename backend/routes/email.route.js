@@ -12,8 +12,9 @@ console.log(clientId);
 const Email = require('../models/Email')
 try {
     const emails = await Email.find(
-        { client_id: Number(clientId) }, // Match documents with the specific client_id
+        { client_id: null }, // Match documents with the specific client_id
         {
+            from_name:1,
             from_email: 1,                     // Include the 'from_email' field
             "warmup_details.status": 1,         // Include 'warmup_details.status'
             "warmup_details.warmup_reputation": 1, // Include 'warmup_details.warmup_reputation'
