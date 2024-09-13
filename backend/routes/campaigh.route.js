@@ -14,7 +14,7 @@ try {
         // Stage 1: Match documents with a specific client_id
         {
             $match: {
-                client_id: clientId
+                client_id: Number(clientId)
             }
         },
         // Stage 2: Group and calculate the sum of the required fields
