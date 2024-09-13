@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const { emailUpdate } = require('../controllers/emailUpdate.controller.js')
 const { reconnetEmails }= require('../controllers/reconnectEmail.controller.js')
+const { updateSetMaxDay } = require('../controllers/updateMaxDay');
 
 
 router.get('/client-emails',async (req , res)=>{
@@ -33,5 +34,6 @@ try {
 
 router.post('/update-email',emailUpdate)
 router.post('/emai-reconnect',reconnetEmails)
+router.post('/max-day',updateSetMaxDay);
 
 module.exports = router;

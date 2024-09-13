@@ -67,9 +67,9 @@ let totals = {
     click_count: 0,
     unique_click_count: 0,
     reply_count: 0,
-    block_count: 0,
-    total_count: 0,
-    drafted_count: 0,
+    // block_count: 0,
+    // total_count: 0,
+    // drafted_count: 0,
     bounce_count: 0
 };
 
@@ -83,9 +83,9 @@ campaignDataArray.forEach(campaign => {
     totals.click_count += parseInt(data.click_count, 10);
     totals.unique_click_count += parseInt(data.unique_click_count, 10);
     totals.reply_count += parseInt(data.reply_count, 10);
-    totals.block_count += parseInt(data.block_count, 10);
-    totals.total_count += parseInt(data.total_count, 10);
-    totals.drafted_count += parseInt(data.drafted_count, 10);
+    // totals.block_count += parseInt(data.block_count, 10);
+    // totals.total_count += parseInt(data.total_count, 10);
+    // totals.drafted_count += parseInt(data.drafted_count, 10);
     totals.bounce_count += parseInt(data.bounce_count, 10);
 });
 
