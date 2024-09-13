@@ -11,9 +11,9 @@ const oauth=require("./routes/oauth")
 const softwareRoutes = require('./routes/software');
 const resetPassRouter=require('./routes/resetPass')
 const userUpdateRoute=require('./routes/updateUser')
-const clientsRouter = require('./routes/clients')
-const campaighsRoutes = require('./routes/campaigh.route')
-const emailRoutes = require('./routes/email.route')
+const clientsRouter = require('./routes/clients.js')
+const campaighsRoutes = require('./routes/campaigh.route.js')
+const emailRoutes = require('./routes/email.route.js')
 const config=require('./config.json')
 const app = express();
 

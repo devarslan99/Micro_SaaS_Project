@@ -1,5 +1,7 @@
 const express = require('express')
 const router = express.Router()
+const { emailUpdate } = require('../controllers/emailUpdate.controller.js')
+const { reconnetEmails }= require('../controllers/reconnectEmail.controller.js')
 
 
 router.get('/client-emails',async (req , res)=>{
@@ -7,7 +9,6 @@ const { clientId} = req.body
 console.log('Request Recieved to /client-emails');
 console.log(clientId);
 const Email = require('../models/Email')
-
 try {
     const emails = await Email.find(
         { client_id: clientId }, // Match documents with the specific client_id
@@ -29,5 +30,8 @@ try {
 }
 
 })
+
+router.post('/update-email',emailUpdate)
+router.post('/emai-reconnect',reconnetEmails)
 
 module.exports = router;

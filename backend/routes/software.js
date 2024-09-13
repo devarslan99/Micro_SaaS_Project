@@ -2,7 +2,7 @@ const express = require('express');
 const { checkSoftware, addApiKey, getUserStats } = require('../controllers/softwareController');
 const auth = require('../middleware/authMiddleware');
 const { updateSetMaxDay } = require('../controllers/updateMaxDay');
-const { reconnectFailedEmailAccounts } = require('../controllers/reconnectFailed');
+// const { reconnectFailedEmailAccounts } = require('../controllers/reconnectFailed');
 
 const router = express.Router();
 
@@ -17,7 +17,7 @@ router.post('/add-api-key',auth, addApiKey);
 
 
 router.post('/max-day',auth,updateSetMaxDay);
-router.post('/reconnect-failed-email',auth,reconnectFailedEmailAccounts);
+// router.post('/reconnect-failed-email',auth,reconnectFailedEmailAccounts);
 
 
 

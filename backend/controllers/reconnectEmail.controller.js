@@ -1,9 +1,10 @@
-const axios = require('axios');
+
+// const axios = require('axios');
 
 
-exports.reconnectEmails = async (req, res) => {
+exports.reconnetEmails = async function(req, res){
     const apiKey = req.body.apiKey; // Replace with your actual API key
-  console.log(apiKey);
+ console.log(apiKey);
     const options = {
       method: 'POST',
       headers: { accept: 'application/json' }
@@ -21,4 +22,3 @@ exports.reconnectEmails = async (req, res) => {
       res.status(500).json({ error: 'Failed to reconnect failed email accounts.' });
     }
   };
-

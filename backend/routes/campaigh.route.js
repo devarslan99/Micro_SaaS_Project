@@ -4,7 +4,8 @@ const TopLevelStats = require('../models/TopLevelStats');
 const {dailyCompaighs} = require('../controllers/dailyCompain.controller')
 
 router.get('/top-level-stats',async (req , res)=>{
-const { clientId} = req.body
+    
+const clientId = req.header("clientId")
 console.log('Request Recieved to /top-level-stats');
 console.log(clientId);
 
