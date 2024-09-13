@@ -5,7 +5,7 @@ const axios = require('axios');
 const Campaign = require('../models/Campaigns'); // Assuming Campaign model is in models folder
 
 exports.dailyCompaighs = async (req, res) => {
-  const { token, clientID } = req.body;
+  const { token, clientID,startDate, endDate} = req.body;
   const decoded = jwt.verify(token, config.JWT_SECRET);
   let userID = decoded.user;
   const user = await User.findById(userID.id);
@@ -29,8 +29,8 @@ exports.dailyCompaighs = async (req, res) => {
   const campaignIds = await getCampaignIdsByClientId(clientID);
 console.log(campaignIds);
   // Prepare the start and end dates (you can adjust these accordingly)
-  const startDate = '2024-08-01';
-  const endDate = '2024-08-23';
+  // const startDate = '2024-08-01';
+  // const endDate = '2024-08-23';
 
   // Function to fetch data for a single campaign
   const fetchCampaignData = async (campaignId) => {

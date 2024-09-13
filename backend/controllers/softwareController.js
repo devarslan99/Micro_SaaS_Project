@@ -9,7 +9,7 @@ const config = require('./../config.json');
 exports.checkSoftware = async (req, res) => {
   const { software } = req.body;
 
-  console.log(software, req.body);
+  console.log('Check Software Called',software, req.body);
   
 
   try {
@@ -64,12 +64,13 @@ console.log(user);
 exports.addApiKey = async (req, res) => {
   const { software, apiKey } = req.body;
 
-  console.log(software, apiKey);
+  console.log("Sotfware Controller , addApiKey:Function :line 67-software-apiKey-->",software, apiKey);
   
 
   try {
-    const user = await User.findById(req.user.id);
-    console.log(user);
+    console.log("Sotfware Controller , addApiKey:Function :line 71-req.body.user.id -->",req.body.user.id);
+    const user = await User.findById(req.body.user.id);
+    console.log("Sotfware Controller , addApiKey:Function :line 73-user -->",user);
     
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
@@ -83,14 +84,13 @@ exports.addApiKey = async (req, res) => {
       return res.status(200).json({ 
         message: 'API key Already Exist', 
         software:software,
-        softwareToken: token
       });
     }
 
      console.log(existingSoftware);
      
 
-    await user.save();
+
     if (software === 'Smart lead.ai') {
       try {
         const clients = await authenticateAndFetchClients(apiKey,user,software);
@@ -103,8 +103,8 @@ exports.addApiKey = async (req, res) => {
         );
     
         //Only save the api key when it gives the clients emails and campaighs
-     user.softwareKeys.push({ software, apiKey });
-
+        user.softwareKeys.push({ software, apiKey });
+        await user.save();
         console.log(token);
         console.log(clients );
         //Setting the Software Token in the Cookie 
