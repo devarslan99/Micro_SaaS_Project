@@ -14,6 +14,7 @@ const userUpdateRoute=require('./routes/updateUser')
 const clientsRouter = require('./routes/clients.js')
 const campaighsRoutes = require('./routes/campaigh.route.js')
 const emailRoutes = require('./routes/email.route.js')
+const {refreshData} = require('./controllers/refreshData.js')
 const config=require('./config.json')
 const app = express();
 
@@ -52,6 +53,9 @@ app.use('/api/otp', otpRoutes);
 app.use('/reset',resetPassRouter)
 app.use('/',userUpdateRoute)
 app.use('/', clientsRouter)
+
+//Refresh Button Route
+app.get('/refreshData', refreshData)
 // Start the server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

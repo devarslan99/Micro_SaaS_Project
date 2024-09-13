@@ -39,9 +39,13 @@ try {
     ]);
 
     // Return or log the result
-    console.log("Aggregated Stats: ", result[0]);
-    res.status(200).json(result);
-     result;
+    if (result.length === 0) {
+        console.log("No Data found for that client");
+        res.status(404).json({ message: "No Data found for that client" });
+    } else {
+        console.log("Aggregated Stats: ", result[0]);
+        res.status(200).json(result);
+    }
 
 } catch (error) {
     console.error("Error during aggregation: ", error);
