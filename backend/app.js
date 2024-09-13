@@ -12,6 +12,8 @@ const softwareRoutes = require('./routes/software');
 const resetPassRouter=require('./routes/resetPass')
 const userUpdateRoute=require('./routes/updateUser')
 const clientsRouter = require('./routes/clients')
+const campaighsRoutes = require('./routes/campaigh.route')
+const emailRoutes = require('./routes/email.route')
 const config=require('./config.json')
 const app = express();
 
@@ -41,9 +43,13 @@ app.use('/api/auth',auth);
 app.use('/', oauth);
 ////Api and software routes
 app.use('/api/software', softwareRoutes);
+//Api For Campaigh Details
+app.use('/api/campaighs',campaighsRoutes)
+//Api for Emails 
+app.use('/api/email',emailRoutes)
 // otp routes
 app.use('/api/otp', otpRoutes);
-app.use('/',resetPassRouter)
+app.use('/reset',resetPassRouter)
 app.use('/',userUpdateRoute)
 app.use('/', clientsRouter)
 // Start the server

@@ -74,18 +74,22 @@ exports.addApiKey = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-    // const existingSoftware = user.softwareKeys.find(
-    //   (item) => item.software === software
-    // );
+    const existingSoftware = user.softwareKeys.find(
+      (item) => item.apiKey === apiKey
+    );
 
-    // if (existingSoftware) {
-    //   return res.status(400).json({ message: 'API key already exists for this software' });
-    // }
+    if (existingSoftware) {
+      // return res.status(200).json({ message: 'API key already exists for this software' });
+      return res.status(200).json({ 
+        message: 'API key Already Exist', 
+        software:software,
+        softwareToken: token
+      });
+    }
 
-    //  console.log(existingSoftware);
+     console.log(existingSoftware);
      
 
-    user.softwareKeys.push({ software, apiKey });
     await user.save();
     if (software === 'Smart lead.ai') {
       try {
@@ -97,8 +101,14 @@ exports.addApiKey = async (req, res) => {
           config.JWT_SECRET, // Use the JWT secret fr om .env file
           { expiresIn: '24h' } // Adjust the token expiration as needed
         );
-        
+    
+        //Only save the api key when it gives the clients emails and campaighs
+     user.softwareKeys.push({ software, apiKey });
+
         console.log(token);
+        console.log(clients );
+        //Setting the Software Token in the Cookie 
+
         return res.status(200).json({ 
           message: 'API key added successfully', 
           software:software,
