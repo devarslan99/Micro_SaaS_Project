@@ -26,8 +26,7 @@ const CompaignAnalytics = ({ menuCollapse }) => {
   const [dailyFilteredData, setDailyFilteredData] = useState([]);
   const [topLevelFilteredData, setTopLevelFilteredData] = useState([]);
   const [clientData, setClientData] = useState([]);
-  const navigate = useNavigate();  
-
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchClients = async () => {
@@ -36,12 +35,12 @@ const CompaignAnalytics = ({ menuCollapse }) => {
         const softwareToken = localStorage.getItem("softwareToken");
         console.log(softwareToken);
 
-        if ( !softwareToken) {
+        if (!softwareToken) {
           navigate("/home"); // Redirect if no authToken or softwareToken found
           return;
         }
 
-        const response = await axios.get('http://localhost:5000/clients', {
+        const response = await axios.get("http://localhost:5000/clients", {
           headers: {
             // "Authorization": `${token}`,
             softwareToken: `${softwareToken}`,
@@ -64,14 +63,12 @@ const CompaignAnalytics = ({ menuCollapse }) => {
     fetchClients();
   }, [navigate]);
 
-
   useEffect(() => {
     const token = localStorage.getItem("authToken");
     if (!token) {
       navigate("/"); // Redirect to /home if token exists
     }
   }, []);
-
 
   const parseDate = (dateString) => {
     return parse(dateString, "dd/MM/yy", new Date());
@@ -102,15 +99,43 @@ const CompaignAnalytics = ({ menuCollapse }) => {
 
   //   setDailyFilteredData(filtered);
   // };
+  const fetchDailyData = async () => {
+    try {
+      const token = localStorage.getItem("authToken");
+
+      if (!token || !selectedClient || !startDate || !endDate) return;
+
+      const response = await axios.get(
+        "http://localhost:5000/api/compaighs/daily",
+        {
+          clientID: selectedClient,
+          startDate,
+          endDate,
+          token: `${token}`,
+        }
+      );
+
+      if (response.status === 200) {
+        setDailyFilteredData(response.data); // Assuming the API returns the filtered data
+      }
+    } catch (error) {
+      console.error("Error fetching daily data:", error);
+    }
+  };
+  
+  useEffect(() => {
+    fetchDailyData(); // Fetch data when client or date changes
+  }, [selectedClient, startDate, endDate]);
 
   const handleTopLevelFilter = () => {
-    const filtered = clientData
-      .filter((client) => client.name === selectedClient) // Filter by selected client
-      // .map((client) => {
-      //   // Don't apply any date filter for Top Level
-      //   return { ...client, stats: client.stats };
-      // })
-      // .filter((client) => client.stats.length > 0); // Only keep clients with stats
+    const filtered = clientData.filter(
+      (client) => client.name === selectedClient
+    ); // Filter by selected client
+    // .map((client) => {
+    //   // Don't apply any date filter for Top Level
+    //   return { ...client, stats: client.stats };
+    // })
+    // .filter((client) => client.stats.length > 0); // Only keep clients with stats
 
     // setTopLevelFilteredData(filtered);
   };
@@ -230,7 +255,7 @@ const CompaignAnalytics = ({ menuCollapse }) => {
 
             return (
               <Grid item md={4} sm={6} xs={12} key={`${clientIndex}-${index}`}>
-                <Box  
+                <Box
                   className={`p-5 rounded-md shadow-md text-white ${gradient}`}
                 >
                   <Typography variant="h6">{statName}</Typography>

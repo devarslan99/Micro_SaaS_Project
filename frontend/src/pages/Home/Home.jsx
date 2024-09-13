@@ -7,91 +7,101 @@ import {
   Modal,
   TextField,
   Button,
+  Snackbar,
+  Alert,
+  CircularProgress,
 } from "@mui/material";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 const Home = ({ menuCollapse }) => {
-    const [selectedOption, setSelectedOption] = useState("");
-    const [openModal, setOpenModal] = useState(false);
-    const [secretKey, setSecretKey] = useState("");
-    const [isAccountImported, setIsAccountImported] = useState(false);
+  const [selectedOption, setSelectedOption] = useState("");
+  const [openModal, setOpenModal] = useState(false);
+  const [secretKey, setSecretKey] = useState("");
+  const [isAccountImported, setIsAccountImported] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+  const [loading, setLoading] = useState(false); // Loader state
 
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    // useEffect(() => {
-    //   const token = localStorage.getItem("authToken");
-    //   if (!token) {
-    //     navigate("/"); // Redirect to /home if token exists
-    //   }
-    // }, []);
+  const handleSelectChange = (event) => {
+    setSelectedOption(event.target.value);
+    if (event.target.value === "Smart lead.ai") {
+      setOpenModal(true);
+    }
+  };
 
-    const handleSelectChange = (event) => {
-      setSelectedOption(event.target.value);
-      if (event.target.value === "Smart lead.ai") {
-        setOpenModal(true);
-      }
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+  };
+
+  const handleSecretKeyChange = (event) => {
+    setSecretKey(event.target.value);
+  };
+
+  const handleSave = async () => {
+    const trimmedKey = secretKey.trim();
+
+    if (trimmedKey === "") {
+      setSnackbarMessage("API key cannot be empty.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+      return;
+    }
+
+    const data = {
+      software: selectedOption,
+      apiKey: trimmedKey,
     };
 
-    const handleCloseModal = () => {
-      setOpenModal(false);
-    };
-
-    const handleSecretKeyChange = (event) => {
-      setSecretKey(event.target.value);
-    };
-
-    const handleSave = async () => {
-      const data = {
-        software: selectedOption,
-        apiKey: secretKey,
-      };
-    
-      try {
-        // Check if apiKey exists in the data object
-        // const url = data.apiKey
-        //   ? "http://localhost:5000/api/software/add-api-key"
-        //   : "http://localhost:5000/api/software/check-software";
-    
-        const response = await axios.post("http://localhost:5000/api/software/add-api-key", data, {
+    try {
+      setLoading(true); // Start loader
+      const response = await axios.post(
+        "http://localhost:5000/api/software/add-api-key",
+        data,
+        {
           headers: {
             "Content-Type": "application/json",
             Authorization: `${localStorage.getItem("authToken")}`,
           },
-        });
+        }
+      );
 
-        console.log("Server Response",response.data);
-        if(response.data?.software){
-          setSelectedOption(response.data.software)
+      if (response.status === 200) {
+        setSnackbarMessage("API Key added successfully!");
+        setSnackbarSeverity("success");
+        setSnackbarOpen(true);
+        if (response.data?.software) {
+          setSelectedOption(response.data.software);
         }
 
         const token = response.data.softwareToken;
         if (token) {
-          localStorage.setItem("softwareToken", token); // Store the token in localStorage
-          console.log("Software Token saved to localStorage.");
+          localStorage.setItem("softwareToken", token);
           navigate("/compaigns");
         }
-
-        
-      
-  
-      if (response.status === 200) {
-        if (data.apiKey) {
-          console.log("API Key added successfully!");
-        } else {
-          console.log("Software selected and secret key sent successfully!");
-        }
       } else {
-        console.log("Failed to send data");
+        setSnackbarMessage("Failed to send data.");
+        setSnackbarSeverity("error");
+        setSnackbarOpen(true);
       }
     } catch (error) {
-      console.error("Error:", error);
+      setSnackbarMessage("Error sending API key.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+    } finally {
+      setLoading(false); // Stop loader
+      handleCloseModal();
     }
-  
-    handleCloseModal();
   };
-  
+
   const handleImportAccount = () => {
     setIsAccountImported(true);
   };
@@ -115,18 +125,15 @@ const Home = ({ menuCollapse }) => {
         <Box className="flex items-center justify-center sm:mt-36 mt-16">
           <Box className="bg-gradient-to-r from-[#FF4B2B] to-[#FF416C] sm:w-2/5 w-10/12 h-2/5 sm:p-10 p-5 rounded-lg shadow-md justify-center flex flex-col gap-5 items-center">
             {!isAccountImported ? (
-              <Typography
-                variant=""
-                className="sm:text-3xl text-xl font-bold text-white text-center"
-              >
-                Click on the Import Account button to import your account
-              </Typography>
+            <Typography
+            variant=""
+            className="sm:text-3xl text-xl font-bold text-white text-center"
+          >
+            Click on the Import Account button to import your account
+          </Typography>
             ) : selectedOption === "" ? (
               <>
-                <Typography
-                  variant=""
-                  className="sm:text-3xl text-2xl font-bold text-white"
-                >
+                <Typography variant="" className="sm:text-3xl text-2xl font-bold text-white">
                   Please select Your Software
                 </Typography>
                 <Select
@@ -201,29 +208,53 @@ const Home = ({ menuCollapse }) => {
           justifyContent: "center",
         }}
       >
-        <Box className="sm:w-1/2 w-4/5   bg-white sm:p-10 p-5 rounded-md shadow-md">
-          <Typography variant="" className="mb-2 text-2xl font-semibold">
-            Enter your Secret Key
-          </Typography>
-          <TextField
-            fullWidth
-            label="Secret Key"
-            value={secretKey}
-            onChange={handleSecretKeyChange}
-            variant="outlined"
-            margin="normal"
-          />
-          <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
-            <Button
-              onClick={handleSave}
-              variant="contained"
-              className="w-1/4 bg-gradient-to-r from-[#FF4B2B] to-[#FF416C]"
-            >
-              Save
-            </Button>
+        {loading ? (
+          <Box  className="sm:w-2/6 w-4/5 items-center  flex flex-col gap-3 bg-white sm:p-10 p-5 rounded-md shadow-md">
+            <CircularProgress size={50} color="error" thickness={10} />
+            <Typography variant="" className="text-2xl font-semibold font-Poppins">Please wait Data is fetching</Typography>
           </Box>
-        </Box>
+        ) : (
+          <Box className="sm:w-1/2 w-4/5   bg-white sm:p-10 p-5 rounded-md shadow-md">
+            <Typography className="mb-2 text-2xl font-semibold">
+              Enter your Secret Key
+            </Typography>
+            <TextField
+              fullWidth
+              label="Secret Key"
+              value={secretKey}
+              onChange={handleSecretKeyChange}
+              variant="outlined"
+              margin="normal"
+              required
+            />
+            <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
+              <Button
+                onClick={handleSave}
+                variant="contained"
+                className="w-1/4 bg-gradient-to-r from-[#FF4B2B] to-[#FF416C]"
+                disabled={loading} // Disable while loading
+              >
+                Save
+              </Button>
+            </Box>
+          </Box>
+        )}
       </Modal>
+
+      {/* Snackbar for Notifications */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Grid>
   );
 };
