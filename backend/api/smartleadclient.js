@@ -9,8 +9,8 @@ const authenticateAndFetchClients = async (apiKey,user,software) => {
     const response = await axios.get(url, { headers: { accept: 'application/json' } });
        const clientsData=response.data;
        console.log('Fetched Clients',clientsData);
-     
-
+       await Client.deleteMany({ user_logged_id: user.id, software: software });
+       
       for (const client of clientsData) {
         const newClient = new Client({
           user_logged_id: user.id,  // Associate with the logged-in user's ID

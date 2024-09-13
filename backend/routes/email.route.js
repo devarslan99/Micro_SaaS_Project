@@ -19,7 +19,11 @@ try {
             "warmup_details.status": 1,         // Include 'warmup_details.status'
             "warmup_details.warmup_reputation": 1, // Include 'warmup_details.warmup_reputation'
             message_per_day: 1,                 // Include 'message_per_day'
-            daily_sent_count: 1                 // Include 'daily_sent_count'
+            daily_sent_count: 1,
+            warmupStatus: "$warmup_details.status",         
+        
+        // Rename 'warmup_details.warmup_reputation' to 'warmupReputation'
+        warmupReputation: "$warmup_details.warmup_reputation"                  // Include 'daily_sent_count'
         }
     );
 

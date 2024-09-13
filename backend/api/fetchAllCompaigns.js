@@ -12,7 +12,8 @@ const FetchAllCampaigns = async (apiKey, user, software) => {
     const response = await axios.get(url, { headers: { accept: 'application/json' } });
     const campaignsData = response.data;
     console.log(campaignsData);
-
+    await Campaign.deleteMany({ user_logged_id: user.id, software: software });
+    await TopLevelStats.deleteMany({ user_logged_id: user.id, software: software });
     for (const campaign of campaignsData) {
     
       // Save campaign data using your Campaign model
