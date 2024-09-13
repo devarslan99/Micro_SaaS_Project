@@ -5,6 +5,7 @@ const axios = require('axios');
 const Campaign = require('../models/Campaigns'); // Assuming Campaign model is in models folder
 
 exports.dailyCompaighs = async (req, res) => {
+  
   const { token, clientID,startDate, endDate} = req.body;
   const decoded = jwt.verify(token, config.JWT_SECRET);
   let userID = decoded.user;
