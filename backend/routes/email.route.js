@@ -19,9 +19,15 @@ try {
             message_per_day: 1,                 // Include 'message_per_day'
             daily_sent_count: 1,
             warmupStatus: "$warmup_details.status",         
-            warmupReputation: "$warmup_details.warmup_reputation"                  // Include 'daily_sent_count'
+            warmupReputation: "$warmup_details.warmup_reputation",                  // Include 'daily_sent_count'
+            warmupBar: {
+                $toInt: { 
+                    $substr: ["$warmup_details.warmup_reputation", 0, -1] 
+                }
         }
+    }
     );
+
 
     // Log or return the results
     console.log("Email List: ", emails);
