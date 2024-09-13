@@ -47,7 +47,7 @@ const CompaignAnalytics = ({ menuCollapse }) => {
           },
         });
 
-        console.log(response.data);
+        console.log("client data", response.data);
 
         if (response.status === 200) {
           setClientData(response.data); // Set the fetched clients to state
@@ -106,23 +106,26 @@ const CompaignAnalytics = ({ menuCollapse }) => {
       if (!token || !selectedClient || !startDate || !endDate) return;
 
       const response = await axios.get(
-        "http://localhost:5000/api/compaighs/daily",
+        "http://localhost:5000/api/campaighs/daily",
         {
-          clientID: selectedClient,
-          startDate,
-          endDate,
-          token: `${token}`,
+          headers: {
+            clientID: selectedClient,
+            startDate,
+            endDate,
+            token: `${token}`,
+          },
         }
       );
 
       if (response.status === 200) {
-        setDailyFilteredData(response.data); // Assuming the API returns the filtered data
+        setDailyFilteredData(response.data);
+        console.log("daily data", response.data);
       }
     } catch (error) {
       console.error("Error fetching daily data:", error);
     }
   };
-  
+
   useEffect(() => {
     fetchDailyData(); // Fetch data when client or date changes
   }, [selectedClient, startDate, endDate]);
