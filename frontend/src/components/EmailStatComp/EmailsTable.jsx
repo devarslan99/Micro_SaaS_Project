@@ -12,6 +12,8 @@ import CustomCheckBtn from "./CustomCheckBtn";
 //   import './table.css'
 
 const EmailTable = ({ data, recovery, moderate, maxeffort, setData }) => {
+  console.log("Table Data",data);
+  
   const handleCheckboxChange = (rowId, field) => {
     // Find the current row data and update the msg_per_day based on the selected checkbox
     const updatedData = data.map((row) => {
@@ -32,14 +34,14 @@ const EmailTable = ({ data, recovery, moderate, maxeffort, setData }) => {
 
   const columns = [
     {
-      field: "email",
+      field: "from_email",
       headerName: "Emails",
       headerClassName: "super-app-theme-header",  
       headerAlign: 'center',
       width: 190,
     },
     {
-      field: "warmup_status",
+      field: 'warmupStatus',
       headerName: "Warmup Status",
       headerClassName: "super-app-theme-header",
       width: 150,
@@ -55,39 +57,43 @@ const EmailTable = ({ data, recovery, moderate, maxeffort, setData }) => {
       headerName: "Warmup Reputation Bar",
       headerClassName: "super-app-theme-header",
       width: 200,
-      renderCell: ({ row }) => (
-        <Box width="100%" className="mt-5">
-          <LinearProgress
-            variant="determinate"
-            value={row.warmup_reputation_bar}
-            sx={{
-              height: 10,
-              borderRadius: 5,
-              "& .MuiLinearProgress-bar": {
-                backgroundColor:
-                  row.warmup_reputation_bar >= 100
-                    ? "#28A745"
-                    : row.warmup_reputation_bar >= 98
-                    ? "#007BFF"
-                    : row.warmup_reputation_bar >= 96
-                    ? "#FFC107"
-                    : row.warmup_reputation_bar >= 91
-                    ? "#FD7E14"
-                    : "#DC3545",
-              },
-            }}
-          />
-        </Box>
-      ),
+      renderCell: ({ row }) => {
+        // Assuming warmup_reputation is a percentage string like "100%"
+        const reputationvalue = parseFloat(row.warmupReputation.replace('%', ''));
+        return (
+          <Box width="100%" className="mt-5">
+            <LinearProgress
+              variant="determinate"
+              value={reputationvalue}
+              sx={{
+                height: 10,
+                borderRadius: 5,
+                "& .MuiLinearProgress-bar": {
+                  backgroundColor:
+                    reputationvalue >= 100
+                      ? "#28A745"
+                      : reputationvalue >= 98
+                      ? "#007BFF"
+                      : reputationvalue >= 96
+                      ? "#FFC107"
+                      : reputationvalue >= 91
+                      ? "#FD7E14"
+                      : "#DC3545",
+                },
+              }}
+            />
+          </Box>
+        );
+      },
     },
     {
-      field: "warmup_reputation",
+      field: "warmupReputation",
       headerName: "Warmup Reputation %",
       headerClassName: "super-app-theme-header",
       width: 150,
     },
     {
-      field: "msg_per_day",
+      field: "message_per_day",
       headerName: "Message Per Day",
       headerClassName: "super-app-theme-header",
       width: 150,
@@ -200,6 +206,7 @@ const EmailTable = ({ data, recovery, moderate, maxeffort, setData }) => {
       <DataGrid
         rows={data}
         columns={columns}
+        getRowId={(row) => row._id}
         initialState={{
           pagination: {
             paginationModel: {

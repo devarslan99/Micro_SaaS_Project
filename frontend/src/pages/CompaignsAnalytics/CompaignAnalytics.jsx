@@ -17,14 +17,15 @@ import axios from "axios";
 
 const CompaignAnalytics = ({ menuCollapse }) => {
   const [selectedClient, setSelectedClient] = useState(""); // Dropdown client selection
+  const [selectedClientId, setSelectedClientId] = useState(null); // Dropdown client selection
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [showOpenCount, setShowOpenCount] = useState(false);
   const [showClickCount, setShowClickCount] = useState(false);
   const [showTopOpenCount, setShowTopOpenCount] = useState(false);
   const [showTopClickCount, setShowTopClickCount] = useState(false);
-  const [dailyFilteredData, setDailyFilteredData] = useState([]);
-  const [topLevelFilteredData, setTopLevelFilteredData] = useState([]);
+  const [dailyFilteredData, setDailyFilteredData] = useState({});
+  const [topLevelFilteredData, setTopLevelFilteredData] = useState({});
   const [clientData, setClientData] = useState([]);
   const navigate = useNavigate();
 
@@ -52,6 +53,7 @@ const CompaignAnalytics = ({ menuCollapse }) => {
         if (response.status === 200) {
           setClientData(response.data); // Set the fetched clients to state
           setSelectedClient(response.data[0]?.name); // Set default selected client
+          setSelectedClientId(response.data[0]?.clientId);
         } else {
           console.log("Failed to fetch clients");
         }
@@ -70,48 +72,30 @@ const CompaignAnalytics = ({ menuCollapse }) => {
     }
   }, []);
 
-  const parseDate = (dateString) => {
-    return parse(dateString, "dd/MM/yy", new Date());
-  };
-
   const handleDateChange = ({ startDate, endDate }) => {
     setStartDate(startDate);
     setEndDate(endDate);
   };
 
-  // const handleDailyDateFilter = () => {
-  //   const filtered = clientData
-  //     .filter((client) => client.name === selectedClient) // First, filter by selected client
-  //     .map((client) => {
-  //       // Filter the client's stats by date for Daily Level
-  //       const filteredStats = client.stats.filter((stat) => {
-  //         const itemDate = parseDate(stat.date);
-  //         return (
-  //           (!startDate || itemDate >= new Date(startDate)) &&
-  //           (!endDate || itemDate <= new Date(endDate))
-  //         );
-  //       });
-
-  //       // Return the client with filtered stats
-  //       return { ...client, stats: filteredStats };
-  //     })
-  //     .filter((client) => client.stats.length > 0); // Only keep clients with stats in the date range
-
-  //   setDailyFilteredData(filtered);
-  // };
   const fetchDailyData = async () => {
     try {
       const token = localStorage.getItem("authToken");
 
       if (!token || !selectedClient || !startDate || !endDate) return;
 
+      const formattedStartDate = format(new Date(startDate), "yyyy-MM-dd");
+      const formattedEndDate = format(new Date(endDate), "yyyy-MM-dd");
+
+      console.log(formattedStartDate);
+      console.log(formattedEndDate);
+
       const response = await axios.get(
         "http://localhost:5000/api/campaighs/daily",
         {
           headers: {
-            clientID: selectedClient,
-            startDate,
-            endDate,
+            clientID: selectedClientId,
+            startDate: formattedStartDate,
+            endDate: formattedEndDate,
             token: `${token}`,
           },
         }
@@ -128,29 +112,39 @@ const CompaignAnalytics = ({ menuCollapse }) => {
 
   useEffect(() => {
     fetchDailyData(); // Fetch data when client or date changes
-  }, [selectedClient, startDate, endDate]);
+  }, [selectedClient, endDate,navigate]);
 
-  const handleTopLevelFilter = () => {
-    const filtered = clientData.filter(
-      (client) => client.name === selectedClient
-    ); // Filter by selected client
-    // .map((client) => {
-    //   // Don't apply any date filter for Top Level
-    //   return { ...client, stats: client.stats };
-    // })
-    // .filter((client) => client.stats.length > 0); // Only keep clients with stats
+  const fetchTopData = async () => {
+    try {
+      if (!selectedClient) return;
+      console.log("top level request send");
 
-    // setTopLevelFilteredData(filtered);
+      const response = await axios.get(
+        "http://localhost:5000/api/campaighs/top-level-stats",
+        {
+          headers: {
+            clientId: selectedClientId,
+          },
+        }
+      );
+      console.log(typeof selectedClientId);
+
+      if (response.status === 200) {
+        setTopLevelFilteredData(response.data[0]);
+        console.log("Top data", response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching daily data:", error);
+    }
   };
 
-  // useEffect(() => {
-  //   handleDailyDateFilter(); // Filter for Daily Level when date or client changes
-  // }, [startDate, endDate, selectedClient]);
-
   useEffect(() => {
-    handleTopLevelFilter(); // Trigger Top Level Filter when client changes
+    fetchTopData();
+    console.log("Top function called"); // Fetch data when client or date changes
   }, [selectedClient]);
 
+  console.log(selectedClient);
+  console.log(selectedClientId);
   return (
     <Grid
       container
@@ -190,8 +184,13 @@ const CompaignAnalytics = ({ menuCollapse }) => {
                 />
                 <Select
                   value={selectedClient}
-                  onChange={(e) => setSelectedClient(e.target.value)}
-                  displayEmpty
+                  onChange={(e) => {
+                    const selectedClient = clientData.find(
+                      (client) => client.name === e.target.value
+                    );
+                    setSelectedClient(selectedClient.name);
+                    setSelectedClientId(selectedClient.clientId);
+                  }}
                   sx={{
                     width: 200,
                     backgroundColor: "white",
@@ -214,7 +213,7 @@ const CompaignAnalytics = ({ menuCollapse }) => {
                   }}
                 >
                   {clientData.map((client) => (
-                    <MenuItem key={client.id} value={client.name}>
+                    <MenuItem key={client.clientId} value={client.name}>
                       {client.name}
                     </MenuItem>
                   ))}
@@ -225,56 +224,54 @@ const CompaignAnalytics = ({ menuCollapse }) => {
         </Box>
       </Grid>
       {/* Stats Section */}
-      {dailyFilteredData.length > 0 &&
-        dailyFilteredData.map((client, clientIndex) => {
-          // Initialize an object to store the aggregated values for each stat
-          const aggregatedStats = {};
+      {Object.keys(dailyFilteredData).length > 0 &&
+        (() => {
+          // Initialize an empty array to store the rendered elements
+          const renderedStats = [];
 
-          client.stats.forEach((stat) => {
-            stat.statsName.forEach((statName, index) => {
-              // If stat is not yet added, initialize it
-              if (!aggregatedStats[statName]) {
-                aggregatedStats[statName] = 0;
+          // Iterate over the dailyFilteredData object using a for...in loop
+          for (const statName in dailyFilteredData) {
+            if (dailyFilteredData.hasOwnProperty(statName)) {
+              const statValue = dailyFilteredData[statName];
+
+              // Conditionally render Open Count and Click Count based on toggles
+              if (
+                (statName === "open_count" && !showOpenCount) ||
+                (statName === "click_count" && !showClickCount) ||
+                statName === "total" ||
+                statName === "inprogress" ||
+                statName === "not_interested" ||
+                statName === "interested"
+              ) {
+                continue; // Skip rendering if toggled off
               }
-              // Sum the values for the current stat across all dates
-              aggregatedStats[statName] += stat.values[index];
-            });
-          });
 
-          // Now render the boxes with aggregated values
-          return Object.keys(aggregatedStats).map((statName, index) => {
-            // Conditionally render Open Count and Click Count
-            if (
-              (statName === "Open Count" && !showOpenCount) ||
-              (statName === "Click Count" && !showClickCount) ||
-              statName === "Total" ||
-              statName === "Inprogress" ||
-              statName === "Not Interested" ||
-              statName === "Interested"
-            ) {
-              return null; // Skip rendering if toggled off
+              // Create gradient index to style the box
+              const gradient =
+                gradients[renderedStats.length % gradients.length];
+
+              // Add the rendered element to the array
+              renderedStats.push(
+                <Grid item md={4} sm={6} xs={12} key={statName}>
+                  <Box
+                    className={`p-5 rounded-md shadow-md text-white ${gradient}`}
+                  >
+                    <Typography variant="h6" textTransform={"capitalize"}>
+                      {statName.replace(/_/g, " ")}
+                    </Typography>
+                    <Typography variant="subtitle2">
+                      Total # of {statName.replace(/_/g, " ")}
+                    </Typography>
+                    <Typography variant="h4">{statValue}</Typography>
+                  </Box>
+                </Grid>
+              );
             }
-            const gradient = gradients[index % gradients.length];
+          }
 
-            return (
-              <Grid item md={4} sm={6} xs={12} key={`${clientIndex}-${index}`}>
-                <Box
-                  className={`p-5 rounded-md shadow-md text-white ${gradient}`}
-                >
-                  <Typography variant="h6">{statName}</Typography>
-                  <Typography variant="subtitle2">
-                    {" "}
-                    Total # of {statName}
-                    {/* {`Client: ${client.name}`} */}
-                  </Typography>
-                  <Typography variant="h4">
-                    {aggregatedStats[statName]}
-                  </Typography>
-                </Box>
-              </Grid>
-            );
-          });
-        })}
+          // Return the rendered elements
+          return renderedStats;
+        })()}
 
       <Grid item xs={12}>
         <Grid container spacing={3}>
@@ -339,53 +336,58 @@ const CompaignAnalytics = ({ menuCollapse }) => {
         </Box>
       </Grid>
       {/* Stats Section */}
-      {topLevelFilteredData.length > 0 &&
-        topLevelFilteredData.map((client, clientIndex) => {
-          // Initialize an object to store the aggregated values for each stat
-          const aggregatedStats = {};
+      {Object.keys(topLevelFilteredData).length > 0 ? (
+        (() => {
+          // Initialize an empty array to store the rendered elements
+          const renderedStats = [];
 
-          client.stats.forEach((stat) => {
-            stat.statsName.forEach((statName, index) => {
-              // If stat is not yet added, initialize it
-              if (!aggregatedStats[statName]) {
-                aggregatedStats[statName] = 0;
+          // Iterate over the topLevelFilteredData object using a for...in loop
+          for (const statName in topLevelFilteredData) {
+            if (topLevelFilteredData.hasOwnProperty(statName)) {
+              const statValue = topLevelFilteredData[statName];
+
+              // Conditionally render Open Count and Click Count based on toggles
+              if (
+                (statName === "open_count" && !showTopOpenCount) ||
+                (statName === "click_count" && !showTopClickCount) ||
+                statName === "_id"
+              ) {
+                continue; // Skip rendering if toggled off
               }
-              // Sum the values for the current stat across all dates
-              aggregatedStats[statName] += stat.values[index];
-            });
-          });
 
-          // Now render the boxes with aggregated values
-          return Object.keys(aggregatedStats).map((statName, index) => {
-            // Conditionally render Open Count and Click Count
-            if (
-              (statName === "Open Count" && !showTopOpenCount) ||
-              (statName === "Click Count" && !showTopClickCount)
-            ) {
-              return null; // Skip rendering if toggled off
+              // Create gradient index to style the box
+              const gradient =
+                gradients[renderedStats.length % gradients.length];
+
+              // Add the rendered element to the array
+              renderedStats.push(
+                <Grid item md={4} sm={6} xs={12} key={statName}>
+                  <Box
+                    className={`p-5 rounded-md shadow-md text-white ${gradient}`}
+                  >
+                    <Typography variant="h6" textTransform="capitalize">
+                      {statName.replace(/_/g, " ")}
+                    </Typography>
+                    <Typography variant="subtitle2">
+                      Total # of {statName.replace(/_/g, " ")}
+                    </Typography>
+                    <Typography variant="h4">{statValue}</Typography>
+                  </Box>
+                </Grid>
+              );
             }
-            const gradient = gradients[index % gradients.length];
+          }
 
-            return (
-              <Grid item md={4} sm={6} xs={12} key={`${clientIndex}-${index}`}>
-                <Box
-                  className={`p-5 rounded-md shadow-md text-white ${gradient}`}
-                >
-                  <Typography variant="h6">{statName}</Typography>
-                  <Typography variant="subtitle2">
-                    {" "}
-                    Total # of {statName}
-                    {/* {`Client: ${client.name}`} */}
-                  </Typography>
-                  <Typography variant="h4">
-                    {aggregatedStats[statName]}
-                  </Typography>
-                </Box>
-              </Grid>
-            );
-          });
-        })}
+          // Return the rendered elements
+          return renderedStats;
+        })()
+      ) : (
+        <Typography variant="h6" color="textSecondary">
+          No data available to display.
+        </Typography>
+      )}
 
+      {/* 
       <Grid item xs={12}>
         <Grid container spacing={3}>
           {statGraphItems.map((item, index) => {
@@ -415,7 +417,7 @@ const CompaignAnalytics = ({ menuCollapse }) => {
             );
           })}
         </Grid>
-      </Grid>
+      </Grid> */}
     </Grid>
   );
 };

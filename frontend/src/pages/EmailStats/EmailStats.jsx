@@ -5,28 +5,49 @@ import CustomInput from "../../components/EmailStatComp/CustomInput";
 import EmailTable from "../../components/EmailStatComp/EmailsTable";
 import { email_stats } from "../../data/mockData";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const EmailStats = ({ menuCollapse }) => {
   const [recovery, setRecovery] = useState(1);
   const [moderate, setModerate] = useState(8);
   const [maxeffort, setMaxeffort] = useState(20);
-  const [selectedClient, setSelectedClient] = useState(email_stats[0].email);
+  const [selectedClient, setSelectedClient] = useState("");
   const [emailHealth, setEmailHealth] = useState("All");
-  const [filteredData, setFilteredData] = useState(email_stats);
+  const [clientData, setClientData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]); // Initialize filteredData
 
   const navigate = useNavigate();  
-
 
   useEffect(() => {
     const token = localStorage.getItem("authToken");
     if (!token) {
       navigate("/"); // Redirect to /home if token exists
     }
+  }, [navigate]);
+
+  useEffect(() => {
+    const fetchClientEmail = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/email/client-emails`);
+        if (response.status === 200) {
+          setClientData(response.data); // Set client data
+          console.log("Client email:", response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching client email:", error);
+      }
+    };
+
+    fetchClientEmail(); // Fetch email when component mounts
   }, []);
 
   const handleFilter = () => {
-    const filtered = email_stats
-      .filter((item) => item.email === selectedClient) // Filter by selected client
+    const selectedClientData = clientData.find(
+      (client) => client.from_name === selectedClient
+    );
+
+    const filtered = clientData
+      .filter((item) => item.from_name === selectedClientData?.from_name) // Filter by selected client's email
       .filter(
         (item) => emailHealth === "All" || item.email_health === emailHealth
       );
@@ -36,7 +57,7 @@ const EmailStats = ({ menuCollapse }) => {
 
   useEffect(() => {
     handleFilter(); // Trigger filter when client or email health changes
-  }, [selectedClient, emailHealth]);
+  }, [selectedClient, emailHealth, clientData]);
 
   return (
     <Grid
@@ -53,8 +74,9 @@ const EmailStats = ({ menuCollapse }) => {
             <Box className="gap-3 flex lg:w-auto w-full sm:flex-row flex-col">
               <Select
                 value={selectedClient}
-                onChange={(e) => setSelectedClient(e.target.value)}
-                displayEmpty
+                onChange={(e) => {
+                  setSelectedClient(e.target.value); // Set the selected client name
+                }}
                 sx={{
                   width: '100%',
                   backgroundColor: "white",
@@ -76,11 +98,12 @@ const EmailStats = ({ menuCollapse }) => {
                   },
                 }}
               >
-                {email_stats.map((item) => (
-                  <MenuItem key={item.id} value={item.email}>
-                    {item.email}
-                  </MenuItem>
-                ))}
+               {[...new Set(clientData.map((item) => item.from_name))].map(
+                (name, index) => (
+                    <MenuItem key={index} value={name}>
+                      {name}
+                    </MenuItem>
+                  ))}
               </Select>
               <Select
                 value={emailHealth}
@@ -121,6 +144,7 @@ const EmailStats = ({ menuCollapse }) => {
               <Button
                 variant="contained"
                 className="bg-gradient-to-r lg:w-auto w-[100%] from-[#FF4B2B] to-[#FF416C] text-white flex items-center gap-2"
+                onClick={handleFilter} // Refresh data on click
               >
                 Refresh <HiRefresh size={18} color="white" />
               </Button>
@@ -143,7 +167,6 @@ const EmailStats = ({ menuCollapse }) => {
         />
       </Grid>
       <Grid item md={4} sm={6} xs={12}>
-        {" "}
         <CustomInput
           id="moderate"
           label={"Moderate"}
@@ -152,7 +175,6 @@ const EmailStats = ({ menuCollapse }) => {
         />
       </Grid>
       <Grid item md={4} sm={6} xs={12}>
-        {" "}
         <CustomInput
           id="maxeffort"
           label={"Max Effort"}
