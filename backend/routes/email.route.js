@@ -6,13 +6,13 @@ const { updateSetMaxDay } = require('../controllers/updateMaxDay');
 
 
 router.get('/client-emails',async (req , res)=>{
-const { clientId} = req.body
+const clientId = req.header("clientId") 
 console.log('Request Recieved to /client-emails');
 console.log(clientId);
 const Email = require('../models/Email')
 try {
     const emails = await Email.find(
-        { client_id: clientId }, // Match documents with the specific client_id
+        { client_id: Number(clientId) }, // Match documents with the specific client_id
         {
             from_email: 1,                     // Include the 'from_email' field
             "warmup_details.status": 1,         // Include 'warmup_details.status'

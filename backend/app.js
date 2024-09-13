@@ -15,6 +15,7 @@ const clientsRouter = require('./routes/clients.js')
 const campaighsRoutes = require('./routes/campaigh.route.js')
 const emailRoutes = require('./routes/email.route.js')
 const {refreshData} = require('./controllers/refreshData.js')
+const auth = require('../middleware/authMiddleware');
 const config=require('./config.json')
 const app = express();
 
