@@ -230,7 +230,7 @@ const CompaignAnalytics = ({ menuCollapse }) => {
 
             return (
               <Grid item md={4} sm={6} xs={12} key={`${clientIndex}-${index}`}>
-                <Box
+                <Box  
                   className={`p-5 rounded-md shadow-md text-white ${gradient}`}
                 >
                   <Typography variant="h6">{statName}</Typography>

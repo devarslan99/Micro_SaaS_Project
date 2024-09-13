@@ -5,6 +5,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom"
 import Layout from "./components/global/layout/Layout";
 import CompaignAnalytics from "./pages/CompaignsAnalytics/CompaignAnalytics";
 import EmailStats from "./pages/EmailStats/EmailStats";
+import ForgetPassword from "./pages/ForgetPassword/ForgetPassword";
+import ResetPassword from "./pages/ResetPassword/ResetPassword";
 
 function App() {
   const [menuCollapse, setMenuCollapse] = useState(false);  
@@ -14,6 +16,8 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route exact path="/" element={<SignInSignUp />} />
+        <Route exact path="/forget-password" element={<ForgetPassword />} />
+        <Route exact path="/reset-password" element={<ResetPassword  />} />
         <Route
           path="/home"
           element={

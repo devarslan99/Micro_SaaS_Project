@@ -62,6 +62,9 @@ const Home = ({ menuCollapse }) => {
         });
 
         console.log("Server Response",response.data);
+        if(response.data?.software){
+          setSelectedOption(response.data.software)
+        }
 
         const token = response.data.softwareToken;
         if (token) {

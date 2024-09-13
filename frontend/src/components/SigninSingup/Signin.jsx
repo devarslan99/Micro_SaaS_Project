@@ -2,7 +2,6 @@ import {
   Box,
   Button,
   IconButton,
-  //   Link,
   TextField,
   Typography,
 } from "@mui/material";
@@ -11,6 +10,7 @@ import { FcGoogle } from "react-icons/fc";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+
 
 const Signin = ({ rightPanelActive }) => {
   const {
@@ -134,11 +134,10 @@ const Signin = ({ rightPanelActive }) => {
           helperText={errors.signInPassword?.message}
         />
         <Link
-          href="#"
+          to="/forget-password"
           variant="body2"
-          sx={{ mt: 2, textDecoration: "none", fontStyle: "italic" }}
         >
-          Forgot your password?
+          <Typography variant="" className="text-[#FF4B2B] italic">Forgot your password?</Typography>
         </Link>
         <Button
           type="submit"
