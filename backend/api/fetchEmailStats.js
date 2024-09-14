@@ -2,6 +2,7 @@ const axios = require('axios');
 const Email = require('../models/Email'); // Assuming you already have this schema
 
 const authenticateAndFetchEmailAccounts = async (apiKey, user, software) => {
+  console.log('Fetching Emails From Database');
   const url = `https://server.smartlead.ai/api/v1/email-accounts/?api_key=${apiKey}&offset=0&limit=100`;
 
   try {
