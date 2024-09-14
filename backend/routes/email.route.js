@@ -3,6 +3,7 @@ const router = express.Router()
 const { emailUpdate } = require('../controllers/emailUpdate.controller.js')
 const { reconnetEmails }= require('../controllers/reconnectEmail.controller.js')
 const { updateSetMaxDay } = require('../controllers/updateMaxDay');
+const authMiddleware = require('../middleware/authMiddleware.js');
 
 
 router.get('/client-emails',async (req , res)=>{
@@ -19,8 +20,8 @@ try {
             message_per_day: 1,                 // Include 'message_per_day'
             daily_sent_count: 1,
             warmupStatus: "$warmup_details.status",         
-            warmupReputation: "$warmup_details.warmup_reputation"                  // Include 'daily_sent_count'
-            
+            warmupReputation: "$warmup_details.warmup_reputation",                  // Include 'daily_sent_count'
+            email_account_id:1   
         }
     );
 
@@ -37,6 +38,6 @@ try {
 
 router.post('/update-email',emailUpdate)
 router.post('/emai-reconnect',reconnetEmails)
-router.post('/max-day',updateSetMaxDay);
+router.post('/max-day',authMiddleware,updateSetMaxDay);
 
 module.exports = router;
