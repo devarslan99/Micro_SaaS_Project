@@ -20,9 +20,8 @@ const EmailStats = ({ menuCollapse }) => {
 
   const navigate = useNavigate();
 
-  let token = localStorage.getItem("authToken");
-  let softwareToken = localStorage.getItem("softwareToken");
   useEffect(() => {
+    const token = localStorage.getItem("authToken");
     if (!token) {
       navigate("/"); // Redirect to /home if token exists
     }
@@ -43,6 +42,8 @@ const EmailStats = ({ menuCollapse }) => {
   };
 
   const handleRefresh = async () => {
+    const token = localStorage.getItem("authToken");
+    const softwareToken = localStorage.getItem("softwareToken");
     try {
       setEmailFetch(true);
       const response = await axios.get(`http://localhost:5000/refresh/emails`, {
@@ -60,9 +61,14 @@ const EmailStats = ({ menuCollapse }) => {
     }
   };
   const handleReconnect = async () => {
+    const token = localStorage.getItem("authToken");
+    const softwareToken = localStorage.getItem("softwareToken");
+    console.log(token);
+    console.log(softwareToken);
+    
     try {
       setEmailConnect(true);
-      const response = await axios.post(`http://localhost:5000/api/email/reconnect`, {
+      const response = await axios.post(`http://localhost:5000/api/email/reconnect`,{},  {
         headers: {
           Authorization: token,
           softwareAuthorization: softwareToken,
@@ -93,7 +99,7 @@ const EmailStats = ({ menuCollapse }) => {
     };
 
     fetchClientEmail(); // Fetch email when component mounts
-  }, [emailFetch,emailConnect]);
+  }, [emailFetch]);
 
   const handleFilter = () => {
     const selectedClientData = clientData.find(
