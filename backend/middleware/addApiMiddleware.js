@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const config = require('./../config.json')
 const User = require('../models/User');
 
-const authMiddleware = async (req, res, next) => {
+const addApiMiddleware = async (req, res, next) => {
   const token = req.header('Authorization');
   console.log('Auth Token', token);
   const SoftwareToken = req.header('SoftwareAuthorization');
@@ -31,7 +31,7 @@ const authMiddleware = async (req, res, next) => {
     const user = await User.findById(req.body.user.id);
     console.log('User DB', user);
     const softwareData =user.softwareKeys.find(
-      (item) => item.software === decodeSoftwareToken.software
+      (item) => item.apiKey === req.body.api
     )
     console.log(softwareData);
       req.body.apiKey= softwareData.apiKey
@@ -45,4 +45,4 @@ const authMiddleware = async (req, res, next) => {
   }
 };
 
-module.exports = authMiddleware;
+module.exports = addApiMiddleware;
