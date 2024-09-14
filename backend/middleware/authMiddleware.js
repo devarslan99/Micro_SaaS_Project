@@ -5,8 +5,8 @@ const User = require('../models/User');
 const authMiddleware = async (req, res, next) => {
   const token = req.header('Authorization');
   const software = req.body.software;
-  console.log(software);
-  console.log(req.body.apiKey);
+  console.log('Software Name',software);
+  console.log('Api Key',req.body.apiKey);
   
   if (!token) {
     return res.status(401).json({ msg: 'No token, authorization denied' });
@@ -20,20 +20,20 @@ const authMiddleware = async (req, res, next) => {
     next();
   }
 
-  // try {
-  //   const decoded = jwt.verify(token, config.JWT_SECRET);
-  //   console.log('autheMiddleware.js:16-decoded-->',decoded);
-  //   req.body.user = decoded.user;
-  //   const user = await User.findById(req.body.user.id);
-  //   const softwareData =user.softwareKeys.find(
-  //     (item) => item.software === software
-  //   );
-  //     req.body.apiKey= softwareData.apiKey
-  //   console.log('autheMiddleware.js:17 , Moving to Next Middleware');
-  //   // next();
-  // } catch (err) {
-  //   res.status(401).json({ msg: 'Token is not valid' });
-  // }
+  try {
+    const decoded = jwt.verify(token, config.JWT_SECRET);
+    console.log('autheMiddleware.js:16-decoded-->',decoded);
+    req.body.user = decoded.user;
+    const user = await User.findById(req.body.user.id);
+    const softwareData =user.softwareKeys.find(
+      (item) => item.software === software
+    );
+      req.body.apiKey= softwareData.apiKey
+    console.log('autheMiddleware.js:17 , Moving to Next Middleware');
+    // next();
+  } catch (err) {
+    res.status(401).json({ msg: 'Token is not valid' });
+  }
 };
 
 module.exports = authMiddleware;
