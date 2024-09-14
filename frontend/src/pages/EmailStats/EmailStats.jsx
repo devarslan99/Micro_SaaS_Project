@@ -1,4 +1,4 @@
-import { Box, Button, Grid, MenuItem, Select, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Grid, MenuItem, Select, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { HiRefresh } from "react-icons/hi";
 import CustomInput from "../../components/EmailStatComp/CustomInput";
@@ -11,12 +11,14 @@ const EmailStats = ({ menuCollapse }) => {
   const [recovery, setRecovery] = useState(1);
   const [moderate, setModerate] = useState(8);
   const [maxeffort, setMaxeffort] = useState(20);
+  const [emailFetch, setEmailFetch] = useState(false); // Initialize data with mock data
+  const [emailConnect, setEmailConnect] = useState(false); // Initialize data with mock data
   const [selectedClient, setSelectedClient] = useState("");
   const [emailHealth, setEmailHealth] = useState("All");
   const [clientData, setClientData] = useState([]);
   const [filteredData, setFilteredData] = useState([]); // Initialize filteredData
 
-  const navigate = useNavigate();  
+  const navigate = useNavigate();
 
   let token = localStorage.getItem("authToken");
   let softwareToken = localStorage.getItem("softwareToken");
@@ -39,19 +41,36 @@ const EmailStats = ({ menuCollapse }) => {
       return "Very Bad";
     }
   };
-  
 
-  const handleRefresh =async () => {
+  const handleRefresh = async () => {
     try {
+      setEmailFetch(true);
       const response = await axios.get(`http://localhost:5000/refresh/emails`, {
-        headers:{
+        headers: {
           Authorization: token,
           softwareAuthorization: softwareToken,
-        }
+        },
       });
       if (response.status === 200) {
-        setClientData(response.data); // Set client data
-        console.log("Client email:", response.data);
+        console.log("Client email:", response.data.message);
+        setEmailFetch(false);
+      }
+    } catch (error) {
+      console.error("Error fetching client email:", error);
+    }
+  };
+  const handleReconnect = async () => {
+    try {
+      setEmailConnect(true);
+      const response = await axios.post(`http://localhost:5000/api/email/reconnect`, {
+        headers: {
+          Authorization: token,
+          softwareAuthorization: softwareToken,
+        },
+      });
+      if (response.status === 200) {
+        console.log("Client email:", response.data.message);
+        setEmailConnect(false);
       }
     } catch (error) {
       console.error("Error fetching client email:", error);
@@ -61,10 +80,12 @@ const EmailStats = ({ menuCollapse }) => {
   useEffect(() => {
     const fetchClientEmail = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/email/client-emails`);
+        const response = await axios.get(
+          `http://localhost:5000/api/email/client-emails`
+        );
         if (response.status === 200) {
           setClientData(response.data); // Set client data
-          console.log("Client email:", response.data);
+          console.log("Client email:", response.data); // Reset fetch flag
         }
       } catch (error) {
         console.error("Error fetching client email:", error);
@@ -72,7 +93,7 @@ const EmailStats = ({ menuCollapse }) => {
     };
 
     fetchClientEmail(); // Fetch email when component mounts
-  }, []);
+  }, [emailFetch,emailConnect]);
 
   const handleFilter = () => {
     const selectedClientData = clientData.find(
@@ -82,17 +103,20 @@ const EmailStats = ({ menuCollapse }) => {
     const filtered = clientData.filter((item) => {
       const matchesClient = item.from_name === selectedClientData?.from_name;
 
-      const reputationvalue = parseFloat(item.warmupReputation.replace("%", ""));
+      const reputationvalue = parseFloat(
+        item.warmupReputation.replace("%", "")
+      );
       const generatedEmailHealth = getEmailHealth(reputationvalue);
 
-      const matchesHealth = emailHealth === "All" || generatedEmailHealth === emailHealth;
+      const matchesHealth =
+        emailHealth === "All" || generatedEmailHealth === emailHealth;
 
       return matchesClient && matchesHealth;
     });
 
     setFilteredData(filtered);
   };
-  
+
   useEffect(() => {
     if (clientData.length > 0) {
       // Set the first client's name as the default selected client
@@ -123,7 +147,7 @@ const EmailStats = ({ menuCollapse }) => {
                   setSelectedClient(e.target.value); // Set the selected client name
                 }}
                 sx={{
-                  width: '100%',
+                  width: "100%",
                   backgroundColor: "white",
                   border: "1px solid #ccc",
                   borderRadius: "5px",
@@ -143,19 +167,20 @@ const EmailStats = ({ menuCollapse }) => {
                   },
                 }}
               >
-               {[...new Set(clientData.map((item) => item.from_name))].map(
-                (name, index) => (
+                {[...new Set(clientData.map((item) => item.from_name))].map(
+                  (name, index) => (
                     <MenuItem key={index} value={name}>
                       {name}
                     </MenuItem>
-                  ))}
+                  )
+                )}
               </Select>
               <Select
                 value={emailHealth}
                 onChange={(e) => setEmailHealth(e.target.value)}
                 displayEmpty
                 sx={{
-                  width: '100%',
+                  width: "100%",
                   backgroundColor: "white",
                   border: "1px solid #ccc",
                   borderRadius: "5px",
@@ -190,12 +215,15 @@ const EmailStats = ({ menuCollapse }) => {
                 variant="contained"
                 className="bg-gradient-to-r lg:w-auto w-[100%] from-[#FF4B2B] to-[#FF416C] text-white flex items-center gap-2"
                 onClick={handleRefresh} // Refresh data on click
-              >
+                disabled={emailConnect}
+                >
                 Refresh <HiRefresh size={18} color="white" />
               </Button>
               <Button
                 variant="contained"
                 className="bg-gradient-to-r lg:w-auto w-[100%] from-[#FF4B2B] to-[#FF416C] text-white text-sm"
+                onClick={handleReconnect} // Refresh data on click
+                disabled={emailFetch}
               >
                 Reconnect all failed email accounts
               </Button>
@@ -228,13 +256,25 @@ const EmailStats = ({ menuCollapse }) => {
         />
       </Grid>
       <Grid item xs={12}>
-        <EmailTable
-          data={filteredData}
-          recovery={recovery}
-          moderate={moderate}
-          maxeffort={maxeffort}
-          setData={setFilteredData}
-        />
+        {emailFetch ? (
+          <Box className=" w-4/5 mx-auto items-center  flex flex-col gap-3 bg-white p-32">
+            <CircularProgress size={50} color="error" thickness={10} />
+            <Typography
+              variant=""
+              className="text-2xl font-semibold font-Poppins"
+            >
+              Please wait Data is Refreshing......
+            </Typography>
+          </Box>
+        ) : (
+          <EmailTable
+            data={filteredData}
+            recovery={recovery}
+            moderate={moderate}
+            maxeffort={maxeffort}
+            setData={setFilteredData}
+          />
+        )}
       </Grid>
     </Grid>
   );
