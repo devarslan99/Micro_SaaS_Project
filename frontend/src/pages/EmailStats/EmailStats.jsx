@@ -54,6 +54,13 @@ const EmailStats = ({ menuCollapse }) => {
 
     setFilteredData(filtered);
   };
+  
+  useEffect(() => {
+    if (clientData.length > 0) {
+      // Set the first client's name as the default selected client
+      setSelectedClient(clientData[0].from_name);
+    }
+  }, [clientData]);
 
   useEffect(() => {
     handleFilter(); // Trigger filter when client or email health changes

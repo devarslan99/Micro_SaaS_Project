@@ -17,16 +17,16 @@ const EmailTable = ({ data, recovery, moderate, maxeffort, setData }) => {
   const handleCheckboxChange = (rowId, field) => {
     // Find the current row data and update the msg_per_day based on the selected checkbox
     const updatedData = data.map((row) => {
-      if (row.id === rowId) {
+      if (row._id === rowId) {
         if (field === "set_recovery") {
-          return { ...row, msg_per_day: recovery };
+          return { ...row, message_per_day: recovery };
         } else if (field === "set_moderate") {
-          return { ...row, msg_per_day: moderate };
+          return { ...row, message_per_day: moderate };
         } else if (field === "set_max_effort") {
-          return { ...row, msg_per_day: maxeffort };
+          return { ...row, message_per_day: maxeffort };
         }
       }
-      return row;
+      return row; 
     });
     // Update the data state
     setData(updatedData);
@@ -51,41 +51,56 @@ const EmailTable = ({ data, recovery, moderate, maxeffort, setData }) => {
       headerName: "Email Health",
       headerClassName: "super-app-theme-header",
       width: 150,
-    },
-    {
-      field: "warmup_reputation_bar",
-      headerName: "Warmup Reputation Bar",
-      headerClassName: "super-app-theme-header",
-      width: 200,
       renderCell: ({ row }) => {
-        // Assuming warmup_reputation is a percentage string like "100%"
         const reputationvalue = parseFloat(row.warmupReputation.replace('%', ''));
-        return (
-          <Box width="100%" className="mt-5">
-            <LinearProgress
-              variant="determinate"
-              value={reputationvalue}
-              sx={{
-                height: 10,
-                borderRadius: 5,
-                "& .MuiLinearProgress-bar": {
-                  backgroundColor:
-                    reputationvalue >= 100
-                      ? "#28A745"
-                      : reputationvalue >= 98
-                      ? "#007BFF"
-                      : reputationvalue >= 96
-                      ? "#FFC107"
-                      : reputationvalue >= 91
-                      ? "#FD7E14"
-                      : "#DC3545",
-                },
-              }}
-            />
-          </Box>
-        );
+        
+        // Set the email health based on the reputation value
+        if (reputationvalue >= 100) {
+          return "Excellent";
+        } else if (reputationvalue >= 98) {
+          return "Decent";
+        } else if (reputationvalue >= 96) {
+          return "OK";
+        } else if (reputationvalue >= 91) {
+          return "Bad";
+        } else {
+          return "Very Bad";
+        }
       },
     },
+      {
+        field: "warmup_reputation_bar",
+        headerName: "Warmup Reputation Bar",
+        headerClassName: "super-app-theme-header",
+        width: 200,
+        renderCell: ({ row }) => {
+          const reputationvalue = parseFloat(row.warmupReputation.replace('%', ''));
+          return (
+            <Box width="100%" className="mt-5">
+              <LinearProgress
+                variant="determinate"
+                value={reputationvalue}
+                sx={{
+                  height: 10,
+                  borderRadius: 5,
+                  "& .MuiLinearProgress-bar": {
+                    backgroundColor:
+                      reputationvalue >= 100
+                        ? "#28A745"
+                        : reputationvalue >= 98
+                        ? "#007BFF"
+                        : reputationvalue >= 96
+                        ? "#FFC107"
+                        : reputationvalue >= 91
+                        ? "#FD7E14"
+                        : "#DC3545",
+                  },
+                }}
+              />
+            </Box>
+          );
+        },
+      },
     {
       field: "warmupReputation",
       headerName: "Warmup Reputation %",
@@ -106,10 +121,10 @@ const EmailTable = ({ data, recovery, moderate, maxeffort, setData }) => {
       renderCell: ({ row }) => {
         let displayValue;
         const sentCount = row.daily_sent_count;
-        const msgPerDay = row.msg_per_day;
+        const msgPerDay = row.message_per_day;
 
         if (sentCount <= 1) {
-          displayValue = `${sentCount}/1`;
+          displayValue = `${sentCount}/${msgPerDay}`;
         } else if (sentCount > 1 && sentCount <= 8) {
           displayValue = `${sentCount}/${msgPerDay}`;
         } else if (sentCount > 8 && sentCount <= 20) {
@@ -126,8 +141,8 @@ const EmailTable = ({ data, recovery, moderate, maxeffort, setData }) => {
       width: 150,
       renderCell: ({ row }) => (
         <CustomCheckBtn
-          checked={row.msg_per_day == recovery} // Check if msg_per_day matches the recovery value
-          onChange={() => handleCheckboxChange(row.id, "set_recovery")}
+          checked={row.message_per_day == recovery} // Check if message_per_day matches the recovery value
+          onChange={() => handleCheckboxChange(row._id, "set_recovery")}
         />
       ),
     },
@@ -138,8 +153,8 @@ const EmailTable = ({ data, recovery, moderate, maxeffort, setData }) => {
       width: 150,
       renderCell: ({ row }) => (
         <CustomCheckBtn
-          checked={row.msg_per_day == moderate} // Check if msg_per_day matches the moderate value
-          onChange={() => handleCheckboxChange(row.id, "set_moderate")}
+          checked={row.message_per_day == moderate} // Check if message_per_day matches the moderate value
+          onChange={() => handleCheckboxChange(row._id, "set_moderate")}
         />
       ),
     },
@@ -150,8 +165,8 @@ const EmailTable = ({ data, recovery, moderate, maxeffort, setData }) => {
       width: 150,
       renderCell: ({ row }) => (
         <CustomCheckBtn
-          checked={row.msg_per_day == maxeffort} // Check if msg_per_day matches the maxeffort value
-          onChange={() => handleCheckboxChange(row.id, "set_max_effort")}
+          checked={row.message_per_day == maxeffort} // Check if message_per_day matches the maxeffort value
+          onChange={() => handleCheckboxChange(row._id, "set_max_effort")}
         />
       ),
     },

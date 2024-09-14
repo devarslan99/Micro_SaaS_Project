@@ -8,11 +8,11 @@ import { Button, Popover } from "@mui/material";
 const DropdownCalendar = ({ startDate, endDate, onDateChange }) => {
   const [anchorEl, setAnchorEl] = useState(null);
 
-  const initialStartDate = subDays(startDate || new Date(), 7);
+
 
   const [selectionRange, setSelectionRange] = useState({
-    startDate: initialStartDate,
-    endDate: endDate || new Date(),
+    startDate: startDate,
+    endDate: endDate ,
     key: "selection",
   });
 

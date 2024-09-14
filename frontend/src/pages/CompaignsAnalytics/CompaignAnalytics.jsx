@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { clientData, gradients, statGraphItems } from "../../data/mockData";
-import { format, parse } from "date-fns";
+import { format, parse, subDays } from "date-fns";
 import CustomCheckBtn from "../../components/CompaingComp/CustomCheckBtn";
 import DropdownCalendar from "../../components/CompaingComp/DatePicker";
 import CompaignCharts from "../../components/CompaingComp/CompaignCharts";
@@ -18,8 +18,8 @@ import axios from "axios";
 const CompaignAnalytics = ({ menuCollapse }) => {
   const [selectedClient, setSelectedClient] = useState(""); // Dropdown client selection
   const [selectedClientId, setSelectedClientId] = useState(null); // Dropdown client selection
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [startDate, setStartDate] = useState(subDays(new Date(), 7));
+  const [endDate, setEndDate] =  useState(new Date());
   const [showOpenCount, setShowOpenCount] = useState(false);
   const [showClickCount, setShowClickCount] = useState(false);
   const [showTopOpenCount, setShowTopOpenCount] = useState(false);
@@ -50,7 +50,7 @@ const CompaignAnalytics = ({ menuCollapse }) => {
 
         console.log("client data", response.data);
 
-        if (response.status === 200) {
+        if (response.status === 200 && response.data.length > 0) {
           setClientData(response.data); // Set the fetched clients to state
           setSelectedClient(response.data[0]?.name); // Set default selected client
           setSelectedClientId(response.data[0]?.clientId);
@@ -110,9 +110,13 @@ const CompaignAnalytics = ({ menuCollapse }) => {
     }
   };
 
+
+  // Fetch data whenever the client or date changes
   useEffect(() => {
-    fetchDailyData(); // Fetch data when client or date changes
-  }, [selectedClient, endDate,navigate]);
+    if (selectedClient && startDate && endDate) {
+      fetchDailyData();
+    }
+  }, [selectedClient, endDate]); 
 
   const fetchTopData = async () => {
     try {
