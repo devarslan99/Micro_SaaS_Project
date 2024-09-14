@@ -10,7 +10,7 @@ const refreshDataEmails = async (req ,res) => {
      console.log('Email Fetched Called And runed' , emails);
     //  const campaigns=await FetchAllCampaigns(apiKey,user,software)
     if(emails){
-      res.status(200).json({message:"Data Refreshed Successfully"})
+      res.status(200).json({message:"Data Refreshed Successfully",emails})
     }
   } catch (error) {
     res.status(400).json({error})
