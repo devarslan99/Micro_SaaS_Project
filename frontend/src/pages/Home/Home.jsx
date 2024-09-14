@@ -17,15 +17,18 @@ import { Link, useNavigate } from "react-router-dom";
 import { MyContext } from "../../hook/Provider";
 
 const Home = ({ menuCollapse }) => {
-  const [selectedOption, setSelectedOption] = useState("");
   const [openModal, setOpenModal] = useState(false);
   const [secretKey, setSecretKey] = useState("");
-  const [isAccountImported, setIsAccountImported] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
   const [loading, setLoading] = useState(false); // Loader state
-  const {setSoftwareName} = useContext(MyContext)
+  const {
+    selectedOption,
+    setSelectedOption,
+    isAccountImported,
+    setIsAccountImported,
+  } = useContext(MyContext);
 
   const navigate = useNavigate();
 
@@ -82,7 +85,6 @@ const Home = ({ menuCollapse }) => {
         setSnackbarOpen(true);
         if (response.data?.software) {
           setSelectedOption(response.data.software);
-          setSoftwareName(response.data.software)
         }
 
         const token = response.data.softwareToken;
@@ -128,15 +130,18 @@ const Home = ({ menuCollapse }) => {
         <Box className="flex items-center justify-center sm:mt-36 mt-16">
           <Box className="bg-gradient-to-r from-[#FF4B2B] to-[#FF416C] sm:w-2/5 w-10/12 h-2/5 sm:p-10 p-5 rounded-lg shadow-md justify-center flex flex-col gap-5 items-center">
             {!isAccountImported ? (
-            <Typography
-            variant=""
-            className="sm:text-3xl text-xl font-bold text-white text-center"
-          >
-            Click on the Import Account button to import your account
-          </Typography>
+              <Typography
+                variant=""
+                className="sm:text-3xl text-xl font-bold text-white text-center"
+              >
+                Click on the Import Account button to import your account
+              </Typography>
             ) : selectedOption === "" ? (
               <>
-                <Typography variant="" className="sm:text-3xl text-2xl font-bold text-white">
+                <Typography
+                  variant=""
+                  className="sm:text-3xl text-2xl font-bold text-white"
+                >
                   Please select Your Software
                 </Typography>
                 <Select
@@ -212,9 +217,14 @@ const Home = ({ menuCollapse }) => {
         }}
       >
         {loading ? (
-          <Box  className="sm:w-2/6 w-4/5 items-center  flex flex-col gap-3 bg-white sm:p-10 p-5 rounded-md shadow-md">
+          <Box className="sm:w-2/6 w-4/5 items-center  flex flex-col gap-3 bg-white sm:p-10 p-5 rounded-md shadow-md">
             <CircularProgress size={50} color="error" thickness={10} />
-            <Typography variant="" className="text-2xl font-semibold font-Poppins">Please wait Data is fetching</Typography>
+            <Typography
+              variant=""
+              className="text-2xl font-semibold font-Poppins"
+            >
+              Please wait Data is fetching
+            </Typography>
           </Box>
         ) : (
           <Box className="sm:w-1/2 w-4/5   bg-white sm:p-10 p-5 rounded-md shadow-md">

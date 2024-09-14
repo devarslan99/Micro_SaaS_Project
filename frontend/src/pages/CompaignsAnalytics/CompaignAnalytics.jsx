@@ -6,6 +6,7 @@ import {
   Select,
   Typography,
   CircularProgress,
+  Button,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { clientData, gradients, statGraphItems } from "../../data/mockData";
@@ -15,6 +16,7 @@ import DropdownCalendar from "../../components/CompaingComp/DatePicker";
 import CompaignCharts from "../../components/CompaingComp/CompaignCharts";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { HiRefresh } from "react-icons/hi";
 
 const CompaignAnalytics = ({ menuCollapse }) => {
   const [selectedClient, setSelectedClient] = useState(""); // Dropdown client selection
@@ -22,6 +24,7 @@ const CompaignAnalytics = ({ menuCollapse }) => {
   const [startDate, setStartDate] = useState(subDays(new Date(), 7));
   const [endDate, setEndDate] = useState(new Date());
   const [showOpenCount, setShowOpenCount] = useState(false);
+  const [compaignFetch, setCompaignFetch] = useState(false);
   const [showClickCount, setShowClickCount] = useState(false);
   const [showTopOpenCount, setShowTopOpenCount] = useState(false);
   const [showTopClickCount, setShowTopClickCount] = useState(false);
@@ -29,6 +32,29 @@ const CompaignAnalytics = ({ menuCollapse }) => {
   const [topLevelFilteredData, setTopLevelFilteredData] = useState({});
   const [clientData, setClientData] = useState([]);
   const navigate = useNavigate();
+
+  const handleRefresh = async () => {
+    const token = localStorage.getItem("authToken");
+    const softwareToken = localStorage.getItem("softwareToken");
+    try {
+      setCompaignFetch(true);
+      const response = await axios.get(
+        `http://localhost:5000/refresh/campaighs `,
+        {
+          headers: {
+            Authorization: token,
+            softwareAuthorization: softwareToken,
+          },
+        }
+      );
+      if (response.status === 200) {
+        console.log("Client email:", response.data.message);
+        setCompaignFetch(false);
+      }
+    } catch (error) {
+      console.error("Error fetching client email:", error);
+    }
+  };
 
   useEffect(() => {
     const fetchClients = async () => {
@@ -180,7 +206,15 @@ const CompaignAnalytics = ({ menuCollapse }) => {
                   label="Click Count"
                 />
               </Box>
-              <Box className="flex gap-3 sm:flex-row flex-col">
+              <Box className="flex  gap-3 sm:flex-row flex-col">
+                <Button
+                  variant="contained"
+                  className="bg-gradient-to-r md:w-auto w-[100%]  from-[#FF4B2B] to-[#FF416C] text-white flex items-center gap-2"
+                  onClick={handleRefresh} // Refresh data on click
+                  disabled={compaignFetch}
+                >
+                  Refresh <HiRefresh size={18} color="white" />
+                </Button>
                 <DropdownCalendar
                   startDate={startDate}
                   endDate={endDate}
@@ -196,7 +230,7 @@ const CompaignAnalytics = ({ menuCollapse }) => {
                     setSelectedClientId(selectedClient.clientId);
                   }}
                   sx={{
-                    width: 200,
+                    width: {md:200, xs:'100%'},
                     backgroundColor: "white",
                     border: "1px solid #ccc",
                     borderRadius: "5px",
@@ -227,101 +261,113 @@ const CompaignAnalytics = ({ menuCollapse }) => {
           </Box>
         </Box>
       </Grid>
-      {/* Stats Section */}
-      {Object.keys(dailyFilteredData).length > 0 ? (
-        (() => {
-          // Initialize an empty array to store the rendered elements
-          const renderedStats = [];
 
-          // Iterate over the dailyFilteredData object using a for...in loop
-          for (const statName in dailyFilteredData) {
-            if (dailyFilteredData.hasOwnProperty(statName)) {
-              const statValue = dailyFilteredData[statName];
-
-              // Conditionally render Open Count and Click Count based on toggles
-              if (
-                (statName === "open_count" && !showOpenCount) ||
-                (statName === "click_count" && !showClickCount) ||
-                statName === "total" ||
-                statName === "inprogress" ||
-                statName === "not_interested" ||
-                statName === "interested"
-              ) {
-                continue; // Skip rendering if toggled off
-              }
-
-              // Create gradient index to style the box
-              const gradient =
-                gradients[renderedStats.length % gradients.length];
-
-              // Add the rendered element to the array
-              renderedStats.push(
-                <Grid item md={4} sm={6} xs={12} key={statName}>
-                  <Box
-                    className={`p-5 rounded-md shadow-md text-white ${gradient}`}
-                  >
-                    <Typography variant="h6" textTransform={"capitalize"}>
-                      {statName.replace(/_/g, " ")}
-                    </Typography>
-                    <Typography variant="subtitle2">
-                      Total # of {statName.replace(/_/g, " ")}
-                    </Typography>
-                    <Typography variant="h4">{statValue}</Typography>
-                  </Box>
-                </Grid>
-              );
-            }
-          }
-
-          // Return the rendered elements
-          return renderedStats;
-        })()
-      ) : (
-        <Box className=" w-4/5 mx-auto items-center  flex flex-col gap-3 bg-white p-10">
+      {compaignFetch ? (
+        <Box className="w-4/5 mx-auto items-center flex flex-col gap-3 bg-white p-32">
           <CircularProgress size={50} color="error" thickness={10} />
           <Typography
             variant=""
             className="text-2xl font-semibold font-Poppins"
           >
-            Please wait Data is Loading......
+            Please wait, Data is Refreshing...
           </Typography>
         </Box>
-      )}
+      ) : (
+        <>
+          {Object.keys(dailyFilteredData).length > 0 ? (
+            <>
+              {/* <Grid container spacing={3}> */}
+              {/* Iterate through dailyFilteredData */}
+              {(() => {
+                const renderedStats = [];
+                for (const statName in dailyFilteredData) {
+                  if (dailyFilteredData.hasOwnProperty(statName)) {
+                    const statValue = dailyFilteredData[statName];
 
-      <Grid item xs={12}>
-        <Grid container spacing={3}>
-          {statGraphItems.map((item, index) => {
-            // Hide "Open Count" and "Click Count"
-            if (
-              (item.title === "Open Count" && !showOpenCount) ||
-              (item.title === "Click Count" && !showClickCount) ||
-              item.title === "Total" ||
-              item.title === "Inprogress" ||
-              item.title === "Not Interested" ||
-              item.title === "Interested"
-            ) {
-              return null; // Skip rendering if not toggled
-            }
+                    if (
+                      (statName === "open_count" && !showOpenCount) ||
+                      (statName === "click_count" && !showClickCount) ||
+                      statName === "total" ||
+                      statName === "inprogress" ||
+                      statName === "not_interested" ||
+                      statName === "interested"
+                    ) {
+                      continue;
+                    }
 
-            return (
-              <Grid item md={4} sm={6} xs={12} key={index}>
-                <Box className="border border-red-500 sm:p-5 p-3 rounded-md shadow-md">
-                  <Typography variant="h6" className="text-2xl font-semibold">
-                    {item.title}
-                  </Typography>
-                  <Typography
-                    variant="subtitle2"
-                    className="text-base text-neutral-600"
-                  >
-                    {item.subtitle}
-                  </Typography>
-                  <CompaignCharts color={item.color} />
-                </Box>
+                    const gradient =
+                      gradients[renderedStats.length % gradients.length];
+
+                    renderedStats.push(
+                      <Grid item md={4} sm={6} xs={12} key={statName}>
+                        <Box
+                          className={`p-5 rounded-md shadow-md text-white ${gradient}`}
+                        >
+                          <Typography variant="h6" textTransform={"capitalize"}>
+                            {statName.replace(/_/g, " ")}
+                          </Typography>
+                          <Typography variant="subtitle2">
+                            Total # of {statName.replace(/_/g, " ")}
+                          </Typography>
+                          <Typography variant="h4">{statValue}</Typography>
+                        </Box>
+                      </Grid>
+                    );
+                  }
+                }
+                return renderedStats;
+              })()}
+              {/* </Grid> */}
+              <Grid item xs={12}>
+                <Grid container spacing={3}>
+                  {statGraphItems.map((item, index) => {
+                    if (
+                      (item.title === "Open Count" && !showOpenCount) ||
+                      (item.title === "Click Count" && !showClickCount) ||
+                      item.title === "Total" ||
+                      item.title === "Inprogress" ||
+                      item.title === "Not Interested" ||
+                      item.title === "Interested"
+                    ) {
+                      return null;
+                    }
+
+                    return (
+                      <Grid item md={4} sm={6} xs={12} key={index}>
+                        <Box className="border border-red-500 sm:p-5 p-3 rounded-md shadow-md">
+                          <Typography
+                            variant="h6"
+                            className="text-2xl font-semibold"
+                          >
+                            {item.title}
+                          </Typography>
+                          <Typography
+                            variant="subtitle2"
+                            className="text-base text-neutral-600"
+                          >
+                            {item.subtitle}
+                          </Typography>
+                          <CompaignCharts color={item.color} />
+                        </Box>
+                      </Grid>
+                    );
+                  })}
+                </Grid>
               </Grid>
-            );
-          })}
-        </Grid>
-      </Grid>
+            </>
+          ) : (
+            <Box className="w-4/5 mx-auto items-center flex flex-col gap-3 bg-white p-10">
+              <CircularProgress size={50} color="error" thickness={10} />
+              <Typography
+                variant=""
+                className="text-2xl font-semibold font-Poppins"
+              >
+                Please wait, Data is Loading...
+              </Typography>
+            </Box>
+          )}
+        </>
+      )}
 
       {/* Top Level */}
       <Grid item xs={12}>
@@ -351,61 +397,74 @@ const CompaignAnalytics = ({ menuCollapse }) => {
         </Box>
       </Grid>
       {/* Stats Section */}
-      {Object.keys(topLevelFilteredData).length > 0 ? (
-        (() => {
-          // Initialize an empty array to store the rendered elements
-          const renderedStats = [];
-
-          // Iterate over the topLevelFilteredData object using a for...in loop
-          for (const statName in topLevelFilteredData) {
-            if (topLevelFilteredData.hasOwnProperty(statName)) {
-              const statValue = topLevelFilteredData[statName];
-
-              // Conditionally render Open Count and Click Count based on toggles
-              if (
-                (statName === "open_count" && !showTopOpenCount) ||
-                (statName === "click_count" && !showTopClickCount) ||
-                statName === "_id"
-              ) {
-                continue; // Skip rendering if toggled off
-              }
-
-              // Create gradient index to style the box
-              const gradient =
-                gradients[renderedStats.length % gradients.length];
-
-              // Add the rendered element to the array
-              renderedStats.push(
-                <Grid item md={4} sm={6} xs={12} key={statName}>
-                  <Box
-                    className={`p-5 rounded-md shadow-md text-white ${gradient}`}
-                  >
-                    <Typography variant="h6" textTransform="capitalize">
-                      {statName.replace(/_/g, " ")}
-                    </Typography>
-                    <Typography variant="subtitle2">
-                      Total # of {statName.replace(/_/g, " ")}
-                    </Typography>
-                    <Typography variant="h4">{statValue}</Typography>
-                  </Box>
-                </Grid>
-              );
-            }
-          }
-
-          // Return the rendered elements
-          return renderedStats;
-        })()
-      ) : (
-        <Box className=" w-4/5 mx-auto items-center  flex flex-col gap-3 bg-white p-5">
+      {compaignFetch ? (
+        <Box className="w-4/5 mx-auto items-center flex flex-col gap-3 bg-white p-32">
           <CircularProgress size={50} color="error" thickness={10} />
           <Typography
             variant=""
             className="text-2xl font-semibold font-Poppins"
           >
-            Please wait Data is Loading......
+            Please wait, Data is Refreshing...
           </Typography>
-        </Box>  
+        </Box>
+      ) : (
+        <>
+          {Object.keys(topLevelFilteredData).length > 0 ? (
+            <>
+              {/* <Grid container spacing={3}> */}
+                {(() => {
+                  const renderedStats = [];
+                  for (const statName in topLevelFilteredData) {
+                    if (topLevelFilteredData.hasOwnProperty(statName)) {
+                      const statValue = topLevelFilteredData[statName];
+
+                      // Conditionally render Open Count and Click Count based on toggles
+                      if (
+                        (statName === "open_count" && !showTopOpenCount) ||
+                        (statName === "click_count" && !showTopClickCount) ||
+                        statName === "_id"
+                      ) {
+                        continue; // Skip rendering if toggled off
+                      }
+
+                      // Create gradient index to style the box
+                      const gradient =
+                        gradients[renderedStats.length % gradients.length];
+
+                      // Add the rendered element to the array
+                      renderedStats.push(
+                        <Grid item md={4} sm={6} xs={12} key={statName}>
+                          <Box
+                            className={`p-5 rounded-md shadow-md text-white ${gradient}`}
+                          >
+                            <Typography variant="h6" textTransform="capitalize">
+                              {statName.replace(/_/g, " ")}
+                            </Typography>
+                            <Typography variant="subtitle2">
+                              Total # of {statName.replace(/_/g, " ")}
+                            </Typography>
+                            <Typography variant="h4">{statValue}</Typography>
+                          </Box>
+                        </Grid>
+                      );
+                    }
+                  }
+                  return renderedStats;
+                })()}
+              {/* </Grid> */}
+            </>
+          ) : (
+            <Box className="w-4/5 mx-auto items-center flex flex-col gap-3 bg-white p-5">
+              <CircularProgress size={50} color="error" thickness={10} />
+              <Typography
+                variant=""
+                className="text-2xl font-semibold font-Poppins"
+              >
+                Please wait, Data is Loading...
+              </Typography>
+            </Box>
+          )}
+        </>
       )}
 
       {/* 

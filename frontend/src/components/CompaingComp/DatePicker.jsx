@@ -37,6 +37,7 @@ const DropdownCalendar = ({ startDate, endDate, onDateChange }) => {
   return (
     <div>
       <Button aria-describedby={id} variant="contained" onClick={handleClick}   sx={{
+        width: {md:'auto', xs:"100%"},
     background: "linear-gradient(to right, #FF4B2B, #FF416C)",
     color: "#fff",
     "&:hover": {
