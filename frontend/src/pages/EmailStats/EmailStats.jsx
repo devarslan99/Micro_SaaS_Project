@@ -18,12 +18,45 @@ const EmailStats = ({ menuCollapse }) => {
 
   const navigate = useNavigate();  
 
+  let token = localStorage.getItem("authToken");
+  let softwareToken = localStorage.getItem("softwareToken");
   useEffect(() => {
-    const token = localStorage.getItem("authToken");
     if (!token) {
       navigate("/"); // Redirect to /home if token exists
     }
   }, [navigate]);
+
+  const getEmailHealth = (reputationvalue) => {
+    if (reputationvalue >= 100) {
+      return "Excellent";
+    } else if (reputationvalue >= 98) {
+      return "Decent";
+    } else if (reputationvalue >= 96) {
+      return "OK";
+    } else if (reputationvalue >= 91) {
+      return "Bad";
+    } else {
+      return "Very Bad";
+    }
+  };
+  
+
+  const handleRefresh =async () => {
+    try {
+      const response = await axios.get(`http://localhost:5000/refresh/emails`, {
+        headers:{
+          Authorization: token,
+          softwareAuthorization: softwareToken,
+        }
+      });
+      if (response.status === 200) {
+        setClientData(response.data); // Set client data
+        console.log("Client email:", response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching client email:", error);
+    }
+  };
 
   useEffect(() => {
     const fetchClientEmail = async () => {
@@ -46,11 +79,16 @@ const EmailStats = ({ menuCollapse }) => {
       (client) => client.from_name === selectedClient
     );
 
-    const filtered = clientData
-      .filter((item) => item.from_name === selectedClientData?.from_name) // Filter by selected client's email
-      .filter(
-        (item) => emailHealth === "All" || item.email_health === emailHealth
-      );
+    const filtered = clientData.filter((item) => {
+      const matchesClient = item.from_name === selectedClientData?.from_name;
+
+      const reputationvalue = parseFloat(item.warmupReputation.replace("%", ""));
+      const generatedEmailHealth = getEmailHealth(reputationvalue);
+
+      const matchesHealth = emailHealth === "All" || generatedEmailHealth === emailHealth;
+
+      return matchesClient && matchesHealth;
+    });
 
     setFilteredData(filtered);
   };
@@ -151,7 +189,7 @@ const EmailStats = ({ menuCollapse }) => {
               <Button
                 variant="contained"
                 className="bg-gradient-to-r lg:w-auto w-[100%] from-[#FF4B2B] to-[#FF416C] text-white flex items-center gap-2"
-                onClick={handleFilter} // Refresh data on click
+                onClick={handleRefresh} // Refresh data on click
               >
                 Refresh <HiRefresh size={18} color="white" />
               </Button>
