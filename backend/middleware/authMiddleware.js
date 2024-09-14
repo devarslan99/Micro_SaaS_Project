@@ -36,6 +36,7 @@ const authMiddleware = async (req, res, next) => {
     );
       req.body.apiKey= softwareData.apiKey
       req.body.software = req.body.decodeSoftwareToken.software
+      console.log('SoftwareToken',softwareData);
     console.log('autheMiddleware.js:17 , Moving to Next Middleware');
     // next();
   } catch (err) {
