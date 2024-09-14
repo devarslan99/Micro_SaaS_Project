@@ -23,17 +23,18 @@ const EmailTable = ({ data, recovery, moderate, maxeffort, setData }) => {
     const token = localStorage.getItem("authToken");
     const softwareToken = localStorage.getItem("softwareToken");
 
+    let message_per_day;
+    if (field === "set_recovery") {
+      message_per_day = recovery;
+    } else if (field === "set_moderate") {
+      message_per_day = moderate;
+    } else if (field === "set_max_effort") {
+      message_per_day = maxeffort;
+    }
+
     // Find the current row data and update the msg_per_day based on the selected checkbox
     const updatedData = data.map((row) => {
       if (row._id === rowId) {
-        let message_per_day = row.message_per_day;
-        if (field === "set_recovery") {
-          message_per_day = recovery;
-        } else if (field === "set_moderate") {
-          message_per_day = moderate;
-        } else if (field === "set_max_effort") {
-          message_per_day = maxeffort;
-        }
 
         // Send the update request to the backend
         const updateData = async () => {
