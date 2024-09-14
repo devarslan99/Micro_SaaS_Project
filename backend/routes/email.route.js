@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const { emailUpdate } = require('../controllers/emailUpdate.controller.js')
-const { reconnetEmails }= require('../controllers/reconnectEmail.controller.js')
+const {reconnetEmails} = require('../controllers/reconnectEmail.controller.js')
 const { updateSetMaxDay } = require('../controllers/updateMaxDay');
 const authMiddleware = require('../middleware/authMiddleware.js');
 
@@ -27,7 +27,7 @@ try {
 
 
     // Log or return the results
-    console.log("Email List: ", emails);
+    // console.log("Email List: ", emails);
    res.status(200).json(emails)
 } catch (error) {
     console.error("Error fetching email list: ", error);

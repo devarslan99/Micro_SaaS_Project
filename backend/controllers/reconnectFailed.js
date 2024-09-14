@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 
-exports.reconnectEmails = async (req, res) => {
+exports.reconnectEmails = async function (req, res){
     const apiKey = req.body.apiKey; // Replace with your actual API key
   console.log(apiKey);
     const options = {
