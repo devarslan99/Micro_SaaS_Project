@@ -65,7 +65,6 @@ console.log(user);
 // Add API key for selected software
 exports.addApiKey = async (req, res) => {
   const { software, apiKey } = req.body;
-
   console.log("Sotfware Controller , addApiKey:Function :line 67-software-apiKey-->",software, apiKey);
   
 
