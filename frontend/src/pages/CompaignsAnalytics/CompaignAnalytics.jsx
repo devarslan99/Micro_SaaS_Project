@@ -5,6 +5,7 @@ import {
   MenuItem,
   Select,
   Typography,
+  CircularProgress,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { clientData, gradients, statGraphItems } from "../../data/mockData";
@@ -19,7 +20,7 @@ const CompaignAnalytics = ({ menuCollapse }) => {
   const [selectedClient, setSelectedClient] = useState(""); // Dropdown client selection
   const [selectedClientId, setSelectedClientId] = useState(null); // Dropdown client selection
   const [startDate, setStartDate] = useState(subDays(new Date(), 7));
-  const [endDate, setEndDate] =  useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
   const [showOpenCount, setShowOpenCount] = useState(false);
   const [showClickCount, setShowClickCount] = useState(false);
   const [showTopOpenCount, setShowTopOpenCount] = useState(false);
@@ -110,13 +111,12 @@ const CompaignAnalytics = ({ menuCollapse }) => {
     }
   };
 
-
   // Fetch data whenever the client or date changes
   useEffect(() => {
     if (selectedClient && startDate && endDate) {
       fetchDailyData();
     }
-  }, [selectedClient, endDate]); 
+  }, [selectedClient, endDate]);
 
   const fetchTopData = async () => {
     try {
@@ -275,11 +275,18 @@ const CompaignAnalytics = ({ menuCollapse }) => {
 
           // Return the rendered elements
           return renderedStats;
-        })() ) : (
-          <Typography variant="h4" color="textSecondary" textAlign={"center"} width={"100%"} padding={32}>
-            No data available to display.
+        })()
+      ) : (
+        <Box className=" w-4/5 mx-auto items-center  flex flex-col gap-3 bg-white p-10">
+          <CircularProgress size={50} color="error" thickness={10} />
+          <Typography
+            variant=""
+            className="text-2xl font-semibold font-Poppins"
+          >
+            Please wait Data is Loading......
           </Typography>
-        )}
+        </Box>
+      )}
 
       <Grid item xs={12}>
         <Grid container spacing={3}>
@@ -390,9 +397,15 @@ const CompaignAnalytics = ({ menuCollapse }) => {
           return renderedStats;
         })()
       ) : (
-        <Typography variant="h4" color="textSecondary" textAlign={"center"} width={"100%"} padding={32}>
-          No data available to display.
-        </Typography>
+        <Box className=" w-4/5 mx-auto items-center  flex flex-col gap-3 bg-white p-5">
+          <CircularProgress size={50} color="error" thickness={10} />
+          <Typography
+            variant=""
+            className="text-2xl font-semibold font-Poppins"
+          >
+            Please wait Data is Loading......
+          </Typography>
+        </Box>  
       )}
 
       {/* 

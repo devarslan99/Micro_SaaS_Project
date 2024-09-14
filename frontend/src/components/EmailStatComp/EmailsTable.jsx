@@ -184,7 +184,7 @@ const EmailTable = ({ data, recovery, moderate, maxeffort, setData }) => {
       width: 150,
       renderCell: ({ row }) => (
         <CustomCheckBtn
-          checked={row.message_per_day == recovery} // Check if message_per_day matches the recovery value
+          checked={row.message_per_day == 1} // Check if message_per_day matches the recovery value
           onChange={() => handleCheckboxChange(row._id, "set_recovery")}
         />
       ),
@@ -196,7 +196,7 @@ const EmailTable = ({ data, recovery, moderate, maxeffort, setData }) => {
       width: 150,
       renderCell: ({ row }) => (
         <CustomCheckBtn
-          checked={row.message_per_day == moderate} // Check if message_per_day matches the moderate value
+          checked={row.message_per_day >= 2 && row.message_per_day <= 8} // Check if message_per_day matches the moderate value
           onChange={() => handleCheckboxChange(row._id, "set_moderate")}
         />
       ),
@@ -208,7 +208,7 @@ const EmailTable = ({ data, recovery, moderate, maxeffort, setData }) => {
       width: 150,
       renderCell: ({ row }) => (
         <CustomCheckBtn
-          checked={row.message_per_day == maxeffort} // Check if message_per_day matches the maxeffort value
+          checked={row.message_per_day >= 9 && row.message_per_day <= 20} // Check if message_per_day matches the maxeffort value
           onChange={() => handleCheckboxChange(row._id, "set_max_effort")}
         />
       ),
