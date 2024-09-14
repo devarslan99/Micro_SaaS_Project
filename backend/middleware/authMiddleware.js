@@ -16,7 +16,10 @@ const authMiddleware = async (req, res, next) => {
   console.log("autheMiddleware.js:7",token);
   const decoded = jwt.verify(token, config.JWT_SECRET);
   console.log('autheMiddleware.js:16-decoded-->',decoded);
+  const decodeSoftwareToken = jwt.verify(SoftwareToken, config.JWT_SECRET);
+  console.log('autheMiddleware.js:29-Softwaredecoded-->',decodeSoftwareToken);
   req.body.user = decoded.user;
+  req.body.software = req.body.decodeSoftwareToken.software
     console.log('autheMiddleware.js:17 , Moving to Next Middleware');
     next();
   }
