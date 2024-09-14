@@ -4,8 +4,9 @@ const User = require('../models/User');
 
 const authMiddleware = async (req, res, next) => {
   const token = req.header('Authorization');
-  const software = req.body.software;
-  console.log('Software Name',software);
+  const SoftwareToken = req.header('SoftwareAuthorization');
+  // const software = req.body.software;
+  console.log('Software Token',SoftwareToken);
   console.log('Api Key',req.body.apiKey);
   
   if (!token) {
@@ -24,11 +25,14 @@ const authMiddleware = async (req, res, next) => {
     const decoded = jwt.verify(token, config.JWT_SECRET);
     console.log('autheMiddleware.js:16-decoded-->',decoded);
     req.body.user = decoded.user;
+    const decodeSoftwareToken = jwt.verify(token, config.JWT_SECRET);
+    console.log('autheMiddleware.js:29-Softwaredecoded-->',decodeSoftwareToken);
     const user = await User.findById(req.body.user.id);
     const softwareData =user.softwareKeys.find(
-      (item) => item.software === software
+      (item) => item.software === decodeSoftwareToken.software
     );
       req.body.apiKey= softwareData.apiKey
+      req.body.software = req.body.decodeSoftwareToken.software
     console.log('autheMiddleware.js:17 , Moving to Next Middleware');
     // next();
   } catch (err) {
