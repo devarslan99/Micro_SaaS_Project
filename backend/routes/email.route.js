@@ -37,7 +37,7 @@ try {
 })
 
 router.post('/update-email',emailUpdate)
-router.post('/reconnect',reconnetEmails)
+router.post('/reconnect',authMiddleware,reconnetEmails)
 router.post('/max-day',authMiddleware,updateSetMaxDay);
 
 module.exports = router;
