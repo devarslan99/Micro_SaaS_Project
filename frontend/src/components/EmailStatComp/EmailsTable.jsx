@@ -6,29 +6,67 @@ import {
   Typography,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import React from "react";
+import React, { useContext } from "react";
 import { clientData, email_stats } from "../../data/mockData";
 import CustomCheckBtn from "./CustomCheckBtn";
+import axios from "axios";
+import { MyContext } from "../../hook/Provider";
 //   import './table.css'
 
 const EmailTable = ({ data, recovery, moderate, maxeffort, setData }) => {
-  console.log("Table Data",data);
-  
-  const handleCheckboxChange = (rowId, field) => {
+  console.log("Table Data", data);
+  // const { softwareName } = useContext(MyContext);
+
+  // console.log(softwareName);
+
+  const handleCheckboxChange = async (rowId, field) => {  
+    const token = localStorage.getItem("authToken");
+    const softwareToken = localStorage.getItem("softwareToken");
+
     // Find the current row data and update the msg_per_day based on the selected checkbox
     const updatedData = data.map((row) => {
       if (row._id === rowId) {
+        let message_per_day = row.message_per_day;
         if (field === "set_recovery") {
-          return { ...row, message_per_day: recovery };
+          message_per_day = recovery;
         } else if (field === "set_moderate") {
-          return { ...row, message_per_day: moderate };
+          message_per_day = moderate;
         } else if (field === "set_max_effort") {
-          return { ...row, message_per_day: maxeffort };
+          message_per_day = maxeffort;
         }
+
+        // Send the update request to the backend
+        const updateData = async () => {
+          try {
+            const response = await axios.post(
+              `http://localhost:5000/api/email/max-day`,
+              {
+                email_account_id: row.email_account_id, // Use email account ID (row._id)
+                max_email_per_day: message_per_day, // Send the new message_per_day value
+              },
+              {
+                headers: {
+                  Authorization: token, // Pass the auth token in headers
+                  softwareAuthorization: softwareToken, // Pass the software token in headers
+                },
+              }
+            );
+            if (response.status === 200) {
+              console.log("Update successful:", response.data);
+            }
+          } catch (error) {
+            console.error("Error updating message per day:", error);
+          }
+        };
+
+        updateData(); // Call the function to update the backend
+
+        return { ...row, message_per_day }; // Update the row in the local state
       }
-      return row; 
+      return row;
     });
-    // Update the data state
+
+    // Update the data state locally
     setData(updatedData);
   };
 
@@ -36,12 +74,12 @@ const EmailTable = ({ data, recovery, moderate, maxeffort, setData }) => {
     {
       field: "from_email",
       headerName: "Emails",
-      headerClassName: "super-app-theme-header",  
-      headerAlign: 'center',
+      headerClassName: "super-app-theme-header",
+      headerAlign: "center",
       width: 190,
     },
     {
-      field: 'warmupStatus',
+      field: "warmupStatus",
       headerName: "Warmup Status",
       headerClassName: "super-app-theme-header",
       width: 150,
@@ -52,8 +90,10 @@ const EmailTable = ({ data, recovery, moderate, maxeffort, setData }) => {
       headerClassName: "super-app-theme-header",
       width: 150,
       renderCell: ({ row }) => {
-        const reputationvalue = parseFloat(row.warmupReputation.replace('%', ''));
-        
+        const reputationvalue = parseFloat(
+          row.warmupReputation.replace("%", "")
+        );
+
         // Set the email health based on the reputation value
         if (reputationvalue >= 100) {
           return "Excellent";
@@ -68,39 +108,41 @@ const EmailTable = ({ data, recovery, moderate, maxeffort, setData }) => {
         }
       },
     },
-      {
-        field: "warmup_reputation_bar",
-        headerName: "Warmup Reputation Bar",
-        headerClassName: "super-app-theme-header",
-        width: 200,
-        renderCell: ({ row }) => {
-          const reputationvalue = parseFloat(row.warmupReputation.replace('%', ''));
-          return (
-            <Box width="100%" className="mt-5">
-              <LinearProgress
-                variant="determinate"
-                value={reputationvalue}
-                sx={{
-                  height: 10,
-                  borderRadius: 5,
-                  "& .MuiLinearProgress-bar": {
-                    backgroundColor:
-                      reputationvalue >= 100
-                        ? "#28A745"
-                        : reputationvalue >= 98
-                        ? "#007BFF"
-                        : reputationvalue >= 96
-                        ? "#FFC107"
-                        : reputationvalue >= 91
-                        ? "#FD7E14"
-                        : "#DC3545",
-                  },
-                }}
-              />
-            </Box>
-          );
-        },
+    {
+      field: "warmup_reputation_bar",
+      headerName: "Warmup Reputation Bar",
+      headerClassName: "super-app-theme-header",
+      width: 200,
+      renderCell: ({ row }) => {
+        const reputationvalue = parseFloat(
+          row.warmupReputation.replace("%", "")
+        );
+        return (
+          <Box width="100%" className="mt-5">
+            <LinearProgress
+              variant="determinate"
+              value={reputationvalue}
+              sx={{
+                height: 10,
+                borderRadius: 5,
+                "& .MuiLinearProgress-bar": {
+                  backgroundColor:
+                    reputationvalue >= 100
+                      ? "#28A745"
+                      : reputationvalue >= 98
+                      ? "#007BFF"
+                      : reputationvalue >= 96
+                      ? "#FFC107"
+                      : reputationvalue >= 91
+                      ? "#FD7E14"
+                      : "#DC3545",
+                },
+              }}
+            />
+          </Box>
+        );
       },
+    },
     {
       field: "warmupReputation",
       headerName: "Warmup Reputation %",

@@ -36,10 +36,10 @@ const CompaignAnalytics = ({ menuCollapse }) => {
         const softwareToken = localStorage.getItem("softwareToken");
         console.log(softwareToken);
 
-        if (!softwareToken) {
-          navigate("/home"); // Redirect if no authToken or softwareToken found
-          return;
-        }
+        // if (!softwareToken) {
+        //   navigate("/home"); // Redirect if no authToken or softwareToken found
+        //   return;
+        // }
 
         const response = await axios.get("http://localhost:5000/clients", {
           headers: {
@@ -228,7 +228,7 @@ const CompaignAnalytics = ({ menuCollapse }) => {
         </Box>
       </Grid>
       {/* Stats Section */}
-      {Object.keys(dailyFilteredData).length > 0 &&
+      {Object.keys(dailyFilteredData).length > 0 ? (
         (() => {
           // Initialize an empty array to store the rendered elements
           const renderedStats = [];
@@ -275,7 +275,11 @@ const CompaignAnalytics = ({ menuCollapse }) => {
 
           // Return the rendered elements
           return renderedStats;
-        })()}
+        })() ) : (
+          <Typography variant="h4" color="textSecondary" textAlign={"center"} width={"100%"} padding={32}>
+            No data available to display.
+          </Typography>
+        )}
 
       <Grid item xs={12}>
         <Grid container spacing={3}>
@@ -386,7 +390,7 @@ const CompaignAnalytics = ({ menuCollapse }) => {
           return renderedStats;
         })()
       ) : (
-        <Typography variant="h6" color="textSecondary">
+        <Typography variant="h4" color="textSecondary" textAlign={"center"} width={"100%"} padding={32}>
           No data available to display.
         </Typography>
       )}

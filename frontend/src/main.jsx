@@ -5,9 +5,9 @@ import "./index.css";
 import { MyProvider } from "./hook/Provider.jsx";
 
 createRoot(document.getElementById("root")).render(
-  <MyProvider>
-    <StrictMode>
+  <StrictMode>
+      <MyProvider>
       <App />
+  </MyProvider>   
     </StrictMode>
-  </MyProvider>  
 );

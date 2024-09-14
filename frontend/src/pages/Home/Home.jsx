@@ -12,8 +12,9 @@ import {
   CircularProgress,
 } from "@mui/material";
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { MyContext } from "../../hook/Provider";
 
 const Home = ({ menuCollapse }) => {
   const [selectedOption, setSelectedOption] = useState("");
@@ -24,6 +25,7 @@ const Home = ({ menuCollapse }) => {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
   const [loading, setLoading] = useState(false); // Loader state
+  const {setSoftwareName} = useContext(MyContext)
 
   const navigate = useNavigate();
 
@@ -80,6 +82,7 @@ const Home = ({ menuCollapse }) => {
         setSnackbarOpen(true);
         if (response.data?.software) {
           setSelectedOption(response.data.software);
+          setSoftwareName(response.data.software)
         }
 
         const token = response.data.softwareToken;
