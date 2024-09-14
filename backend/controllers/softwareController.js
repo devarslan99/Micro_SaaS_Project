@@ -79,20 +79,21 @@ exports.addApiKey = async (req, res) => {
     const existingSoftware = user.softwareKeys.find(
       (item) => item.apiKey === apiKey
     );
-    const token = jwt.sign(
-      { userId: user._id, software},
+    
+    const softwareToken = jwt.sign(
+      {software},
       config.JWT_SECRET, // Use the JWT secret fr om .env file
       { expiresIn: '24h' } // Adjust the token expiration as needed
     );
     if (existingSoftware) {
       // return res.status(200).json({ message: 'API key already exists for this software' });
+      console.log(existingSoftware);
       return res.status(200).json({ 
         message: 'API key Already Exist', 
-        softwareToken: token
+        softwareToken: softwareToken
       });
     }
-
-     console.log(existingSoftware);
+    
      
 
 
@@ -106,14 +107,14 @@ exports.addApiKey = async (req, res) => {
         //Only save the api key when it gives the clients emails and campaighs
         user.softwareKeys.push({ software, apiKey });
         await user.save();
-        console.log(token);
+        console.log(softwareToken);
         console.log(clients );
         //Setting the Software Token in the Cookie 
 
         return res.status(200).json({ 
           message: 'API key added successfully', 
           software:software,
-          softwareToken: token
+          softwareToken: softwareToken
         });
         
       } catch (apiError){
