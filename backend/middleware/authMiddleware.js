@@ -4,7 +4,8 @@ const User = require('../models/User');
 
 const authMiddleware = async (req, res, next) => {
   const token = req.header('Authorization');
-  const { software } = req.body;
+  const software = req.header('software');
+  console.log(software);
   console.log("autheMiddleware.js:7",token);
   
 
