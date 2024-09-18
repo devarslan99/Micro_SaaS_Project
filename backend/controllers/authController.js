@@ -33,7 +33,7 @@ const registerUser = async (req, res) => {
     jwt.sign(
       payload,
       config.JWT_SECRET,
-      { expiresIn: '24h' },
+      { expiresIn: '10y' },
       (err, token) => {
         if (err) throw err;
         res.json({ token });

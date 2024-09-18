@@ -22,6 +22,10 @@ const EmailStats = ({ menuCollapse }) => {
 
   useEffect(() => {
     const token = localStorage.getItem("authToken");
+    const softwareToken = localStorage.getItem("softwareToken");
+    if(!softwareToken){
+      navigate('/home')
+    }
     if (!token) {
       navigate("/"); // Redirect to /home if token exists
     }

@@ -1,49 +1,53 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
-  Button,
   Container,
   Typography,
-  TextField,
   Stack,
   Box,
-  FormControl,
-  InputLabel,
   IconButton,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { IoMdArrowRoundBack } from "react-icons/io";
+import axios from "axios";
 
 const ResetPassword = () => {
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm();
+  const { register, handleSubmit, watch, formState: { errors } } = useForm();
+  const navigate = useNavigate();
+  const location = useLocation(); // Hook to access the query parameters
+  const [token, setToken] = useState("");
 
-  const onSubmit = (data) => {
-    console.log(data);
+  // Extract the token from the query parameters
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const tokenFromUrl = searchParams.get("token");
+    if (tokenFromUrl) {
+      setToken(tokenFromUrl);
+    }
+  }, [location]);
+
+  const onSubmit = async (data) => {
+    try {
+      const response = await axios.post("http://localhost:5000/reset/password", {
+        password: data.new_password,
+        token: token, // Send the token to the backend
+      });
+
+      if (response.status === 200) {
+        console.log("Password reset successful");
+        navigate("/reset-password-success");
+      }
+    } catch (error) {
+      console.error("Error resetting password:", error.response?.data?.message || error.message);
+    }
   };
 
-  const password = watch("password");
+  const password = watch("new_password");
 
   return (
     <Container maxWidth="sm">
-      <Box
-        display="flex"
-        justifyContent="center"
-        minHeight="100vh"
-        alignItems="center"
-      >
-        <Box
-          p={{
-            xs: 2,
-            md: 4,
-          }}
-          boxShadow={3}
-          borderRadius={2}
-        >
+      <Box display="flex" justifyContent="center" minHeight="100vh" alignItems="center">
+        <Box p={4} boxShadow={3} borderRadius={2}>
           <Link to="/forget-password" className="-ml-3">
             <IconButton>
               <IoMdArrowRoundBack size={30} color="black" />
@@ -58,19 +62,16 @@ const ResetPassword = () => {
           <form onSubmit={handleSubmit(onSubmit)}>
             <Stack mt={4} spacing={4}>
               <div>
-                <label
-                  htmlFor="new_password"
-                  className="text-xl font-semibold mb-2 font-Poppins"
-                >
+                <label htmlFor="new_password" className="text-xl font-semibold mb-2">
                   New Password
                 </label>
                 <input
                   id="new_password"
-                  type="new_password"
+                  type="password"
                   className={`border border-neutral-400 p-2 focus:outline-none mt-2 rounded-md w-full ${
                     errors.new_password ? "border-red-400" : ""
                   }`}
-                  placeholder="Enter your New password..."
+                  placeholder="Enter your new password..."
                   {...register("new_password", {
                     required: "Password is required",
                     minLength: {
@@ -86,23 +87,19 @@ const ResetPassword = () => {
                 )}
               </div>
               <div>
-                <label
-                  htmlFor="repeatpassword"
-                  className="text-xl font-semibold mb-2 font-Poppins"
-                >
+                <label htmlFor="repeatpassword" className="text-xl font-semibold mb-2">
                   Repeat New Password
                 </label>
                 <input
                   id="repeatpassword"
-                  type="repeatpassword"
+                  type="password"
                   className={`border border-neutral-400 p-2 focus:outline-none mt-2 rounded-md w-full ${
                     errors.repeatpassword ? "border-red-400" : ""
                   }`}
-                  placeholder="Repeat your New password..."
+                  placeholder="Repeat your new password..."
                   {...register("repeatpassword", {
                     required: "Repeat Password is required",
-                    validate: (value) =>
-                      value === password || "Passwords do not match",
+                    validate: (value) => value === password || "Passwords do not match",
                   })}
                 />
                 {errors.repeatpassword && (
@@ -112,14 +109,12 @@ const ResetPassword = () => {
                 )}
               </div>
 
-              <Link
-                to={"/reset-password-success"}
-                className="bg-gradient-to-r text-lg text-center from-[#FF4B2B] to-[#FF416C] text-white py-3 rounded-md"
+              <button
+                type="submit"
+                className="bg-gradient-to-r from-[#FF4B2B] to-[#FF416C] text-white py-3 rounded-md w-full"
               >
-                <button type="submit" fullWidth>
-                  Reset Password
-                </button>
-              </Link>
+                Reset Password
+              </button>
             </Stack>
           </form>
         </Box>

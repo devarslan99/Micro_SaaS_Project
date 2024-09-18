@@ -1,24 +1,50 @@
-import React from "react";
+import React, { useState } from "react";
+import axios from "axios";
 import {
   Container,
   Typography,
   IconButton,
   Stack,
   Box,
+  CircularProgress,
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import { IoMdArrowRoundBack } from "react-icons/io";
-import { useForm } from "react-hook-form";
 
 const ForgotPassword = () => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false); // Loader state
 
-  const onSubmit = (data) => {
-    console.log(data);
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+  };
+
+  const handleResetPassword = async () => {
+    if (!email) {
+      setError("Email is required");
+    } else if (
+      !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)
+    ) {
+      setError("Invalid email address");
+    } else {
+      setError("");
+      setLoading(true); // Start loader
+      try {
+        const response = await axios.post(`http://localhost:5000/reset/mail`, {
+          email: email,
+        });
+        if (response.status === 200) {
+          setSuccess(true);
+        }
+      } catch (error) {
+        console.log(error);
+        setError("Failed to send reset email. Try again.");
+      } finally {
+        setLoading(false); // Stop loader after request completes
+      }
+    }
   };
 
   return (
@@ -44,20 +70,41 @@ const ForgotPassword = () => {
               </IconButton>
             </Link>
             <Typography
-              variant=""
-              className="text-3xl text-neutral-800 font-Poppins font-semibold"
+              variant="h4"
+              className="text-neutral-800 font-Poppins font-semibold"
             >
               Forgot Password
             </Typography>
             <Typography
-              variant=""
+              variant="body1"
               className="text-base text-neutral-500 font-Poppins"
             >
               Enter your email address for the account you want to reset the
               password for.
             </Typography>
           </Box>
-          <form onSubmit={handleSubmit(onSubmit)}>
+
+          {loading ? (
+            // Show loader while loading
+            <Box display="flex" justifyContent="center" mt={3}>
+              <CircularProgress />
+            </Box>
+          ) : success ? (
+            // If success is true, show success message
+            <Typography
+              variant="h6"
+              align="center"
+              style={{
+                color: "#4CAF50",
+                marginTop: "20px",
+                fontFamily: "Poppins, sans-serif",
+                fontWeight: "bold",
+              }}
+            >
+              Email sent to your account successfully! Kindly reset your password
+              from the email.
+            </Typography>
+          ) : (
             <Stack mt={2} spacing={3}>
               <div>
                 <label
@@ -70,34 +117,27 @@ const ForgotPassword = () => {
                   id="email"
                   type="email"
                   className={`border border-neutral-400 p-2 focus:outline-none mt-2 rounded-md w-full ${
-                    errors.email ? "border-red-400" : ""
+                    error ? "border-red-400" : ""
                   }`}
                   placeholder="Enter your email..."
-                  {...register("email", {
-                    required: "Email is required",
-                    pattern: {
-                      value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-                      message: "Invalid email address",
-                    },
-                  })}
+                  value={email}
+                  onChange={handleEmailChange}
                 />
-                {errors.email && (
-                  <span className="text-red-500 text-sm">
-                    {errors.email.message}
-                  </span>
+                {error && (
+                  <span className="text-red-500 text-sm">{error}</span>
                 )}
               </div>
-              <Link to={'/reset-password'} className="bg-gradient-to-r text-lg text-center from-[#FF4B2B] to-[#FF416C] text-white py-3 rounded-md">
-              <button
-                
-                type="submit"
-                fullWidth
+              <Link className="bg-gradient-to-r text-lg text-center from-[#FF4B2B] to-[#FF416C] text-white py-3 rounded-md">
+                <button
+                  type="button"
+                  onClick={handleResetPassword}
+                  className="w-full"
                 >
-                Reset Password
-              </button>
-                  </Link>
+                  Reset Password
+                </button>
+              </Link>
             </Stack>
-          </form>
+          )}
         </Box>
       </Box>
     </Container>

@@ -1,17 +1,29 @@
 const User = require('../models/User.js');
 const bcryptjs = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const config = require('../config.json')
 
 exports.resetPassword = function (req, res) {
-  const email = req.body.email;
+  const token = req.body.token;
   const password = req.body.password;
 
   // Validate input
-  if (!email || !password) {
-    return res.status(400).json({ message: 'Email and password are required' });
+  if (!token || !password) {
+    return res.status(400).json({ message: 'Token and password are required' });
   }
 
+  // Verify the token
+  let decoded;
+  try {
+    decoded = jwt.verify(token, config.JWT_SECRET); // Replace with your JWT secret
+  } catch (error) {
+    return res.status(400).json({ message: 'Invalid or expired token' });
+  }
+
+  const userId = decoded.userId;
+
   // Check if user exists
-  User.findOne({ email: email })
+  User.findById(userId)
     .then(function (user) {
       if (!user) {
         return res.status(404).json({ message: 'User not found' });

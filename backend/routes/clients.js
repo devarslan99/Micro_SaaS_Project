@@ -3,6 +3,8 @@ const jwt = require('jsonwebtoken');
 const config = require('../config.json');
 const express = require('express')
 const router = express.Router()
+const {saveUserSelectedClients} = require('../controllers/saveSelectedUser.controller.js');
+const authMiddleware = require('../middleware/authMiddleware.js');
 
 router.get('/clients', async (req, res) => {
   const softwareToken = req.header('softwareToken');
@@ -33,7 +35,7 @@ router.get('/clients', async (req, res) => {
       res.status(500).json({ message: 'Failed to fetch clients', error: err.message });
     }
   });
-
+router.post('/save-client-data',authMiddleware,saveUserSelectedClients)
 
   module.exports = router;
 

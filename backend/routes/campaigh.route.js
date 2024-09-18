@@ -5,16 +5,21 @@ const {dailyCompaighs} = require('../controllers/dailyCompain.controller')
 
 router.get('/top-level-stats',async (req , res)=>{
 
-const clientId = req.header("clientId")
 console.log('Request Recieved to /top-level-stats');
-console.log(clientId);
+let dbClientId=null
+const clientId = null
+//  req.header("clientId")
+if(clientId!=null){
+    dbClientId = Number(clientId)
+}
+console.log(typeof clientId);
 
 try {
     const result = await TopLevelStats.aggregate([
         // Stage 1: Match documents with a specific client_id
         {
             $match: {
-                client_id: Number(clientId)
+                client_id: dbClientId
             }
         },
         // Stage 2: Group and calculate the sum of the required fields

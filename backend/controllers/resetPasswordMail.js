@@ -27,7 +27,7 @@ exports.sendPasswordResetEmail = function (req, res) {
       );
 
       // Create a URL with the token that redirects to your frontend
-      const resetUrl = `http://localhost:5173/reset-password/${token}`;
+      const resetUrl = `http://localhost:5173/reset-password/?token=${token}`;
 
       // Set up the email transporter (use Gmail or any SMTP service)
       const transporter = nodemailer.createTransport({

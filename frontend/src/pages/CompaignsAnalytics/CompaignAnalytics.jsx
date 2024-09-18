@@ -35,7 +35,12 @@ const CompaignAnalytics = ({ menuCollapse }) => {
 
   const handleRefresh = async () => {
     const token = localStorage.getItem("authToken");
-    const softwareToken = localStorage.getItem("softwareToken");
+    useEffect(() => {
+      const softwareToken = localStorage.getItem("softwareToken");
+      if(!softwareToken){
+        navigate('/home')
+      }
+    }, [navigate]);
     try {
       setCompaignFetch(true);
       const response = await axios.get(
@@ -59,18 +64,15 @@ const CompaignAnalytics = ({ menuCollapse }) => {
   useEffect(() => {
     const fetchClients = async () => {
       try {
-        // const token = localStorage.getItem("authToken");
         const softwareToken = localStorage.getItem("softwareToken");
-        console.log(softwareToken);
 
-        // if (!softwareToken) {
-        //   navigate("/home"); // Redirect if no authToken or softwareToken found
-        //   return;
-        // }
+        if (!softwareToken) {
+          navigate("/home"); // Redirect if no softwareToken found
+          return;
+        }
 
         const response = await axios.get("http://localhost:5000/clients", {
           headers: {
-            // "Authorization": `${token}`,
             softwareToken: `${softwareToken}`,
           },
         });
@@ -95,9 +97,10 @@ const CompaignAnalytics = ({ menuCollapse }) => {
   useEffect(() => {
     const token = localStorage.getItem("authToken");
     if (!token) {
-      navigate("/"); // Redirect to /home if token exists
+      navigate("/"); // Redirect to / if authToken is not present
     }
-  }, []);
+  }, [navigate]);
+
 
   const handleDateChange = ({ startDate, endDate }) => {
     setStartDate(startDate);

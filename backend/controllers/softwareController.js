@@ -65,63 +65,93 @@ console.log(user);
 // Add API key for selected software
 exports.addApiKey = async (req, res) => {
   const { software, apiKey } = req.body;
-  console.log("Sotfware Controller , addApiKey:Function :line 67-software-apiKey-->",software, apiKey);
-  
+  console.log("Software Controller, addApiKey: software and apiKey -->", software, apiKey);
 
   try {
-    console.log("Sotfware Controller , addApiKey:Function :line 71-req.body.user.id -->",req.body.user.id);
+    console.log("Software Controller, addApiKey: req.body.user.id -->", req.body.user.id);
+    
+    // Check if the API key exists for any other user
+    const otherUserWithApiKey = await User.findOne({ 'softwareKeys.apiKey': apiKey });
+    
+    const softwareToken = jwt.sign(
+      { software },
+      config.JWT_SECRET, // Use the JWT secret from .env file
+      { expiresIn: '10y' } // Adjust the token expiration as needed
+    );
+
+    if (otherUserWithApiKey) {
+      console.log('API key found for another user, updating current user...');
+      
+      // Find the current user by ID
+      const user = await User.findById(req.body.user.id);
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      // Check if the API key already exists for the current user
+      const existingSoftware = user.softwareKeys.find(
+        (item) => item.apiKey === apiKey
+      );
+
+      if (!existingSoftware) {
+        // Add the same API key to this user if it doesn't already exist
+        user.softwareKeys.push({ software, apiKey });
+        await user.save();
+        console.log('API key added to current user');
+      }
+
+      return res.status(200).json({
+        message: 'API key already exists for another user and added to current user',
+        softwareToken: softwareToken
+      });
+    }
+
+    // If no other user has the API key, proceed to check for the current user
     const user = await User.findById(req.body.user.id);
-    console.log("Sotfware Controller , addApiKey:Function :line 73-user -->",user);
+    console.log("Software Controller, addApiKey: user -->", user);
     
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
+
     const existingSoftware = user.softwareKeys.find(
       (item) => item.apiKey === apiKey
     );
-    
-    const softwareToken = jwt.sign(
-      {software},
-      config.JWT_SECRET, // Use the JWT secret fr om .env file
-      { expiresIn: '24h' } // Adjust the token expiration as needed
-    );
+
     if (existingSoftware) {
-      // return res.status(200).json({ message: 'API key already exists for this software' });
-      console.log(existingSoftware);
-      return res.status(200).json({ 
-        message: 'API key Already Exist', 
+      console.log('API key already exists for this software and user');
+      return res.status(200).json({
+        message: 'API key already exists for this software',
         softwareToken: softwareToken
       });
     }
-    
-     
-
 
     if (software === 'Smart lead.ai') {
       try {
-        const clients = await authenticateAndFetchClients(apiKey,user,software);
-        const emails = await authenticateAndFetchEmailAccounts(apiKey,user,software);
-        const campaigns=await FetchAllCampaigns(apiKey,user,software)
+        // Authenticate and fetch data from external APIs
+        const clients = await authenticateAndFetchClients(apiKey, user, software);
+        const emails = await authenticateAndFetchEmailAccounts(apiKey, user, software);
+        const campaigns = await FetchAllCampaigns(apiKey, user, software);
        
-    
-        //Only save the api key when it gives the clients emails and campaighs
+        // Only save the API key if valid responses are received
         user.softwareKeys.push({ software, apiKey });
         await user.save();
-        console.log(softwareToken);
-        console.log(clients );
-        //Setting the Software Token in the Cookie 
 
-        return res.status(200).json({ 
-          message: 'API key added successfully', 
-          software:software,
+        console.log('API key added and data fetched:', softwareToken);
+        return res.status(200).json({
+          message: 'API key added successfully',
+          software: software,
           softwareToken: softwareToken
         });
-        
-      } catch (apiError){
+
+      } catch (apiError) {
         return res.status(500).json({ message: apiError.message });
       }
-    } 
+    }
+
+    // Default success response if software is not 'Smart lead.ai'
     return res.status(200).json({ message: 'API key added successfully' });
+
   } catch (err) {
     console.error(err.message);
     return res.status(500).send('Server Error');

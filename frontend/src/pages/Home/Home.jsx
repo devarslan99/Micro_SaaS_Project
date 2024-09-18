@@ -10,11 +10,14 @@ import {
   Snackbar,
   Alert,
   CircularProgress,
+  Checkbox,
+  FormControlLabel,
 } from "@mui/material";
 import axios from "axios";
-import React, { useContext, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { MyContext } from "../../hook/Provider";
+import ClientSelectionModal from "../../components/HomeComp/ClientSelectionModel";
+import ClientDetailsModal from "../../components/HomeComp/ClientDetailModel";
 
 const Home = ({ menuCollapse }) => {
   const [openModal, setOpenModal] = useState(false);
@@ -23,14 +26,24 @@ const Home = ({ menuCollapse }) => {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
   const [loading, setLoading] = useState(false); // Loader state
-  const {
-    selectedOption,
-    setSelectedOption,
-    isAccountImported,
-    setIsAccountImported,
-  } = useContext(MyContext);
-
+  const [selectedOption, setSelectedOption] = useState("");
+  const [isAccountImported, setIsAccountImported] = useState(false);
+  const [softwareName, setSoftwareName] = useState(""); // New state for software name
+  const [clients, setClients] = useState([]); // State for clients
+  const [selectedClients, setSelectedClients] = useState([]); // State for selected clients
+  const [clientModalOpen, setClientModalOpen] = useState(false); // State for client selection modal
+  const [clientDetailsModalOpen , setClientDetailsModalOpen] = useState(false)
+ 
   const navigate = useNavigate();
+
+  // Check for softwareToken in localStorage on component mount
+  useEffect(() => {
+    const token = localStorage.getItem("softwareToken");
+    if (token) {
+      setSoftwareName("Smart lead.ai"); // Placeholder, adjust as needed
+      setIsAccountImported(true); // Set to true since token is present
+    }
+  }, []);
 
   const handleSelectChange = (event) => {
     setSelectedOption(event.target.value);
@@ -83,14 +96,18 @@ const Home = ({ menuCollapse }) => {
         setSnackbarMessage("API Key added successfully!");
         setSnackbarSeverity("success");
         setSnackbarOpen(true);
+
         if (response.data?.software) {
           setSelectedOption(response.data.software);
+          setSoftwareName(response.data.software); // Set the software name
         }
 
         const token = response.data.softwareToken;
         if (token) {
           localStorage.setItem("softwareToken", token);
-          navigate("/compaigns");
+
+          // Fetch clients after secret key validation
+          await fetchClients(token); // Wait for the clients to be fetched
         }
       } else {
         setSnackbarMessage("Failed to send data.");
@@ -107,21 +124,117 @@ const Home = ({ menuCollapse }) => {
     }
   };
 
-  const handleImportAccount = () => {
-    setIsAccountImported(true);
+  const fetchClients = async (softwareToken) => {
+    try {
+      const response = await axios.get("http://localhost:5000/clients", {
+        headers: {
+          softwareToken: `${softwareToken}`, // Use the softwareToken as per your request
+        },
+      });
+
+      if (response.status === 200) {
+        // Map _id to clientId
+        const clientsWithClientId = response.data.map(client => ({
+          clientId: client.clientId,
+          name: client.name
+        }));
+        setClients(clientsWithClientId);
+        setClientModalOpen(true); // Open the client selection modal after data is fetched
+      } else {
+        setSnackbarMessage("Failed to fetch clients.");
+        setSnackbarSeverity("error");
+        setSnackbarOpen(true);
+      }
+    } catch (error) {
+      setSnackbarMessage("Error fetching clients.");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+    }
   };
+
+  const handleClientSelection = (clientId, clientName) => {
+    setSelectedClients((prevSelected) => {
+      const isSelected = prevSelected.some((client) => client.clientId === clientId);
+
+      if (isSelected) {
+        // Remove client if already selected
+        return prevSelected.filter((client) => client.clientId !== clientId);
+      } else {
+        // Add client if not selected
+        return [...prevSelected, { clientId, name: clientName }];
+      }
+    });
+  };
+
+  const handleNext = async () => {
+    console.log(selectedClients);
+    // try {
+    //   await axios.post(
+    //     "http://localhost:5000/api/save-selected-clients",
+    //     { selectedClients },
+    //     {
+    //       headers: {
+    //         "Content-Type": "application/json",
+    //         Authorization: `${localStorage.getItem("authToken")}`,
+    //       },
+    //     }
+    //   );
+
+      setClientModalOpen(false);
+      setClientDetailsModalOpen(true)
+      setSnackbarMessage("Clients selected successfully!");
+      setSnackbarSeverity("success");
+      setSnackbarOpen(true);
+    // } catch (error) {
+    //   setSnackbarMessage("Error saving selected clients.");
+    //   setSnackbarSeverity("error");
+    //   setSnackbarOpen(true);
+    // }
+  };
+  const handleClientDetailsSave = async(changedClient)=>{
+    console.log(changedClient);
+    try {
+        await axios.post(
+          "http://localhost:5000/save-client-data",
+          {clients:changedClient },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `${localStorage.getItem("authToken")}`,
+              SoftwareAuthorization : `${localStorage.getItem("softwareToken")}`,
+            },
+          }
+        );
+        setSnackbarMessage("Clients selected successfully!");
+        setSnackbarSeverity("success");
+        setSnackbarOpen(true);
+      } catch (error) {
+        setSnackbarMessage("Error saving selected clients.");
+        setSnackbarSeverity("error");
+        setSnackbarOpen(true);
+      }
+  }
+
 
   return (
     <Grid container mb={2} sx={{ pl: { xs: 0, lg: menuCollapse ? 14 : 36 } }}>
       {/* Top Bar with Import Account Button */}
       <Grid item xs={12} className="flex justify-end p-4">
-        {!isAccountImported && (
+        {!isAccountImported ? (
           <Button
-            onClick={handleImportAccount}
+            onClick={() => setIsAccountImported(true)}
             variant="contained"
             className="bg-gradient-to-r from-[#FF4B2B] to-[#FF416C] text-white"
           >
-            Import Account
+            {softwareName || "Import Account"} {/* Update button text */}
+          </Button>
+        ) : (
+          <Button
+            variant="contained"
+            className="bg-gradient-to-r from-[#FF4B2B] to-[#FF416C] text-white"
+            onClick={() => navigate("/compaigns")}
+          >
+            Go to Campaigns
           </Button>
         )}
       </Grid>
@@ -136,7 +249,10 @@ const Home = ({ menuCollapse }) => {
               >
                 Click on the Import Account button to import your account
               </Typography>
-            ) : selectedOption === "" ? (
+            ) 
+            : 
+            // selectedOption === "" ?
+             (
               <>
                 <Typography
                   variant=""
@@ -175,86 +291,103 @@ const Home = ({ menuCollapse }) => {
                     <img
                       src="./src/assets/Smart_Lead_logo.svg"
                       className="h-8 w-40"
-                      alt=""
+                      alt="Smart Lead.ai Logo"
                     />
                   </MenuItem>
-                  {/* Add more options here */}
                 </Select>
-                <Link to="/compaigns">
-                  <Button
-                    sx={{
-                      px: 10,
-                      mt: 1,
-                      borderRadius: "20px",
-                      borderColor: "white",
-                      color: "white",
-                      textTransform: "uppercase",
-                    }}
-                    variant="outlined"
-                    disabled={selectedOption === ""}
-                  >
-                    Next
-                  </Button>
-                </Link>
               </>
-            ) : (
-              <Typography variant="" className="text-3xl font-bold text-white">
-                {selectedOption}
-              </Typography>
-            )}
+            )
+            //  : (
+            //   <Button
+            //     variant="contained"
+            //     onClick={() => setClientModalOpen(true)}
+            //     sx={{
+            //       backgroundColor: "#FF4B2B",
+            //       borderRadius: "5px",
+            //       padding: "10px 20px",
+            //       color: "#fff",
+            //     }}
+            //   >
+            //     Open Client Selection Modal
+            //   </Button>
+            // )
+            }
           </Box>
         </Box>
       </Grid>
 
-      {/* Modal */}
+      {/* Client Selection Modal */}
+  
+    <   ClientSelectionModal    clientModalOpen={clientModalOpen}
+    setClientModalOpen={setClientModalOpen}
+    clients={clients}
+    selectedClients={selectedClients}
+    handleClientSelection={handleClientSelection}
+    handleNext={handleNext}
+               />
+
+      {   clientDetailsModalOpen&&
+        <ClientDetailsModal 
+        clients={selectedClients} 
+        clientDetailsModalOpen = {clientDetailsModalOpen}
+        setClientDetailsModalOpen={setClientDetailsModalOpen}
+        handleClientDetailsSave={handleClientDetailsSave}
+        />
+      }
+    
+      {/* Modal for secret key input */}
       <Modal
         open={openModal}
         onClose={handleCloseModal}
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
+        aria-labelledby="modal-title"
+        aria-describedby="modal-description"
       >
-        {loading ? (
-          <Box className="sm:w-2/6 w-4/5 items-center  flex flex-col gap-3 bg-white sm:p-10 p-5 rounded-md shadow-md">
-            <CircularProgress size={50} color="error" thickness={10} />
-            <Typography
-              variant=""
-              className="text-2xl font-semibold font-Poppins"
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 400,
+            bgcolor: "background.paper",
+            border: "2px solid #000",
+            boxShadow: 24,
+            p: 4,
+          }}
+        >
+          <Typography id="modal-title" variant="h6" component="h2">
+            Enter API Key
+          </Typography>
+          <TextField
+            fullWidth
+            margin="normal"
+            label="API Key"
+            type="password"
+            variant="outlined"
+            value={secretKey}
+            onChange={handleSecretKeyChange}
+          />
+          <Box mt={2} display="flex" justifyContent="flex-end">
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleSave}
+              disabled={loading}
             >
-              Please wait Data is fetching
-            </Typography>
-          </Box>
-        ) : (
-          <Box className="sm:w-1/2 w-4/5   bg-white sm:p-10 p-5 rounded-md shadow-md">
-            <Typography className="mb-2 text-2xl font-semibold">
-              Enter your Secret Key
-            </Typography>
-            <TextField
-              fullWidth
-              label="Secret Key"
-              value={secretKey}
-              onChange={handleSecretKeyChange}
+              {loading ? <CircularProgress size={24} /> : "Save"}
+            </Button>
+            <Button
               variant="outlined"
-              margin="normal"
-              required
-            />
-            <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
-              <Button
-                onClick={handleSave}
-                variant="contained"
-                className="w-1/4 bg-gradient-to-r from-[#FF4B2B] to-[#FF416C]"
-                disabled={loading} // Disable while loading
-              >
-                Save
-              </Button>
-            </Box>
+              onClick={handleCloseModal}
+              sx={{ marginLeft: 1 }}
+            >
+              Cancel
+            </Button>
           </Box>
-        )}
+        </Box>
       </Modal>
 
-      {/* Snackbar for Notifications */}
+      {/* Snackbar for notifications */}
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={6000}

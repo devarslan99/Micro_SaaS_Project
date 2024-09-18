@@ -17,7 +17,12 @@ const addApiMiddleware = async (req, res, next) => {
   console.log("autheMiddleware.js:7",token);
   const decoded = jwt.verify(token, config.JWT_SECRET);
   console.log('autheMiddleware.js:16-decoded-->',decoded);
-  req.body.user = decoded.user;
+  const user = decoded.user
+  req.body.user = user;
+  const softwareData =user.softwareKeys.find(
+    (item) => item.apiKey === req.body.api
+  )
+    if(softwareData) res.status(200).json("Api Key Already Exist")
     console.log('autheMiddleware.js:17 , Moving to Next Middleware');
    return next();
   }
