@@ -1,4 +1,12 @@
-import { Box, Button, CircularProgress, Grid, MenuItem, Select, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Grid,
+  MenuItem,
+  Select,
+  Typography,
+} from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { HiRefresh } from "react-icons/hi";
 import CustomInput from "../../components/EmailStatComp/CustomInput";
@@ -8,23 +16,25 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const EmailStats = ({ menuCollapse }) => {
+  const [selectedClient, setSelectedClient] = useState(""); // Dropdown client selection
+  const [selectedClientId, setSelectedClientId] = useState(null);
+  const [clientData, setClientData] = useState([]);
+  const [emailData, setEmailData] = useState([]);
   const [recovery, setRecovery] = useState(1);
   const [moderate, setModerate] = useState(8);
   const [maxeffort, setMaxeffort] = useState(20);
   const [emailFetch, setEmailFetch] = useState(false); // Initialize data with mock data
   const [emailConnect, setEmailConnect] = useState(false); // Initialize data with mock data
-  const [selectedClient, setSelectedClient] = useState("");
   const [emailHealth, setEmailHealth] = useState("All");
-  const [clientData, setClientData] = useState([]);
-  const [filteredData, setFilteredData] = useState([]); // Initialize filteredData
+  const [filteredData, setFilteredData] = useState([])
 
   const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("authToken");
     const softwareToken = localStorage.getItem("softwareToken");
-    if(!softwareToken){
-      navigate('/home')
+    if (!softwareToken) {
+      navigate("/home");
     }
     if (!token) {
       navigate("/"); // Redirect to /home if token exists
@@ -37,11 +47,13 @@ const EmailStats = ({ menuCollapse }) => {
     } else if (reputationvalue >= 98) {
       return "Decent";
     } else if (reputationvalue >= 96) {
-      return "OK";
+      return "Okay";
     } else if (reputationvalue >= 91) {
       return "Bad";
-    } else {
+    } else if (reputationvalue <= 91) {
       return "Very Bad";
+    } else if (reputationvalue === null) {
+      return "N/A";
     }
   };
 
@@ -69,15 +81,19 @@ const EmailStats = ({ menuCollapse }) => {
     const softwareToken = localStorage.getItem("softwareToken");
     console.log(token);
     console.log(softwareToken);
-    
+
     try {
       setEmailConnect(true);
-      const response = await axios.post(`http://localhost:5000/api/email/reconnect`,{},  {
-        headers: {
-          Authorization: token,
-          softwareAuthorization: softwareToken,
-        },
-      });
+      const response = await axios.post(
+        `http://localhost:5000/api/email/reconnect`,
+        {},
+        {
+          headers: {
+            Authorization: token,
+            softwareAuthorization: softwareToken,
+          },
+        }
+      );
       if (response.status === 200) {
         console.log("Client email:", response.data.message);
         setEmailConnect(false);
@@ -88,55 +104,96 @@ const EmailStats = ({ menuCollapse }) => {
   };
 
   useEffect(() => {
-    const fetchClientEmail = async () => {
+    const fetchClients = async () => {
       try {
+        const softwareToken = localStorage.getItem("softwareToken");
+        const authToken = localStorage.getItem("authToken");
+
+        if (!softwareToken) {
+          navigate("/home"); // Redirect if no softwareToken found
+          return;
+        }
+
         const response = await axios.get(
-          `http://localhost:5000/api/email/client-emails`
+          "http://localhost:5000/selectedClients",
+          {
+            headers: {
+              softwareToken: `${softwareToken}`,
+              authToken: `${authToken}`,
+            },
+          }
         );
-        if (response.status === 200) {
-          setClientData(response.data); // Set client data
-          console.log("Client email:", response.data); // Reset fetch flag
+
+        console.log("client data", response.data);
+
+        if (response.status === 200 && response.data.length > 0) {
+          setClientData(response.data); // Set the fetched clients to state
+          setSelectedClient(response.data[0]?.selectedName); // Set default selected client
+          setSelectedClientId(response.data[0]?.clientId);
+        } else {
+          console.log("Failed to fetch clients");
         }
       } catch (error) {
-        console.error("Error fetching client email:", error);
+        console.error("Error fetching clients:", error);
       }
     };
 
-    fetchClientEmail(); // Fetch email when component mounts
-  }, [emailFetch]);
+    fetchClients();
+  }, []);
 
-  const handleFilter = () => {
-    const selectedClientData = clientData.find(
-      (client) => client.from_name === selectedClient
-    );
+  const fetchEmailData = async () => {
+    try {
+      if (!selectedClient) return;
+      console.log("email request send");
 
-    const filtered = clientData.filter((item) => {
-      const matchesClient = item.from_name === selectedClientData?.from_name;
-
-      const reputationvalue = parseFloat(
-        item.warmupReputation.replace("%", "")
+      const response = await axios.get(
+        "http://localhost:5000/api/email/client-emails",
+        {
+          headers: {
+            clientId: selectedClientId,
+          },
+        }
       );
-      const generatedEmailHealth = getEmailHealth(reputationvalue);
+      console.log(typeof selectedClientId);
 
-      const matchesHealth =
-        emailHealth === "All" || generatedEmailHealth === emailHealth;
-
-      return matchesClient && matchesHealth;
-    });
-
-    setFilteredData(filtered);
+      if (response.status === 200) {
+        setEmailData(response.data);
+        console.log("Email data", response.data);
+        setFilteredData(response.data)
+      }
+    } catch (error) {
+      console.error("Error fetching email data:", error);
+    }
   };
 
   useEffect(() => {
-    if (clientData.length > 0) {
-      // Set the first client's name as the default selected client
-      setSelectedClient(clientData[0].from_name);
-    }
-  }, [clientData]);
+    fetchEmailData();
+    console.log("Top function called"); // Fetch data when client or date changes
+  }, [selectedClient ]);
 
+  const handleFilter = () => {
+    const filtered = emailData.filter((item) => {
+      // Parse warmupReputation, handle if it's null or undefined
+      const reputationvalue = parseFloat(item?.warmupReputation?.replace("%", ""));
+  
+      // Generate the email health based on the reputation value
+      const generatedEmailHealth = getEmailHealth(reputationvalue);
+  
+      // Filter by health: either "All" or a match with generatedEmailHealth
+      const matchesHealth =
+        emailHealth === "All" || generatedEmailHealth === emailHealth;
+  
+      return matchesHealth;
+    });
+  
+    // Update filtered email data
+    setFilteredData(filtered);
+  };
+  
   useEffect(() => {
-    handleFilter(); // Trigger filter when client or email health changes
-  }, [selectedClient, emailHealth, clientData]);
+    handleFilter(); // Trigger filter when emailHealth changes
+  }, [emailHealth]);
+  
 
   return (
     <Grid
@@ -154,7 +211,11 @@ const EmailStats = ({ menuCollapse }) => {
               <Select
                 value={selectedClient}
                 onChange={(e) => {
-                  setSelectedClient(e.target.value); // Set the selected client name
+                  const selectedClient = clientData.find(
+                    (client) => client.selectedName == e.target.value
+                  );
+                  setSelectedClient(selectedClient.selectedName);
+                  setSelectedClientId(selectedClient.clientId);
                 }}
                 sx={{
                   width: "100%",
@@ -177,13 +238,11 @@ const EmailStats = ({ menuCollapse }) => {
                   },
                 }}
               >
-                {[...new Set(clientData.map((item) => item.from_name))].map(
-                  (name, index) => (
-                    <MenuItem key={index} value={name}>
-                      {name}
-                    </MenuItem>
-                  )
-                )}
+                {clientData.map((client) => (
+                  <MenuItem key={client.clientId} value={client.selectedName}>
+                    {client.selectedName}
+                  </MenuItem>
+                ))}
               </Select>
               <Select
                 value={emailHealth}
@@ -226,7 +285,7 @@ const EmailStats = ({ menuCollapse }) => {
                 className="bg-gradient-to-r lg:w-auto w-[100%] from-[#FF4B2B] to-[#FF416C] text-white flex items-center gap-2"
                 onClick={handleRefresh} // Refresh data on click
                 disabled={emailConnect}
-                >
+              >
                 Refresh <HiRefresh size={18} color="white" />
               </Button>
               <Button

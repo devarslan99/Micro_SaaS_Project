@@ -20,10 +20,10 @@ const config = require('../config.json');
       const decodedAuth = jwt.verify(authToken, config.JWT_SECRET);
       
       const softwareName = decoded.software;
-      const userLoggedId = decodedAuth.user.id;
-    
+      
       console.log("Software name", softwareName);
       console.log("User logged ID", decodedAuth);
+      const userLoggedId = decodedAuth.user.id;
     
       if (!softwareName) {
         return res.status(404).json({ message: 'Software not found' });

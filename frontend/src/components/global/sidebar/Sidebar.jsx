@@ -31,7 +31,7 @@ const Sidebar = ({ menuCollapse, setMenuCollapse,onPageSelect }) => {
       case "/home":
         return "Select Software";
       case "/compaigns":
-        return "Compaign Analytics";
+        return "Campaigns Analytics";
       case "/email_stats":
         return "Email Stats";
       default:
@@ -105,7 +105,7 @@ const Sidebar = ({ menuCollapse, setMenuCollapse,onPageSelect }) => {
               active={isMenuItemActive("/compaigns")}
               icon={<ImStatsBars fontSize="22px" />}
             >
-              Compaign Analytics
+              Campaigns Analytics
             </MenuItem>
               </Link>
               <Link to="/email_stats">

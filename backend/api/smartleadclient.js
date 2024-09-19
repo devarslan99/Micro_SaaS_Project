@@ -22,7 +22,7 @@ const authenticateAndFetchClients = async (apiKey, user, software) => {
       uuid: null,
       createdAt: new Date(),
       userIdFromClient: null,
-      logo: null,
+      logo: 'Base',
       logoUrl: null,
       permission: [],  // Default to empty permissions
       restricted_category: [],  // Default to empty restricted categories

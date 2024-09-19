@@ -21,7 +21,7 @@ const TemporaryDrawer = ({ isOpen, toggleDrawer, onPageSelect }) => {
       case "/home":
         return "Select Software";
       case "/compaigns":
-        return "Compaign Analytics";
+        return "Campaigns Analytics";
       case "/email_stats":
         return "Email Stats";
       default:
@@ -108,7 +108,7 @@ const TemporaryDrawer = ({ isOpen, toggleDrawer, onPageSelect }) => {
                     icon={<ImStatsBars fontSize="22px" />}
                     onClick={() => toggleDrawer(false)}
                   >
-                    Compaigns Analytics
+                    Campaigns Analytics
                   </MenuItem>
                 </Link>
                 <Link to="/email_stats">

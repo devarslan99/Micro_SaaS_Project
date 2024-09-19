@@ -7,13 +7,19 @@ const authMiddleware = require('../middleware/authMiddleware.js');
 
 
 router.get('/client-emails',async (req , res)=>{
-const clientId = req.header("clientId") 
+    let dbClientId=null
+    // const clientId = null
+    const clientId = req.header("clientId")
+    if(clientId!=null){
+        dbClientId = Number(clientId)
+    }
+    console.log(typeof dbClientId,dbClientId);
 console.log('Request Recieved to /client-emails');
 console.log(clientId);
 const Email = require('../models/Email')
 try {
     const emails = await Email.find(
-        { client_id: null }, // Match documents with the specific client_id
+        { client_id: dbClientId }, // Match documents with the specific client_id
         {
             from_name:1,
             from_email: 1,                     // Include the 'from_email' field

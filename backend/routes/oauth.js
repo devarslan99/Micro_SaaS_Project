@@ -3,7 +3,7 @@ const router = express.Router();
 const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const config = require('./../config.json');
-const User = require('../models/User.js'); // Adjust path to your User model
+const User = require('../models/User'); // Adjust path to your User model
 
 // Google OAuth routes
 router.get('/auth/google', passport.authenticate('google', {
