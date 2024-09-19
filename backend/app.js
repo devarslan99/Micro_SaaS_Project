@@ -17,13 +17,15 @@ const emailRoutes = require('./routes/email.route.js')
 const refreshRoute = require('./routes/refreshRoute.route.js')
 const config=require('./config.json')
 const app = express();
-
+const cors = require('cors')
 // Connect Database
 connectDB();
 
 // Init Middleware
 app.use(express.json());
-
+app.use(cors({
+  origin:'*'
+}))
 // Middleware to parse URL-encoded bodies (for form submissions)
 app.use(express.urlencoded({ extended: true }));
 
