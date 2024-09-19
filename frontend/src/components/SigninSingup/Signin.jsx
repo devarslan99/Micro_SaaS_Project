@@ -10,7 +10,7 @@ import { FcGoogle } from "react-icons/fc";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-
+import { BASE_URL } from "../../config";
 
 const Signin = ({ rightPanelActive }) => {
   const {
@@ -34,7 +34,7 @@ const Signin = ({ rightPanelActive }) => {
     console.log(data.signInEmail, data.signInPassword);
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/auth/login",
+        `${BASE_URL}/api/auth/login`,
         {
           email: data.signInEmail,
           password: data.signInPassword,
@@ -61,7 +61,7 @@ const Signin = ({ rightPanelActive }) => {
   const handleGoogleSignIn = async () => {
     try {
         // This will redirect the user to the Google OAuth page via your backend
-        window.location.href = 'http://localhost:5000/auth/google';
+        window.location.href = `${BASE_URL}/auth/google`;
     } catch (error) {
         console.error("Error during Google Sign-Up: ", error);
     }

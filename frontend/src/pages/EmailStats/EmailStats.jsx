@@ -14,6 +14,7 @@ import EmailTable from "../../components/EmailStatComp/EmailsTable";
 import { email_stats } from "../../data/mockData";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { BASE_URL } from "../../config";
 
 const EmailStats = ({ menuCollapse }) => {
   const [selectedClient, setSelectedClient] = useState(""); // Dropdown client selection
@@ -62,7 +63,7 @@ const EmailStats = ({ menuCollapse }) => {
     const softwareToken = localStorage.getItem("softwareToken");
     try {
       setEmailFetch(true);
-      const response = await axios.get(`http://localhost:5000/refresh/emails`, {
+      const response = await axios.get(`${BASE_URL}/refresh/emails`, {
         headers: {
           Authorization: token,
           softwareAuthorization: softwareToken,
@@ -85,7 +86,7 @@ const EmailStats = ({ menuCollapse }) => {
     try {
       setEmailConnect(true);
       const response = await axios.post(
-        `http://localhost:5000/api/email/reconnect`,
+        `${BASE_URL}/api/email/reconnect`,
         {},
         {
           headers: {
@@ -115,7 +116,7 @@ const EmailStats = ({ menuCollapse }) => {
         }
 
         const response = await axios.get(
-          "http://localhost:5000/selectedClients",
+          `${BASE_URL}/selectedClients`,
           {
             headers: {
               softwareToken: `${softwareToken}`,
@@ -147,7 +148,7 @@ const EmailStats = ({ menuCollapse }) => {
       console.log("email request send");
 
       const response = await axios.get(
-        "http://localhost:5000/api/email/client-emails",
+        `${BASE_URL}/api/email/client-emails`,
         {
           headers: {
             clientId: selectedClientId,

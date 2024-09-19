@@ -10,7 +10,7 @@ import { useForm } from "react-hook-form";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { IoMdArrowRoundBack } from "react-icons/io";
 import axios from "axios";
-
+import { BASE_URL } from "../../config";
 const ResetPassword = () => {
   const { register, handleSubmit, watch, formState: { errors } } = useForm();
   const navigate = useNavigate();
@@ -28,7 +28,7 @@ const ResetPassword = () => {
 
   const onSubmit = async (data) => {
     try {
-      const response = await axios.post("http://localhost:5000/reset/password", {
+      const response = await axios.post(`${BASE_URL}/reset/password`, {
         password: data.new_password,
         token: token, // Send the token to the backend
       });

@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import { IoMdArrowRoundBack } from "react-icons/io";
-
+import { BASE_URL } from "../../config";
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
@@ -32,7 +32,7 @@ const ForgotPassword = () => {
       setError("");
       setLoading(true); // Start loader
       try {
-        const response = await axios.post(`http://localhost:5000/reset/mail`, {
+        const response = await axios.post(`${BASE_URL}/reset/mail`, {
           email: email,
         });
         if (response.status === 200) {

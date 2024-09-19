@@ -4,7 +4,7 @@ import { FcGoogle } from "react-icons/fc";
 import { useForm } from "react-hook-form";
 import axios from "axios"; // Fix import here (without the curly braces)
 import { useNavigate } from "react-router-dom";
-
+import { BASE_URL } from "../../config";
 const Signup = ({ rightPanelActive }) => {
   const {
     register,
@@ -26,7 +26,7 @@ const Signup = ({ rightPanelActive }) => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/auth/register",
+        `${BASE_URL}/api/auth/register`,
         {
           name: data.name,
           email: data.email,
@@ -52,7 +52,7 @@ const Signup = ({ rightPanelActive }) => {
   const handleGoogleSignUp = async () => {
     try {
         // This will redirect the user to the Google OAuth page via your backend
-        window.location.href = 'http://localhost:5000/auth/google';
+        window.location.href = `${BASE_URL}/auth/google`;
     } catch (error) {
         console.error("Error during Google Sign-Up: ", error);
     }

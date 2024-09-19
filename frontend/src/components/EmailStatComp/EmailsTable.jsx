@@ -12,7 +12,7 @@ import CustomCheckBtn from "./CustomCheckBtn";
 import axios from "axios";
 import { MyContext } from "../../hook/Provider";
 //   import './table.css'
-
+import { BASE_URL } from "../../config";
 const EmailTable = ({ data, recovery, moderate, maxeffort, setData }) => {
   console.log("Table Data", data);
 
@@ -38,7 +38,7 @@ const EmailTable = ({ data, recovery, moderate, maxeffort, setData }) => {
         const updateData = async () => {
           try {
             const response = await axios.post(
-              `http://localhost:5000/api/email/max-day`,
+              `${BASE_URL}/api/email/max-day`,
               {
                 email_account_id: row.email_account_id, // Use email account ID (row._id)
                 max_email_per_day: message_per_day, // Send the new message_per_day value

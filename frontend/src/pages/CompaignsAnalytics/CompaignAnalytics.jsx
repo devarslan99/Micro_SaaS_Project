@@ -17,6 +17,7 @@ import CompaignCharts from "../../components/CompaingComp/CompaignCharts";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { HiRefresh } from "react-icons/hi";
+import { BASE_URL } from "../../config";
 
 const CompaignAnalytics = ({ menuCollapse }) => {
   const [selectedClient, setSelectedClient] = useState(""); // Dropdown client selection
@@ -44,7 +45,7 @@ const CompaignAnalytics = ({ menuCollapse }) => {
     try {
       setCompaignFetch(true);
       const response = await axios.get(
-        `http://localhost:5000/refresh/campaighs `,
+        `${BASE_URL}/campaighs `,
         {
           headers: {
             Authorization: token,
@@ -72,7 +73,7 @@ const CompaignAnalytics = ({ menuCollapse }) => {
           return;
         }
 
-        const response = await axios.get("http://localhost:5000/selectedClients", {
+        const response = await axios.get(`${BASE_URL}/selectedClients`, {
           headers: {
             softwareToken: `${softwareToken}`,
             authToken: `${authToken}`,
@@ -122,7 +123,7 @@ const CompaignAnalytics = ({ menuCollapse }) => {
       console.log(formattedEndDate);
 
       const response = await axios.get(
-        "http://localhost:5000/api/campaighs/daily",
+        `${BASE_URL}/api/campaighs/daily`,
         {
           headers: {
             clientID: selectedClientId,
@@ -155,7 +156,7 @@ const CompaignAnalytics = ({ menuCollapse }) => {
       console.log("top level request send");
 
       const response = await axios.get(
-        "http://localhost:5000/api/campaighs/top-level-stats",
+        `${BASE_URL}/api/campaighs/top-level-stats`,
         {
           headers: {
             clientId: selectedClientId,

@@ -18,6 +18,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import ClientSelectionModal from "../../components/HomeComp/ClientSelectionModel";
 import ClientDetailsModal from "../../components/HomeComp/ClientDetailModel";
+import { BASE_URL } from "../../config";
 
 const Home = ({ menuCollapse }) => {
   const [openModal, setOpenModal] = useState(false);
@@ -81,7 +82,7 @@ const Home = ({ menuCollapse }) => {
     try {
       setLoading(true); // Start loader
       const response = await axios.post(
-        "http://localhost:5000/api/software/add-api-key",
+        `${BASE_URL}/api/software/add-api-key`,
         data,
         {
           headers: {
@@ -125,7 +126,7 @@ const Home = ({ menuCollapse }) => {
 
   const fetchClients = async (softwareToken) => {
     try {
-      const response = await axios.get("http://localhost:5000/clients", {
+      const response = await axios.get(`${BASE_URL}/clients`, {
         headers: {
           softwareToken: `${softwareToken}`, // Use the softwareToken as per your request
         },
@@ -196,7 +197,7 @@ const Home = ({ menuCollapse }) => {
     console.log(changedClient);
     try {
       await axios.post(
-        "http://localhost:5000/save-client-data",
+        `${BASE_URL}/save-client-data`,
         { clients: changedClient },
         {
           headers: {
