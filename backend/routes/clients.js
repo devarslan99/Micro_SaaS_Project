@@ -1,15 +1,16 @@
-const Client = require('../models/Client');
+const Client = require('../models/Client.js');
 const jwt = require('jsonwebtoken');
 const config = require('../config.json');
 const express = require('express')
 const router = express.Router()
 const {saveUserSelectedClients} = require('../controllers/saveSelectedUser.controller.js');
 const authMiddleware = require('../middleware/authMiddleware.js');
+const {SelectedClient} = require('../controllers/selectedClientsList.js')
+
 
 router.get('/clients', async (req, res) => {
   const softwareToken = req.header('softwareToken');
-
-    console.log("software client", softwareToken)
+    console.log("Software Token", softwareToken)
   
     if (!softwareToken) {
       return res.status(400).json({ message: 'Software token is required' });
@@ -20,7 +21,7 @@ router.get('/clients', async (req, res) => {
       const decoded = jwt.verify(softwareToken, config.JWT_SECRET);
       const softwareName = decoded.software;
 
-      console.log("software name",softwareName)
+      console.log("Software name",softwareName)
   
       if (!softwareName) {
         return res.status(404).json({ message: 'Software not found' });
@@ -36,7 +37,7 @@ router.get('/clients', async (req, res) => {
     }
   });
 router.post('/save-client-data',authMiddleware,saveUserSelectedClients)
-
+router.get('/selectedClients',SelectedClient)
   module.exports = router;
 
 

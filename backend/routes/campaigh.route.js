@@ -7,12 +7,12 @@ router.get('/top-level-stats',async (req , res)=>{
 
 console.log('Request Recieved to /top-level-stats');
 let dbClientId=null
-const clientId = null
-//  req.header("clientId")
+// const clientId = null
+const clientId = req.header("clientId")
 if(clientId!=null){
     dbClientId = Number(clientId)
 }
-console.log(typeof clientId);
+console.log(typeof dbClientId,dbClientId);
 
 try {
     const result = await TopLevelStats.aggregate([

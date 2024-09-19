@@ -65,15 +65,17 @@ const CompaignAnalytics = ({ menuCollapse }) => {
     const fetchClients = async () => {
       try {
         const softwareToken = localStorage.getItem("softwareToken");
+        const authToken = localStorage.getItem("authToken");
 
         if (!softwareToken) {
           navigate("/home"); // Redirect if no softwareToken found
           return;
         }
 
-        const response = await axios.get("http://localhost:5000/clients", {
+        const response = await axios.get("http://localhost:5000/selectedClients", {
           headers: {
             softwareToken: `${softwareToken}`,
+            authToken: `${authToken}`,
           },
         });
 
@@ -81,7 +83,7 @@ const CompaignAnalytics = ({ menuCollapse }) => {
 
         if (response.status === 200 && response.data.length > 0) {
           setClientData(response.data); // Set the fetched clients to state
-          setSelectedClient(response.data[0]?.name); // Set default selected client
+          setSelectedClient(response.data[0]?.selectedName); // Set default selected client
           setSelectedClientId(response.data[0]?.clientId);
         } else {
           console.log("Failed to fetch clients");
@@ -227,9 +229,9 @@ const CompaignAnalytics = ({ menuCollapse }) => {
                   value={selectedClient}
                   onChange={(e) => {
                     const selectedClient = clientData.find(
-                      (client) => client.name === e.target.value
+                      (client) => client.selectedName == e.target.value
                     );
-                    setSelectedClient(selectedClient.name);
+                    setSelectedClient(selectedClient.selectedName);
                     setSelectedClientId(selectedClient.clientId);
                   }}
                   sx={{
@@ -254,8 +256,8 @@ const CompaignAnalytics = ({ menuCollapse }) => {
                   }}
                 >
                   {clientData.map((client) => (
-                    <MenuItem key={client.clientId} value={client.name}>
-                      {client.name}
+                    <MenuItem key={client.clientId} value={client.selectedName}>
+                      {client.selectedName}
                     </MenuItem>
                   ))}
                 </Select>

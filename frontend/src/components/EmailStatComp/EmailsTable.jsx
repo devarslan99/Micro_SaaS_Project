@@ -17,9 +17,9 @@ const EmailTable = ({ data, recovery, moderate, maxeffort, setData }) => {
   console.log("Table Data", data);
   // const { softwareName } = useContext(MyContext);
 
-  // console.log(softwareName);
+  // console.log(softwareName)
 
-  const handleCheckboxChange = async (rowId, field) => {  
+  const handleCheckboxChange = async (rowId, field) => {
     const token = localStorage.getItem("authToken");
     const softwareToken = localStorage.getItem("softwareToken");
 
@@ -35,7 +35,6 @@ const EmailTable = ({ data, recovery, moderate, maxeffort, setData }) => {
     // Find the current row data and update the msg_per_day based on the selected checkbox
     const updatedData = data.map((row) => {
       if (row._id === rowId) {
-
         // Send the update request to the backend
         const updateData = async () => {
           try {
@@ -84,6 +83,15 @@ const EmailTable = ({ data, recovery, moderate, maxeffort, setData }) => {
       headerName: "Warmup Status",
       headerClassName: "super-app-theme-header",
       width: 150,
+      renderCell:({row})=>{
+        if(row.warmupStatus){
+          return <Typography className="pt-4">{row.warmupStatus}</Typography>
+        }
+        else{
+          return <Typography className="pt-4">N/A</Typography>
+
+        }
+      }
     },
     {
       field: "email_health",
@@ -91,35 +99,42 @@ const EmailTable = ({ data, recovery, moderate, maxeffort, setData }) => {
       headerClassName: "super-app-theme-header",
       width: 150,
       renderCell: ({ row }) => {
-        const reputationvalue = parseFloat(
-          row.warmupReputation.replace("%", "")
-        );
-
-        // Set the email health based on the reputation value
-        if (reputationvalue >= 100) {
-          return "Excellent";
-        } else if (reputationvalue >= 98) {
-          return "Decent";
-        } else if (reputationvalue >= 96) {
-          return "OK";
-        } else if (reputationvalue >= 91) {
-          return "Bad";
-        } else {
-          return "Very Bad";
-        }
-      },
-    },
-    {
-      field: "warmup_reputation_bar",
+        if(row.warmupReputation){
+          const reputationvalue = parseFloat(
+            row.warmupReputation.replace("%", "")
+            );
+            
+            // Set the email health based on the reputation value
+            if (reputationvalue >= 100) {
+              return "Excellent";
+            } else if (reputationvalue >= 98) {
+              return "Decent";
+            } else if (reputationvalue >= 96) {
+              return "OK";
+            } else if (reputationvalue >= 91) {
+              return "Bad";
+            } else {
+              return "Very Bad";
+            }
+          }
+          else{
+            <Typography className="pt-4">N/A</Typography>
+          }
+          },
+        },
+        {
+          field: "warmup_reputation_bar",
       headerName: "Warmup Reputation Bar",
       headerClassName: "super-app-theme-header",
       width: 200,
       renderCell: ({ row }) => {
-        const reputationvalue = parseFloat(
-          row.warmupReputation.replace("%", "")
-        );
-        return (
-          <Box width="100%" className="mt-5">
+        if(row.warmupReputation){
+
+          const reputationvalue = parseFloat(
+            row.warmupReputation.replace("%", "")
+            );
+            return (
+              <Box width="100%" className="mt-5">
             <LinearProgress
               variant="determinate"
               value={reputationvalue}
@@ -128,20 +143,23 @@ const EmailTable = ({ data, recovery, moderate, maxeffort, setData }) => {
                 borderRadius: 5,
                 "& .MuiLinearProgress-bar": {
                   backgroundColor:
-                    reputationvalue >= 100
-                      ? "#28A745"
-                      : reputationvalue >= 98
-                      ? "#007BFF"
-                      : reputationvalue >= 96
-                      ? "#FFC107"
-                      : reputationvalue >= 91
-                      ? "#FD7E14"
-                      : "#DC3545",
+                  reputationvalue >= 100
+                  ? "#28A745"
+                  : reputationvalue >= 98
+                  ? "#007BFF"
+                  : reputationvalue >= 96
+                  ? "#FFC107"
+                  : reputationvalue >= 91
+                  ? "#FD7E14"
+                  : "#DC3545",
                 },
               }}
-            />
+              />
           </Box>
         );
+      }else{
+        return  <Typography className="pt-4">N/A</Typography>
+      }
       },
     },
     {
@@ -149,6 +167,18 @@ const EmailTable = ({ data, recovery, moderate, maxeffort, setData }) => {
       headerName: "Warmup Reputation %",
       headerClassName: "super-app-theme-header",
       width: 150,
+      renderCell: ({ row }) => {
+        const warmupReputation = row.warmupReputation;
+    
+        // Display "NA" if warmupReputation does not exist, otherwise show the value
+        const displayValue = warmupReputation !== undefined && warmupReputation !== null 
+          ? `${warmupReputation}%` 
+          : "NA";
+    
+        return (
+          <Typography className="pt-4">{displayValue}</Typography>
+        );
+      },
     },
     {
       field: "message_per_day",
