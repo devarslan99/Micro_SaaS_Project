@@ -32,8 +32,9 @@ app.use(session({
   resave: false,
   saveUninitialized: true
 }));
-app.get('/test',(req,res)=>{
+app.get('/',(req,res)=>{
     console.log('test')
+    res.send("Working Fine")
 })
 // Initialize Passport
 app.use(passport.initialize());
