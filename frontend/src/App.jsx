@@ -21,7 +21,7 @@ function App() {
         <Route exact path="/forget-password" element={<ForgetPassword />} />
         <Route exact path="/reset-password" element={<ResetPassword  />} />
         <Route exact path="/reset-password-success" element={<ResetPasswordSuccess  />} />
-        <Route exact  path="/authsetter" element={<AuthSetter />} />
+        <Route path="/authsetter" element={<AuthSetter />} />
         <Route
           path="/home"
           element={
