@@ -41,7 +41,7 @@ router.get('/auth/google/callback', passport.authenticate('google', {
       (err, token) => {
         if (err) throw err;
         // Send token in response to store it in localStorage on the client-side
-        res.redirect(`/authsetter?token=${token}`);
+        res.redirect(`https://micro-saas-nu.vercel.app/authsetter?token=${token}`);
       }
     );
   } catch (error) {
