@@ -1,0 +1,12 @@
+{
+    "GOOGLE_CLIENT_ID":"1055398415811-o7fcun6sq0kld1hmlt82n847oth7do3p.apps.googleusercontent.com",
+   "GOOGLE_CLIENT_SECRET":"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",
+   
+   "SMTP_HOST" :"smtp.gmail.com",
+   "SMTP_PORT": "587",
+   "EMAIL":"j44451666@gmail.com",
+   "EMAIL_PASSWORD":"xhgr hupq naqd yhwm",
+    "JWT_SECRET":"ALKDJAL",
+    "KEY":"MASJID"
+    
+   }

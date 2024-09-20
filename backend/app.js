@@ -40,7 +40,6 @@ app.get('/',(req,res)=>{
 // Initialize Passport
 app.use(passport.initialize());
 app.use(passport.session())
-app.use(cors());
 //auth  Routes
 app.use('/api/auth',auth);
 app.use('/', oauth);
