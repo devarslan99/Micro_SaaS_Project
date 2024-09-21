@@ -60,8 +60,8 @@ const Signup = ({ rightPanelActive }) => {
 
   return (
     <Box
-      className={`absolute top-0 h-full w-1/2 z-20 flex justify-center items-center flex-col transition-all duration-[0.6s] ease-in-out ${
-        rightPanelActive ? "opacity-0 " : "translate-x-full opacity-100 z-50"
+      className={`absolute top-0 h-full md:w-1/2 w-[100%] z-20 flex justify-center items-center flex-col transition-all duration-[0.6s] ease-in-out ${
+        rightPanelActive ? "opacity-0 " : "md:translate-x-full  opacity-100 z-50"
       }`}
     >
       <Box

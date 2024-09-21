@@ -68,8 +68,8 @@ const Signin = ({ rightPanelActive }) => {
 };
   return (
     <Box
-      className={`absolute top-0 h-full w-1/2 z-20 flex justify-center items-center flex-col transition-all duration-[0.6s] ease-in-out ${
-        rightPanelActive ? "" : "translate-x-full"
+      className={`absolute top-0 h-full md:w-1/2 w-[100%] z-20 flex justify-center items-center flex-col transition-all duration-[0.6s] ease-in-out ${
+        rightPanelActive ? "" : "md:translate-x-full"
       }`}
     >
       <Box
