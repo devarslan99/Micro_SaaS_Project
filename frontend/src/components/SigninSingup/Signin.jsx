@@ -12,7 +12,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { BASE_URL } from "../../config";
 
-const Signin = ({ rightPanelActive }) => {
+const Signin = ({ rightPanelActive,handleSignUpClick }) => {
   const {
     register,
     handleSubmit,
@@ -152,6 +152,7 @@ const Signin = ({ rightPanelActive }) => {
         >
           Sign In
         </Button>
+        <Typography variant="" className="text-sm md:hidden block pt-3">Don't have an account? <span className="text-red-500 font-semibold" onClick={handleSignUpClick}>SignUp</span></Typography>
         <Typography className="pt-4 italic text-red-500">
           {errorMessage}
         </Typography>

@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import axios from "axios"; // Fix import here (without the curly braces)
 import { useNavigate } from "react-router-dom";
 import { BASE_URL } from "../../config";
-const Signup = ({ rightPanelActive }) => {
+const Signup = ({ rightPanelActive,handleSignInClick }) => {
   const {
     register,
     handleSubmit,
@@ -144,6 +144,7 @@ const Signup = ({ rightPanelActive }) => {
         <Typography className="pt-4 italic text-red-500">
           {errorMessage}
         </Typography>
+        <Typography variant="" className="text-sm md:hidden block">Already have an account? <span className="text-red-500 font-semibold" onClick={handleSignInClick}>SignIn</span></Typography>
       </Box>
     </Box>
   );
