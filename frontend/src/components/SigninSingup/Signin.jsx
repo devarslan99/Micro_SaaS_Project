@@ -12,7 +12,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { BASE_URL } from "../../config";
 
-const Signin = ({ rightPanelActive }) => {
+const Signin = ({ rightPanelActive,handleSignUpClick }) => {
   const {
     register,
     handleSubmit,
@@ -68,8 +68,8 @@ const Signin = ({ rightPanelActive }) => {
 };
   return (
     <Box
-      className={`absolute top-0 h-full w-1/2 z-20 flex justify-center items-center flex-col transition-all duration-[0.6s] ease-in-out ${
-        rightPanelActive ? "" : "translate-x-full"
+      className={`absolute top-0 h-full md:w-1/2 w-[100%] z-20 flex justify-center items-center flex-col transition-all duration-[0.6s] ease-in-out ${
+        rightPanelActive ? "" : "md:translate-x-full"
       }`}
     >
       <Box
@@ -152,6 +152,7 @@ const Signin = ({ rightPanelActive }) => {
         >
           Sign In
         </Button>
+        <Typography variant="" className="text-sm md:hidden block pt-3">Don't have an account? <span className="text-red-500 font-semibold" onClick={handleSignUpClick}>SignUp</span></Typography>
         <Typography className="pt-4 italic text-red-500">
           {errorMessage}
         </Typography>

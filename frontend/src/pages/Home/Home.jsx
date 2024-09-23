@@ -19,6 +19,7 @@ import { Link, useNavigate } from "react-router-dom";
 import ClientSelectionModal from "../../components/HomeComp/ClientSelectionModel";
 import ClientDetailsModal from "../../components/HomeComp/ClientDetailModel";
 import { BASE_URL } from "../../config";
+import SmartLeadLogo from '../../assets/Smart_Lead_logo.svg'
 
 const Home = ({ menuCollapse }) => {
   const [openModal, setOpenModal] = useState(false);
@@ -286,7 +287,7 @@ const Home = ({ menuCollapse }) => {
                     </MenuItem>
                     <MenuItem value="Smart lead.ai">
                       <img
-                        src="./src/assets/Smart_Lead_logo.svg"
+                        src={SmartLeadLogo}
                         className="h-8 w-40"
                         alt="Smart Lead.ai Logo"
                       />

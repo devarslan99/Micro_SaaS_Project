@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Box, Button, Typography } from "@mui/material";
-import Signup from "../../components/SigninSingup/Signup"
-import Signin from "../../components/SigninSingup/Signin"
+import Signup from "../../components/SigninSingup/Signup";
+import Signin from "../../components/SigninSingup/Signin";
 
 const SignInSignUp = () => {
   const [rightPanelActive, setRightPanelActive] = useState(false);
@@ -17,23 +17,33 @@ const SignInSignUp = () => {
   return (
     <Box className="flex items-center justify-center h-screen bg-neutral-100">
       <Box
-        className={`relative w-full max-w-3xl min-h-[480px] bg-white rounded-lg shadow-xl overflow-hidden transition-transform duration-[0.6s] ease-in-out ${
+        className={`relative w-full md:max-w-3xl max-w-[90%] md:min-h-[500px] min-h-[90%] bg-white rounded-lg shadow-xl overflow-hidden transition-transform duration-[0.6s] ease-in-out ${
           rightPanelActive ? "right-panel-active" : ""
         }`}
+        sx={{
+          flexDirection: { xs: "column", md: "row" },
+          overflow: "hidden",
+        }}
       >
         {/* Sign Up Form */}
-
-        <Signup rightPanelActive={rightPanelActive} />
+        <Signup
+          rightPanelActive={rightPanelActive}
+          handleSignInClick={handleSignInClick}
+        />
         {/* Sign In Form */}
-        <Signin rightPanelActive={rightPanelActive} />
+        <Signin
+          rightPanelActive={rightPanelActive}
+          handleSignUpClick={handleSignUpClick}
+        />
+
         {/* Overlay Part */}
         <Box
-          className={`absolute top-0 w-full h-full transition-transform overflow-hidden duration-[0.6s] ease-in-out z-50 ${
+          className={`absolute md:block hidden top-0 w-full h-full transition-transform overflow-hidden duration-[0.6s] ease-in-out z-50 ${
             rightPanelActive ? "left-1/2" : "-left-1/2"
           }`}
           sx={{
             background: "linear-gradient(to right, #FF4B2B, #FF416C)",
-            display: "flex",
+            display: { xs: "none", md: "flex" },
             alignItems: "center",
             justifyContent: "center",
           }}
