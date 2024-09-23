@@ -234,6 +234,7 @@ const CompaignAnalytics = ({ menuCollapse }) => {
                     );
                     setSelectedClient(selectedClient.selectedName);
                     setSelectedClientId(selectedClient.clientId);
+                    // fetchDailyData()
                   }}
                   sx={{
                     width: {md:200, xs:'100%'},

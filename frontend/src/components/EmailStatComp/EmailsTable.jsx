@@ -277,7 +277,7 @@ const EmailTable = ({ data, recovery, moderate, maxeffort, setData }) => {
         },
       }}
     >
-      <Box className="flex justify-around mb-4">
+      {/* <Box className="flex justify-around mb-4">
         <Typography
           variant=""
           className="sm:text-3xl text-xl font-bold font-Poppins"
@@ -290,7 +290,7 @@ const EmailTable = ({ data, recovery, moderate, maxeffort, setData }) => {
         >
           Sending Section
         </Typography>
-      </Box>
+      </Box> */}
       <DataGrid
         rows={data}
         columns={columns}

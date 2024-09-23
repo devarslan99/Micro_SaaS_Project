@@ -9,47 +9,53 @@ const authenticateAndFetchEmailAccounts = async (apiKey, user, software) => {
     // Make the HTTP request to fetch email accounts
     const response = await axios.get(url, { headers: { accept: 'application/json' } });
     const emailAccountsData = response.data;
-    // console.log(emailAccountsData);
-    await Email.deleteMany({ user_logged_id: user.id, software: software });
+
+    // Clear existing email accounts for the user
+    await Email.deleteMany({ user_logged_id: user.id, software });
 
     for (const account of emailAccountsData) {
-      const newEmailAccount = new Email({
-        user_logged_id: user.id, // Static logged-in user ID
-        software: software, // Static software
-        email_account_id: account.id,
-        created_at: account.created_at,
-        updated_at: account.updated_at,
-        user_id: account.user_id,
-        from_name: account.from_name,
-        from_email: account.from_email,
-        username: account.username,
-        password: account.password,
-        imap_password: account.imap_password,
-        smtp_host: account.smtp_host,
-        smtp_port: account.smtp_port,
-        smtp_port_type: account.smtp_port_type,
-        message_per_day: account.message_per_day,
-        different_reply_to_address: account.different_reply_to_address || "",
-        is_different_imap_account: account.is_different_imap_account || false,
-        imap_username: account.imap_username,
-        imap_host: account.imap_host,
-        imap_port: account.imap_port,
-        imap_port_type: account.imap_port_type,
-        signature: account.signature || "",
-        custom_tracking_domain: account.custom_tracking_domain || "",
-        bcc_email: account.bcc_email || "",
-        is_smtp_success: account.is_smtp_success || false,
-        is_imap_success: account.is_imap_success || false,
-        smtp_failure_error: account.smtp_failure_error || "",
-        imap_failure_error: account.imap_failure_error || "",
-        type: account.type,
-        daily_sent_count: account.daily_sent_count || 0,
-        client_id: account.client_id || null,
-        warmup_details: account.warmup_details
-      });
+      try {
+        const newEmailAccount = new Email({
+          user_logged_id: user.id,
+          software,
+          email_account_id: account.id,
+          created_at: account.created_at,
+          updated_at: account.updated_at,
+          user_id: account.user_id,
+          from_name: account.from_name,
+          from_email: account.from_email,
+          username: account.username,
+          password: account.password,
+          imap_password: account.imap_password,
+          smtp_host: account.smtp_host,
+          smtp_port: account.smtp_port,
+          smtp_port_type: account.smtp_port_type,
+          message_per_day: account.message_per_day,
+          different_reply_to_address: account.different_reply_to_address || "",
+          is_different_imap_account: account.is_different_imap_account || false,
+          imap_username: account.imap_username,
+          imap_host: account.imap_host,
+          imap_port: account.imap_port,
+          imap_port_type: account.imap_port_type,
+          signature: account.signature || "",
+          custom_tracking_domain: account.custom_tracking_domain || "",
+          bcc_email: account.bcc_email || "",
+          is_smtp_success: account.is_smtp_success || false,
+          is_imap_success: account.is_imap_success || false,
+          smtp_failure_error: account.smtp_failure_error || "",
+          imap_failure_error: account.imap_failure_error || "",
+          type: account.type,
+          daily_sent_count: account.daily_sent_count || 0,
+          client_id: account.client_id || null,
+          warmup_details: account.warmup_details,
+        });
 
-      // Save the new email account in the database
-      await newEmailAccount.save();
+        // Save the new email account in the database
+        await newEmailAccount.save();
+      } catch (err) {
+        console.error(`Error saving email account ${account.id}:`, err.message);
+        // Continue to the next account without stopping
+      }
     }
 
     return emailAccountsData;

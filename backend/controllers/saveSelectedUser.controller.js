@@ -12,7 +12,7 @@ exports.saveUserSelectedClients = async (req, res) => {
   
     try {
       // First, delete existing clients with the same user_logged_id
-      await SelectedClient.deleteMany({ user_logged_id });
+      // await SelectedClient.deleteMany({ user_logged_id });
       // Now, insert the new clients
       const insertedClients = await SelectedClient.insertMany(
           clients.map(client => {
