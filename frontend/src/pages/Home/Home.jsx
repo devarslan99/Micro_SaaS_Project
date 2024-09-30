@@ -197,7 +197,7 @@ const Home = ({ menuCollapse }) => {
   const handleClientDetailsSave = async (changedClient) => {
     console.log(changedClient);
     try {
-      await axios.post(
+    const response =   await axios.post(
         `${BASE_URL}/save-client-data`,
         { clients: changedClient },
         {
@@ -208,9 +208,11 @@ const Home = ({ menuCollapse }) => {
           },
         }
       );
-      setSnackbarMessage("Clients selected successfully!");
-      setSnackbarSeverity("success");
-      setSnackbarOpen(true);
+      if(response.status==201){
+        setSnackbarMessage(response.data.message);
+        setSnackbarSeverity("success");
+        setSnackbarOpen(true);
+      }
     } catch (error) {
       setSnackbarMessage("Error saving selected clients.");
       setSnackbarSeverity("error");

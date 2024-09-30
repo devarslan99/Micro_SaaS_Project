@@ -3,9 +3,11 @@ const jwt = require('jsonwebtoken');
 const config = require('../config.json');
 const express = require('express')
 const router = express.Router()
-const {saveUserSelectedClients} = require('../controllers/saveSelectedUser.controller.js');
+const {saveUserSelectedClients, deleteSelectedClient} = require('../controllers/saveSelectedUser.controller.js');
 const authMiddleware = require('../middleware/authMiddleware.js');
-const {SelectedClient} = require('../controllers/selectedClientsList.js')
+const {SelectedClient} = require('../controllers/selectedClientsList.js');
+const { updateSelectedName } = require('../controllers/renameSelectedClient.controller.js');
+const { route } = require('./campaigh.route.js');
 
 
 router.get('/clients', async (req, res) => {
@@ -38,6 +40,8 @@ router.get('/clients', async (req, res) => {
   });
 router.post('/save-client-data',authMiddleware,saveUserSelectedClients)
 router.get('/selectedClients',SelectedClient)
+router.post('/delete',authMiddleware,deleteSelectedClient)
+router.post('/update-client',authMiddleware,updateSelectedName)
   module.exports = router;
 
 

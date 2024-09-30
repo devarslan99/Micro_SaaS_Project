@@ -18,7 +18,7 @@ const config = require('../config.json');
       // Decode the tokens to get software and user information
       const decoded = jwt.verify(softwareToken, config.JWT_SECRET);
       const decodedAuth = jwt.verify(authToken, config.JWT_SECRET);
-      
+      console.log("DecodedToken:",decoded);
       const softwareName = decoded.software;
       
       console.log("Software name", softwareName);

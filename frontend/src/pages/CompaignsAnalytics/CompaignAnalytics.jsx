@@ -67,7 +67,6 @@ const CompaignAnalytics = ({ menuCollapse }) => {
       try {
         const softwareToken = localStorage.getItem("softwareToken");
         const authToken = localStorage.getItem("authToken");
-
         if (!softwareToken) {
           navigate("/home"); // Redirect if no softwareToken found
           return;

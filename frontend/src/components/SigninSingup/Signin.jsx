@@ -30,8 +30,6 @@ const Signin = ({ rightPanelActive,handleSignUpClick }) => {
   }, []);
 
   const onSubmitSignIn = async (data) => {
-    console.log("Sign In Data: ", data);
-    console.log(data.signInEmail, data.signInPassword);
     try {
       const response = await axios.post(
         `${BASE_URL}/api/auth/login`,
@@ -46,10 +44,14 @@ const Signin = ({ rightPanelActive,handleSignUpClick }) => {
       );
 
       const token = response.data.token;
+      const softwareToken = response.data.softwareToken 
       if (token) {
         localStorage.setItem("authToken", token); // Store the token in localStorage
         console.log("Token saved to localStorage.");
         navigate("/home");
+      }
+      if(softwareToken){
+        localStorage.setItem("softwareToken", softwareToken);
       }
 
       // Optionally redirect the user to another page after sign up

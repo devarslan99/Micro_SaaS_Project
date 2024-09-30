@@ -52,7 +52,7 @@ app.use('/api/email',emailRoutes)
 // otp routes
 app.use('/api/otp', otpRoutes);
 app.use('/reset',resetPassRouter)
-app.use('/',userUpdateRoute)
+app.use('/user',userUpdateRoute)
 app.use('/', clientsRouter)
 
 //Refresh Routes
