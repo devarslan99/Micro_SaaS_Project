@@ -4,7 +4,6 @@ import {
   Typography,
   Button,
   Modal,
-  Checkbox,
   FormControlLabel,
 } from "@mui/material";
 import CustomCheckBtn from "../EmailStatComp/CustomCheckBtn";
@@ -31,17 +30,6 @@ const ClientSelectionModal = ({
     >
       <Box
         className="sm:w-1/2 w-4/5 bg-white sm:p-10 p-5 rounded-md shadow-md"
-        // sx={{
-        //   position: "absolute",
-        //   top: "50%",
-        //   left: "50%",
-        //   transform: "translate(-50%, -50%)",
-        //   width: 400,
-        //   bgcolor: "background.paper",
-        //   border: "2px solid #000",
-        //   boxShadow: 24,
-        //   p: 4,
-        // }}
       >
         <Typography
           id="client-selection-modal-title"

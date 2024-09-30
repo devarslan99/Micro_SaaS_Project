@@ -9,6 +9,7 @@ import ForgetPassword from "./pages/ForgetPassword/ForgetPassword";
 import ResetPassword from "./pages/ResetPassword/ResetPassword";
 import ResetPasswordSuccess from "./pages/PasswordSuccess/PasswordSuccess";
 import AuthSetter from './components/AuthSetter/AuthSetter ';
+import Settings from "./pages/Settings/Settings";
 
 function App() {
   const [menuCollapse, setMenuCollapse] = useState(false);  
@@ -52,6 +53,17 @@ function App() {
               setMenuCollapse={setMenuCollapse}
             >
               <EmailStats menuCollapse={menuCollapse} />
+            </Layout>
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <Layout
+              menuCollapse={menuCollapse} 
+              setMenuCollapse={setMenuCollapse}
+            >
+              <Settings menuCollapse={menuCollapse} />
             </Layout>
           }
         />

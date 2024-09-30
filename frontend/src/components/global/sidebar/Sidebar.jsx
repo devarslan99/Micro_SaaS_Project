@@ -5,11 +5,9 @@ import {
   MenuItem,
   SubMenu,
 } from "react-pro-sidebar";
-import {  FaQrcode } from "react-icons/fa";
-import {
-  LuArrowBigRightDash,
-  LuArrowBigLeftDash,
-} from "react-icons/lu";
+import { FaQrcode } from "react-icons/fa";
+import { LuArrowBigRightDash, LuArrowBigLeftDash } from "react-icons/lu";
+import { IoSettingsOutline } from "react-icons/io5";
 import { AiFillHome } from "react-icons/ai";
 import { Box, IconButton, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
@@ -18,8 +16,7 @@ import { ImStatsBars } from "react-icons/im";
 import { RiMailSendLine } from "react-icons/ri";
 import { useEffect } from "react";
 
-
-const Sidebar = ({ menuCollapse, setMenuCollapse,onPageSelect }) => {
+const Sidebar = ({ menuCollapse, setMenuCollapse, onPageSelect }) => {
   const location = useLocation();
 
   const menuIconClick = () => {
@@ -34,18 +31,18 @@ const Sidebar = ({ menuCollapse, setMenuCollapse,onPageSelect }) => {
         return "Campaigns Analytics";
       case "/email_stats":
         return "Email Stats";
+      case "/settings":
+        return "Settings";
       default:
-        return "Unknown Page"; 
+        return "Unknown Page";
     }
   };
 
   useEffect(() => {
     const currentPath = location.pathname;
     const title = getPageTitle(currentPath);
-    onPageSelect(title); 
-  }, [location, onPageSelect]); 
-
-
+    onPageSelect(title);
+  }, [location, onPageSelect]);
 
   const isMenuItemActive = (path) => {
     return location.pathname === path;
@@ -59,7 +56,7 @@ const Sidebar = ({ menuCollapse, setMenuCollapse,onPageSelect }) => {
           "& .ps-sidebar-container .ps-submenu-content": {
             fontSize: "16px",
             zIndex: "9999 !important",
-            backgroundColor: "#FF4747"
+            backgroundColor: "#FF4747",
           },
           "& .ps-sidebar-container .ps-submenu-content .ps-menu-button": {
             height: "30px",
@@ -82,7 +79,7 @@ const Sidebar = ({ menuCollapse, setMenuCollapse,onPageSelect }) => {
           >
             <Box className="logotext" bgcolor="white" borderRadius="50%" p={1}>
               <IconButton>
-                <FaQrcode fontSize="30px" className="text-red-500"/>
+                <FaQrcode fontSize="30px" className="text-red-500" />
               </IconButton>
             </Box>
             <Box display={menuCollapse ? "none" : "block"}>
@@ -93,29 +90,37 @@ const Sidebar = ({ menuCollapse, setMenuCollapse,onPageSelect }) => {
           </Box>
           <Menu className="text-lg h-[320px] overflow-y-auto">
             <Link to="/home">
-            <MenuItem
-              active={isMenuItemActive("/home")}
-              icon={<AiFillHome fontSize="22px" />}
-            >
-              Home
-            </MenuItem>
-              </Link>
-              <Link to="/compaigns">
-            <MenuItem
-              active={isMenuItemActive("/compaigns")}
-              icon={<ImStatsBars fontSize="22px" />}
-            >
-              Campaigns Analytics
-            </MenuItem>
-              </Link>
-              <Link to="/email_stats">
-            <MenuItem
-              active={isMenuItemActive("/email_stats")}
-              icon={<RiMailSendLine fontSize="22px" />}
-            >
-              Email Stats
-            </MenuItem>
-              </Link>
+              <MenuItem
+                active={isMenuItemActive("/home")}
+                icon={<AiFillHome fontSize="22px" />}
+              >
+                Home
+              </MenuItem>
+            </Link>
+            <Link to="/compaigns">
+              <MenuItem
+                active={isMenuItemActive("/compaigns")}
+                icon={<ImStatsBars fontSize="22px" />}
+              >
+                Campaigns Analytics
+              </MenuItem>
+            </Link>
+            <Link to="/email_stats">
+              <MenuItem
+                active={isMenuItemActive("/email_stats")}
+                icon={<RiMailSendLine fontSize="22px" />}
+              >
+                Email Stats
+              </MenuItem>
+            </Link>
+            <Link to="/settings">
+              <MenuItem
+                active={isMenuItemActive("/settings")}
+                icon={<IoSettingsOutline fontSize="22px" />}
+              >
+                Settings
+              </MenuItem>
+            </Link>
             {/* {menuCollapse ? (
               <MenuItem icon={<FaUsers fontSize="22px" />}>Feature#1</MenuItem>
             ) : (
@@ -130,12 +135,12 @@ const Sidebar = ({ menuCollapse, setMenuCollapse,onPageSelect }) => {
                     Analytics
                   </MenuItem>
                 </Link> */}
-                {/* <Link to="/employee-profile">
+            {/* <Link to="/employee-profile">
                   <MenuItem active={isMenuItemActive("/employee-profile")}>
                     Employee Profile
                   </MenuItem>
                 </Link> */}
-              {/* </SubMenu>
+            {/* </SubMenu>
             )}
             {menuCollapse ? (
               <MenuItem icon={<IoCalculatorOutline fontSize="22px" />}>
@@ -151,7 +156,7 @@ const Sidebar = ({ menuCollapse, setMenuCollapse,onPageSelect }) => {
                     Email Stats
                   </MenuItem>
                 </Link> */}
-                {/* <Link to="/payments">
+            {/* <Link to="/payments">
                   <MenuItem active={isMenuItemActive("/payments")}>
                     Payments
                   </MenuItem>
@@ -166,7 +171,7 @@ const Sidebar = ({ menuCollapse, setMenuCollapse,onPageSelect }) => {
                     Create Invoice
                   </MenuItem>
                 </Link> */}
-              {/* </SubMenu>
+            {/* </SubMenu>
             )} */}
           </Menu>
           <Box

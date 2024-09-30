@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 import { Box, IconButton, Typography } from "@mui/material";
 import { ImStatsBars } from "react-icons/im";
 import { RiMailSendLine } from "react-icons/ri";
+import { IoSettingsOutline } from "react-icons/io5";
 
 const TemporaryDrawer = ({ isOpen, toggleDrawer, onPageSelect }) => {
   const location = useLocation();
@@ -24,6 +25,8 @@ const TemporaryDrawer = ({ isOpen, toggleDrawer, onPageSelect }) => {
         return "Campaigns Analytics";
       case "/email_stats":
         return "Email Stats";
+        case "/settings":
+          return "Settings";
       default:
         return "Unknown Page";
     }
@@ -118,6 +121,14 @@ const TemporaryDrawer = ({ isOpen, toggleDrawer, onPageSelect }) => {
                     onClick={() => toggleDrawer(false)}
                   >
                     Email Stats
+                  </MenuItem>
+                </Link>
+                <Link to="/settings">
+                  <MenuItem
+                    active={isMenuItemActive("/settings")}
+                    icon={<IoSettingsOutline fontSize="22px" />}
+                  >
+                    Settings
                   </MenuItem>
                 </Link>
                 {/* <SubMenu label="Members" icon={<FaUsers fontSize="22px" />}>
