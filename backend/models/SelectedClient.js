@@ -9,6 +9,10 @@ const SelectedClientSchema = new mongoose.Schema({
       required: false,
     },
     selectedName: String,
+    email:String,
+    password:String,
+    authToken:String,
+    SoftwareToken:String
   });
 
   module.exports = mongoose.model('SelectedClient', SelectedClientSchema);

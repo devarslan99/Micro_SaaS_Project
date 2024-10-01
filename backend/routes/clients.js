@@ -8,6 +8,7 @@ const authMiddleware = require('../middleware/authMiddleware.js');
 const {SelectedClient} = require('../controllers/selectedClientsList.js');
 const { updateSelectedName } = require('../controllers/renameSelectedClient.controller.js');
 const { route } = require('./campaigh.route.js');
+const { addClientDetails } = require('../controllers/authController.js');
 
 
 router.get('/clients', async (req, res) => {
@@ -40,8 +41,9 @@ router.get('/clients', async (req, res) => {
   });
 router.post('/save-client-data',authMiddleware,saveUserSelectedClients)
 router.get('/selectedClients',SelectedClient)
-router.post('/delete',authMiddleware,deleteSelectedClient)
-router.post('/update-client',authMiddleware,updateSelectedName)
+router.post('/client/delete',authMiddleware,deleteSelectedClient)
+router.post('/client/update',authMiddleware,updateSelectedName)
+router.post('/client/credentials',authMiddleware,addClientDetails)
   module.exports = router;
 
 

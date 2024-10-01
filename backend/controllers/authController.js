@@ -2,6 +2,7 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const config=require('./../config.json')
+const SelectedClient = require('../models/SelectedClient')
 
 // Register a new user
 const registerUser = async (req, res) => {
@@ -45,54 +46,9 @@ const registerUser = async (req, res) => {
   }
 };
 
-// Login a user
-// const loginUser = async (req, res) => {
-//   const {email, password } = req.body;
-// console.log(req.body);
-// if (!email || !password) {
-//   return res.json({ msg: "Email and password are required." });
-// }
-
-// // Email format validation
-// const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-// if (!emailRegex.test(email)) {
-//   return res.json({ msg: "Invalid email format." });
-// }
-//   try {
-//     let user = await User.findOne({ email });
-//     if (!user) {
-//       return res.json({ msg: 'Invalid credentials' });
-//     }
-
-//     const isMatch = await bcrypt.compare(password, user.password);
-//     if (!isMatch) {
-//       return res.json({ msg: 'Invalid credentials' });
-//     }
-
-//     const payload = {
-//       user: {
-//         id: user.id,
-//       },
-//     };
-
-//     jwt.sign(
-//       payload,
-//       config.JWT_SECRET,
-//       { expiresIn: '24h' },
-//       (err, token) => {
-//         if (err) throw err;
-//         res.json({ token });
-//       }
-//     );
-//   } catch (err) {
-//     console.error(err.message);
-//     res.json({ msg:'Server error'});
-//   }
-// };
-
+//LogIn Logic for both client and user
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
-  console.log(req.body);
 
   // Check if email or password is missing
   if (!email || !password) {
@@ -106,69 +62,86 @@ const loginUser = async (req, res) => {
   }
 
   try {
-    // Find user by email
+    // First, search for the user in the User collection
     let user = await User.findOne({ email });
-    if (!user) {
-      return res.json({ msg: 'User not found' });
-    }
-
-    // Compare provided password with stored hashed password
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.json({ msg: 'Invalid credentials' });
-    }
-
-    // Create payload for user authentication token
-    const payload = {
-      user: {
-        id: user.id,
-      },
-    };
-
-    // Sign JWT token for user authentication
-    jwt.sign(
-      payload,
-      config.JWT_SECRET,
-      { expiresIn: '24h' }, // User token valid for 24 hours
-      async (err, token) => {
-        if (err) throw err; // Error handling
-
-        // Check if user has software with an API key
-        let softwareToken;
-        let apiKey;
-        let software;
-
-        // If user has softwareKeys, find the first one with an API key
-        if (user.softwareKeys && user.softwareKeys.length > 0) {
-          const softwareData = user.softwareKeys.find(item => item.apiKey);
-
-          if (softwareData) {
-            apiKey = softwareData.apiKey;
-            software = softwareData.software;
-              console.log(software);
-            // Generate a software token only including the software name
-            softwareToken = jwt.sign(
-              { software }, // Only include software name
-              config.JWT_SECRET,
-              { expiresIn: '10y' } // Token valid for 10 years
-            );
-          }
-        }
-
-        // Send response with both user token and software token (if available)
-        res.json({
-          token, // User login token
-          ...(softwareToken && { softwareToken }), // Include software token if it exists
-          ...(apiKey && { apiKey }), // Include API key if it exists
-          ...(software && { software }), // Include software name if it exists
-        });
+    
+    if (user) {
+      // User found in the User collection
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        return res.json({ msg: 'Invalid credentials' });
       }
-    );
+
+      // Create payload for user authentication token
+      const payload = {
+        user: {
+          id: user.id,
+        },
+      };
+
+      // Sign JWT token for user authentication
+      jwt.sign(
+        payload,
+        config.JWT_SECRET,
+        { expiresIn: '24h' }, // User token valid for 24 hours
+        async (err, token) => {
+          if (err) throw err; // Error handling
+
+          // Check if user has software with an API key
+          let softwareToken;
+          let apiKey;
+          let software;
+
+          if (user.softwareKeys && user.softwareKeys.length > 0) {
+            const softwareData = user.softwareKeys.find(item => item.apiKey);
+            if (softwareData) {
+              apiKey = softwareData.apiKey;
+              software = softwareData.software;
+              softwareToken = jwt.sign(
+                { software }, // Include software name
+                config.JWT_SECRET,
+                { expiresIn: '10y' } // Token valid for 10 years
+              );
+            }
+          }
+
+          // Send response with both user token and software token (if available)
+          res.json({
+            token, // User login token
+            ...(softwareToken && { softwareToken }), // Include software token if it exists
+            ...(apiKey && { apiKey }), // Include API key if it exists
+            ...(software && { software }), // Include software name if it exists
+            isClient:false
+          });
+        }
+      );
+    } else {
+      // If user not found, search in the SelectedClient collection
+      let client = await SelectedClient.findOne({ email });
+      if (!client) {
+        return res.json({ msg: 'Invalid credentials' });
+      }
+
+      // Compare client password
+      const isMatch = await bcrypt.compare(password, client.password);
+      if (!isMatch) {
+        return res.json({ msg: 'Invalid credentials' });
+      }
+
+      // Send authToken and softwareToken from the client collection
+      res.json({
+        token: client.authToken,
+        softwareToken: client.SoftwareToken,
+        clientId: client.clientId, // Return clientId if needed
+        isClient:true
+      });
+    }
   } catch (err) {
     console.error(err.message);
     res.json({ msg: 'Server error' });
   }
 };
+
 
 const changePassword = async (req, res) => {
   const { oldPassword, newPassword, user } = req.body;
@@ -208,124 +181,61 @@ const changePassword = async (req, res) => {
 };
 
 //Register A Client
-const registerClient = async (req, res) => {
-  const {name, username, password } = req.body;
-//Checking If user Already Exist
+const addClientDetails = async (req, res) => {
+  const { clientId, email, password } = req.body; // Get email and password from the body
+  const user_logged_id = req.body.user.id; // Assuming the user is authenticated and this is set in req.user
+  // Get tokens from headers
+  const authToken = req.headers['authorization']; // Lowercased header name 'authorization'
+  const SoftwareToken = req.headers['softwareauthorization']; // Lowercased header name 'softwareauthorization'
+
+  // Ensure the tokens are present
+  if (!authToken || !SoftwareToken) {
+    return res.status(400).json({ msg: 'Missing authToken or SoftwareToken in headers.' });
+  }
+
   try {
-    let user = await User.findOne({ username });
-    if (user) {
-      return res.json({ msg: 'Client already exists.Please SignIn' });
+    // First, check if the email already exists in either User or SelectedClient collection
+    const userWithEmail = await User.findOne({ email });
+    const clientWithEmail = await SelectedClient.findOne({ email });
+
+    if (userWithEmail || clientWithEmail) {
+      return res.status(400).json({ msg: 'Email already exists in the system.' });
     }
 
-    user = new User({
-      name,
-      email:username,
-      password,
-    });
-
+    // Hash the password before saving it
     const salt = await bcrypt.genSalt(10);
-      user.password = await bcrypt.hash(password, salt);
-      user.client= false
-    await user.save();
-
-    const payload = {
-      user: {
-        id: user.id,
-      },
-    };
-
-    jwt.sign(
-      payload,
-      config.JWT_SECRET,
-      { expiresIn: '10y' },
-      (err, token) => {
-        if (err) throw err;
-        res.json({ token });
-      }
-    );
-  } catch (err) {
-    console.error(err.message);
-    res.send({msg:'Server error'});
-  }
-};
-
-const loginClient = async (req, res) => {
-  const { username, password } = req.body;
-  console.log(req.body);
-
-  // Check if email or password is missing
-  if (!username || !password) {
-    return res.json({ msg: "Email and password are required." });
-  }
-
-
-  try {
-    // Find user by email
-    let user = await User.findOne({ email:username });
-    if (!user) {
-      return res.json({ msg: 'User not found' });
-    }
-
-    // Compare provided password with stored hashed password
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.json({ msg: 'Invalid credentials' });
-    }
-
-    // Create payload for user authentication token
-    const payload = {
-      user: {
-        id: user.id,
-      },
-    };
-
-    // Sign JWT token for user authentication
-    jwt.sign(
-      payload,
-      config.JWT_SECRET,
-      { expiresIn: '24h' }, // User token valid for 24 hours
-      async (err, token) => {
-        if (err) throw err; // Error handling
-
-        // Check if user has software with an API key
-        let softwareToken;
-        let apiKey;
-        let software;
-
-        // If user has softwareKeys, find the first one with an API key
-        if (user.softwareKeys && user.softwareKeys.length > 0) {
-          const softwareData = user.softwareKeys.find(item => item.apiKey);
-
-          if (softwareData) {
-            apiKey = softwareData.apiKey;
-            software = softwareData.software;
-              console.log(software);
-            // Generate a software token only including the software name
-            softwareToken = jwt.sign(
-              { software }, // Only include software name
-              config.JWT_SECRET,
-              { expiresIn: '10y' } // Token valid for 10 years
-            );
-          }
+    const hashedPassword = await bcrypt.hash(password, salt);
+    console.log(clientId, user_logged_id );
+    // Find the client by clientId and user_logged_id and update the fields
+    const updatedClient = await SelectedClient.findOneAndUpdate(
+      { clientId, user_logged_id },  // Match on clientId and user_logged_id
+      {
+        $set: {
+          email,
+          password: hashedPassword, // Save the hashed password
+          authToken,
+          SoftwareToken
         }
-
-        // Send response with both user token and software token (if available)
-        res.json({
-          token, // User login token
-          ...(softwareToken && { softwareToken }), // Include software token if it exists
-          ...(apiKey && { apiKey }), // Include API key if it exists
-          ...(software && { software }), // Include software name if it exists
-        });
-      }
+      },
+      { new: true }  // Return the updated document
     );
+
+    if (!updatedClient) {
+      return res.status(404).json({ msg: 'Client not found for the provided clientId and user_logged_id.' });
+    }
+
+    res.json({ msg: 'Client details updated successfully', client: updatedClient });
   } catch (err) {
     console.error(err.message);
-    res.json({ msg: 'Server error' });
+    res.status(500).send({ msg: 'Server error' });
   }
 };
+
+
 
 module.exports = {
   registerUser,
   loginUser,
-  changePassword
+  changePassword,
+  addClientDetails
 };
