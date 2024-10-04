@@ -148,22 +148,22 @@ const changePassword = async (req, res) => {
   const user_logged_id = user.id; // Assuming user ID is passed in the user object
 
   // Validate input
-  if (!oldPassword || !newPassword || !user_logged_id) {
-    return res.status(400).json({ msg: 'Old password, new password, and user ID are required.' });
-  }
+  // if (!oldPassword || !newPassword || !user_logged_id) {
+  //   return res.status(400).json({ msg: 'Old password, new password, and user ID are required.' });
+  // }
 
   try {
     // Find the user by user ID
     let foundUser = await User.findById(user_logged_id);
-    if (!foundUser) {
-      return res.status(404).json({ msg: 'User not found.' });
-    }
+    // if (!foundUser) {
+    //   return res.status(404).json({ msg: 'User not found.' });
+    // }
 
-    // Compare the old password with the stored hashed password
-    const isMatch = await bcrypt.compare(oldPassword, foundUser.password);
-    if (!isMatch) {
-      return res.status(400).json({ msg: 'Old password is incorrect.' });
-    }
+    // // Compare the old password with the stored hashed password
+    // const isMatch = await bcrypt.compare(oldPassword, foundUser.password);
+    // if (!isMatch) {
+    //   return res.status(400).json({ msg: 'Old password is incorrect.' });
+    // }
 
     // Hash the new password
     const salt = await bcrypt.genSalt(10);
