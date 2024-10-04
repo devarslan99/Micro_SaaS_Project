@@ -1,17 +1,46 @@
 import { Box, Modal, Stack } from "@mui/material";
 import React from "react";
 import { useForm } from "react-hook-form";
+import axios from "axios";
+import { BASE_URL } from "../../config";
 
 const ChangePasswordModal = ({ openModal, onCloseModal }) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
+    watch,
   } = useForm();
 
-  const onSubmit = (data) => {
-    console.log(data);
+  const token = localStorage.getItem("authToken")
+  const softwareToken = localStorage.getItem("softwareToken")
+
+  const onSubmit = async (data) => {
+    try {
+      const response = await axios.post(
+        `${BASE_URL}/api/auth/change-password`,
+        {
+          newPassword: data.new_password,
+        },
+        {
+          headers: {
+            Authorization: token,
+            SoftwareAuthorization : softwareToken,
+          },
+        }
+      );
+      console.log("Password changed successfully:", response.data);
+      onCloseModal();
+    } catch (error) {
+      console.error(
+        "Error changing password:",
+        error.response?.data || error.message
+      );
+    }
   };
+
+  const password = watch("new_password");
+
   return (
     <Modal
       open={openModal}
@@ -86,7 +115,7 @@ const ChangePasswordModal = ({ openModal, onCloseModal }) => {
                 onClick={onCloseModal}
                 className="bg-transparent border-red-500 border py-1 text-lg rounded-md w-full"
               >
-                cancel
+                Cancel
               </button>
               <button
                 type="submit"

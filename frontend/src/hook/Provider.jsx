@@ -1,21 +1,31 @@
-import React, { createContext, useState } from "react";
+import React, { useState } from "react";
+import MyContext from "./context";
 
-// Create the context
-export const MyContext = createContext();
-
-// Create a provider component
-export const MyProvider = ({ children }) => {
-  const [state, setState] = useState("Some shared data");
-
+const MyProvider = ({ children }) => {
+  const [clientData, setClientData] = useState([]);
+  const [selectedClientId, setSelectedClientId] = useState(undefined);
+  const [loggedInClientId, setLoggedInClientId] = useState(undefined);
+  const [isClientLoggedIn, setIsClientLoggedIn] = useState(null);
+  const [selectedClient, setSelectedClient] = useState("");
 
   return (
     <MyContext.Provider
       value={{
-        state,
-        setState,
+        clientData,
+        setClientData,
+        selectedClientId,
+        setSelectedClientId,
+        loggedInClientId,
+        setLoggedInClientId,
+        isClientLoggedIn,
+        setIsClientLoggedIn,
+        selectedClient,
+        setSelectedClient,
       }}
     >
       {children}
     </MyContext.Provider>
   );
 };
+
+export default MyProvider;

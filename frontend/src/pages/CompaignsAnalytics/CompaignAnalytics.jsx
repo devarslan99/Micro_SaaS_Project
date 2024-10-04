@@ -8,7 +8,7 @@ import {
   CircularProgress,
   Button,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { clientData, gradients, statGraphItems } from "../../data/mockData";
 import { format, parse, subDays } from "date-fns";
 import CustomCheckBtn from "../../components/CompaingComp/CustomCheckBtn";
@@ -18,10 +18,9 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { HiRefresh } from "react-icons/hi";
 import { BASE_URL } from "../../config";
+import MyContext from "../../hook/context";
 
 const CompaignAnalytics = ({ menuCollapse }) => {
-  const [selectedClient, setSelectedClient] = useState(""); // Dropdown client selection
-  const [selectedClientId, setSelectedClientId] = useState(null); // Dropdown client selection
   const [startDate, setStartDate] = useState(subDays(new Date(), 7));
   const [endDate, setEndDate] = useState(new Date());
   const [showOpenCount, setShowOpenCount] = useState(false);
@@ -31,28 +30,39 @@ const CompaignAnalytics = ({ menuCollapse }) => {
   const [showTopClickCount, setShowTopClickCount] = useState(false);
   const [dailyFilteredData, setDailyFilteredData] = useState({});
   const [topLevelFilteredData, setTopLevelFilteredData] = useState({});
-  const [clientData, setClientData] = useState([]);
+  const {
+    clientData,
+    setClientData,
+    selectedClientId,
+    setSelectedClientId,
+    selectedClient,
+    setSelectedClient,
+  } = useContext(MyContext);
   const navigate = useNavigate();
+  const loggedInClientId = localStorage.getItem("clientId");
+  const isClientLoggedIn = Boolean(localStorage.getItem("isClient"))
+
+  console.log(typeof isClientLoggedIn)
+
+
 
   const handleRefresh = async () => {
     const token = localStorage.getItem("authToken");
+
     useEffect(() => {
       const softwareToken = localStorage.getItem("softwareToken");
-      if(!softwareToken){
-        navigate('/home')
+      if (!softwareToken) {
+        navigate("/home");
       }
     }, [navigate]);
     try {
       setCompaignFetch(true);
-      const response = await axios.get(
-        `${BASE_URL}/campaighs `,
-        {
-          headers: {
-            Authorization: token,
-            softwareAuthorization: softwareToken,
-          },
-        }
-      );
+      const response = await axios.get(`${BASE_URL}/campaighs `, {
+        headers: {
+          Authorization: token,
+          softwareAuthorization: softwareToken,
+        },
+      });
       if (response.status === 200) {
         console.log("Client email:", response.data.message);
         setCompaignFetch(false);
@@ -103,7 +113,6 @@ const CompaignAnalytics = ({ menuCollapse }) => {
     }
   }, [navigate]);
 
-
   const handleDateChange = ({ startDate, endDate }) => {
     setStartDate(startDate);
     setEndDate(endDate);
@@ -121,17 +130,15 @@ const CompaignAnalytics = ({ menuCollapse }) => {
       console.log(formattedStartDate);
       console.log(formattedEndDate);
 
-      const response = await axios.get(
-        `${BASE_URL}/api/campaighs/daily`,
-        {
-          headers: {
-            clientID: selectedClientId,
-            startDate: formattedStartDate,
-            endDate: formattedEndDate,
-            token: `${token}`,
-          },
-        }
-      );
+      const response = await axios.get(`${BASE_URL}/api/campaighs/daily`, {
+        headers: {
+          clientID:
+            isClientLoggedIn === false ? selectedClientId : loggedInClientId,
+          startDate: formattedStartDate,
+          endDate: formattedEndDate,
+          token: `${token}`,
+        },
+      });
 
       if (response.status === 200) {
         setDailyFilteredData(response.data);
@@ -158,7 +165,8 @@ const CompaignAnalytics = ({ menuCollapse }) => {
         `${BASE_URL}/api/campaighs/top-level-stats`,
         {
           headers: {
-            clientId: selectedClientId,
+            clientId:
+              isClientLoggedIn === false ? selectedClientId : loggedInClientId,
           },
         }
       );
@@ -225,43 +233,50 @@ const CompaignAnalytics = ({ menuCollapse }) => {
                   endDate={endDate}
                   onDateChange={handleDateChange} // Pass down the date change handler
                 />
-                <Select
-                  value={selectedClient}
-                  onChange={(e) => {
-                    const selectedClient = clientData.find(
-                      (client) => client.selectedName == e.target.value
-                    );
-                    setSelectedClient(selectedClient.selectedName);
-                    setSelectedClientId(selectedClient.clientId);
-                    // fetchDailyData()
-                  }}
-                  sx={{
-                    width: {md:200, xs:'100%'},
-                    backgroundColor: "white",
-                    border: "1px solid #ccc",
-                    borderRadius: "5px",
-                    height: "38px",
-                    color: "#FF4B2B",
-                    "& .MuiSelect-icon": {
+                {isClientLoggedIn === false ? (
+                  <Select
+                    value={selectedClient}
+                    onChange={(e) => {
+                      const selectedClient = clientData.find(
+                        (client) => client.selectedName == e.target.value
+                      );
+                      setSelectedClient(selectedClient.selectedName);
+                      setSelectedClientId(selectedClient.clientId);
+                      // fetchDailyData()
+                    }}
+                    sx={{
+                      width: { md: 200, xs: "100%" },
+                      backgroundColor: "white",
+                      border: "1px solid #ccc",
+                      borderRadius: "5px",
+                      height: "38px",
                       color: "#FF4B2B",
-                    },
-                    "& .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "#FF4B2B",
-                    },
-                    "&:hover .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "#FF4B2B",
-                    },
-                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "#FF4B2B",
-                    },
-                  }}
-                >
-                  {clientData.map((client) => (
-                    <MenuItem key={client.clientId} value={client.selectedName}>
-                      {client.selectedName}
-                    </MenuItem>
-                  ))}
-                </Select>
+                      "& .MuiSelect-icon": {
+                        color: "#FF4B2B",
+                      },
+                      "& .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "#FF4B2B",
+                      },
+                      "&:hover .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "#FF4B2B",
+                      },
+                      "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                        borderColor: "#FF4B2B",
+                      },
+                    }}
+                  >
+                    {clientData.map((client) => (
+                      <MenuItem
+                        key={client.clientId}
+                        value={client.selectedName}
+                      >
+                        {client.selectedName}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                ) : (
+                  <></>
+                )}
               </Box>
             </Box>
           </Box>
@@ -418,45 +433,45 @@ const CompaignAnalytics = ({ menuCollapse }) => {
           {Object.keys(topLevelFilteredData).length > 0 ? (
             <>
               {/* <Grid container spacing={3}> */}
-                {(() => {
-                  const renderedStats = [];
-                  for (const statName in topLevelFilteredData) {
-                    if (topLevelFilteredData.hasOwnProperty(statName)) {
-                      const statValue = topLevelFilteredData[statName];
+              {(() => {
+                const renderedStats = [];
+                for (const statName in topLevelFilteredData) {
+                  if (topLevelFilteredData.hasOwnProperty(statName)) {
+                    const statValue = topLevelFilteredData[statName];
 
-                      // Conditionally render Open Count and Click Count based on toggles
-                      if (
-                        (statName === "open_count" && !showTopOpenCount) ||
-                        (statName === "click_count" && !showTopClickCount) ||
-                        statName === "_id"
-                      ) {
-                        continue; // Skip rendering if toggled off
-                      }
-
-                      // Create gradient index to style the box
-                      const gradient =
-                        gradients[renderedStats.length % gradients.length];
-
-                      // Add the rendered element to the array
-                      renderedStats.push(
-                        <Grid item md={4} sm={6} xs={12} key={statName}>
-                          <Box
-                            className={`p-5 rounded-md shadow-md text-white ${gradient}`}
-                          >
-                            <Typography variant="h6" textTransform="capitalize">
-                              {statName.replace(/_/g, " ")}
-                            </Typography>
-                            <Typography variant="subtitle2">
-                              Total # of {statName.replace(/_/g, " ")}
-                            </Typography>
-                            <Typography variant="h4">{statValue}</Typography>
-                          </Box>
-                        </Grid>
-                      );
+                    // Conditionally render Open Count and Click Count based on toggles
+                    if (
+                      (statName === "open_count" && !showTopOpenCount) ||
+                      (statName === "click_count" && !showTopClickCount) ||
+                      statName === "_id"
+                    ) {
+                      continue; // Skip rendering if toggled off
                     }
+
+                    // Create gradient index to style the box
+                    const gradient =
+                      gradients[renderedStats.length % gradients.length];
+
+                    // Add the rendered element to the array
+                    renderedStats.push(
+                      <Grid item md={4} sm={6} xs={12} key={statName}>
+                        <Box
+                          className={`p-5 rounded-md shadow-md text-white ${gradient}`}
+                        >
+                          <Typography variant="h6" textTransform="capitalize">
+                            {statName.replace(/_/g, " ")}
+                          </Typography>
+                          <Typography variant="subtitle2">
+                            Total # of {statName.replace(/_/g, " ")}
+                          </Typography>
+                          <Typography variant="h4">{statValue}</Typography>
+                        </Box>
+                      </Grid>
+                    );
                   }
-                  return renderedStats;
-                })()}
+                }
+                return renderedStats;
+              })()}
               {/* </Grid> */}
             </>
           ) : (

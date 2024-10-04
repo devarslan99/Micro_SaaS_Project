@@ -10,9 +10,11 @@ import { Box, IconButton, Typography } from "@mui/material";
 import { ImStatsBars } from "react-icons/im";
 import { RiMailSendLine } from "react-icons/ri";
 import { IoSettingsOutline } from "react-icons/io5";
+import MyContext from "../../../hook/context";
 
 const TemporaryDrawer = ({ isOpen, toggleDrawer, onPageSelect }) => {
   const location = useLocation();
+  const isClientLoggedIn = Boolean(localStorage.getItem("isClient"));
 
   const isMenuItemActive = (path) => {
     return location.pathname === path;
@@ -25,8 +27,8 @@ const TemporaryDrawer = ({ isOpen, toggleDrawer, onPageSelect }) => {
         return "Campaigns Analytics";
       case "/email_stats":
         return "Email Stats";
-        case "/settings":
-          return "Settings";
+      case "/settings":
+        return "Settings";
       default:
         return "Unknown Page";
     }
@@ -96,15 +98,16 @@ const TemporaryDrawer = ({ isOpen, toggleDrawer, onPageSelect }) => {
                 </Box>
               </Box>
               <Menu className="text-lg h-[280px] overflow-y-auto">
-                <Link to="/home">
-                  <MenuItem
-                    active={isMenuItemActive("/home")}
-                    icon={<AiFillHome fontSize="22px" />}
-                    onClick={() => toggleDrawer(false)}
-                  >
-                    Home
-                  </MenuItem>
-                </Link>
+                {isClientLoggedIn === false ? (
+                  <Link to="/home">
+                    <MenuItem
+                      active={isMenuItemActive("/home")}
+                      icon={<AiFillHome fontSize="22px" />}
+                    >
+                      Home
+                    </MenuItem>
+                  </Link>
+                ) : (<></>)}
                 <Link to="/compaigns">
                   <MenuItem
                     active={isMenuItemActive("/compaigns")}
@@ -123,14 +126,16 @@ const TemporaryDrawer = ({ isOpen, toggleDrawer, onPageSelect }) => {
                     Email Stats
                   </MenuItem>
                 </Link>
-                <Link to="/settings">
-                  <MenuItem
-                    active={isMenuItemActive("/settings")}
-                    icon={<IoSettingsOutline fontSize="22px" />}
-                  >
-                    Settings
-                  </MenuItem>
-                </Link>
+                {isClientLoggedIn === false ? (
+                  <Link to="/settings">
+                    <MenuItem
+                      active={isMenuItemActive("/settings")}
+                      icon={<IoSettingsOutline fontSize="22px" />}
+                    >
+                      Settings
+                    </MenuItem>
+                  </Link>
+                ) : (<></>)}
                 {/* <SubMenu label="Members" icon={<FaUsers fontSize="22px" />}>
                   <Link to="/leaders">
                     <MenuItem

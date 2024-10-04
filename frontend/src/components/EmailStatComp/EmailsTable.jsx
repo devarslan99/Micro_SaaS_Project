@@ -10,7 +10,6 @@ import React, { useContext } from "react";
 import { clientData, email_stats } from "../../data/mockData";
 import CustomCheckBtn from "./CustomCheckBtn";
 import axios from "axios";
-import { MyContext } from "../../hook/Provider";
 //   import './table.css'
 import { BASE_URL } from "../../config";
 const EmailTable = ({ data, recovery, moderate, maxeffort, setData }) => {

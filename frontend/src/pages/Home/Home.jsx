@@ -171,28 +171,13 @@ const Home = ({ menuCollapse }) => {
 
   const handleNext = async () => {
     console.log(selectedClients);
-    // try {
-    //   await axios.post(
-    //     "http://localhost:5000/api/save-selected-clients",
-    //     { selectedClients },
-    //     {
-    //       headers: {
-    //         "Content-Type": "application/json",
-    //         Authorization: `${localStorage.getItem("authToken")}`,
-    //       },
-    //     }
-    //   );
 
     setClientModalOpen(false);
     setClientDetailsModalOpen(true);
     setSnackbarMessage("Clients selected successfully!");
     setSnackbarSeverity("success");
     setSnackbarOpen(true);
-    // } catch (error) {
-    //   setSnackbarMessage("Error saving selected clients.");
-    //   setSnackbarSeverity("error");
-    //   setSnackbarOpen(true);
-    // }
+
   };
   const handleClientDetailsSave = async (changedClient) => {
     console.log(changedClient);

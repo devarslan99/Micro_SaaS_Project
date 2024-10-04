@@ -1,18 +1,15 @@
-import {
-  Box,
-  Button,
-  IconButton,
-  TextField,
-  Typography,
-} from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { Box, Button, IconButton, TextField, Typography } from "@mui/material";
+import React, { useContext, useEffect, useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { BASE_URL } from "../../config";
+import MyContext from "../../hook/context";
 
-const Signin = ({ rightPanelActive,handleSignUpClick }) => {
+const Signin = ({ rightPanelActive, handleSignUpClick }) => {
+  const { setLoggedInClientId, setIsClientLoggedIn, isClientLoggedIn } =
+    useContext(MyContext);
   const {
     register,
     handleSubmit,
@@ -25,32 +22,37 @@ const Signin = ({ rightPanelActive,handleSignUpClick }) => {
   useEffect(() => {
     const token = localStorage.getItem("authToken");
     if (token) {
-      navigate("/home"); // Redirect to /home if token exists
+      navigate("/home");
     }
   }, []);
 
   const onSubmitSignIn = async (data) => {
     try {
-      const response = await axios.post(
-        `${BASE_URL}/api/auth/login`,
-        {
-          email: data.signInEmail,
-          password: data.signInPassword,
-        }
-      );
+      const response = await axios.post(`${BASE_URL}/api/auth/login`, {
+        email: data.signInEmail,
+        password: data.signInPassword,
+      });
       console.log("Server Response: ", response.data);
       setErrorMessage(
         response?.data?.msg || "An error occurred during sign up."
       );
 
       const token = response.data.token;
-      const softwareToken = response.data.softwareToken 
+      const softwareToken = response.data.softwareToken;
+      // setLoggedInClientId(response.data.clientId);
+      // setIsClientLoggedIn(response.data.isClient)
+      localStorage.setItem("clientId", response.data.clientId)
+      localStorage.setItem("isClient", response.data.isClient)
       if (token) {
         localStorage.setItem("authToken", token); // Store the token in localStorage
         console.log("Token saved to localStorage.");
-        navigate("/home");
+        if (isClientLoggedIn === false) {
+          navigate("/home"); // Navigate to /home if isClient is true
+        } else {
+          navigate("/compaigns"); // Navigate to /campaigns if isClient is false
+        }
       }
-      if(softwareToken){
+      if (softwareToken) {
         localStorage.setItem("softwareToken", softwareToken);
       }
 
@@ -62,12 +64,12 @@ const Signin = ({ rightPanelActive,handleSignUpClick }) => {
 
   const handleGoogleSignIn = async () => {
     try {
-        // This will redirect the user to the Google OAuth page via your backend
-        window.location.href = `${BASE_URL}/auth/google`;
+      // This will redirect the user to the Google OAuth page via your backend
+      window.location.href = `${BASE_URL}/auth/google`;
     } catch (error) {
-        console.error("Error during Google Sign-Up: ", error);
+      console.error("Error during Google Sign-In: ", error);
     }
-};
+  };
   return (
     <Box
       className={`absolute top-0 h-full md:w-1/2 w-[100%] z-20 flex justify-center items-center flex-col transition-all duration-[0.6s] ease-in-out ${
@@ -97,8 +99,8 @@ const Signin = ({ rightPanelActive,handleSignUpClick }) => {
           <FacebookIcon />
         </IconButton> */}
         <IconButton onClick={handleGoogleSignIn}>
-            <FcGoogle />
-          </IconButton>
+          <FcGoogle />
+        </IconButton>
         {/* <IconButton>
           <LinkedInIcon />
         </IconButton> */}
@@ -135,11 +137,10 @@ const Signin = ({ rightPanelActive,handleSignUpClick }) => {
           error={!!errors.signInPassword}
           helperText={errors.signInPassword?.message}
         />
-        <Link
-          to="/forget-password"
-          variant="body2"
-        >
-          <Typography variant="" className="text-[#FF4B2B] italic">Forgot your password?</Typography>
+        <Link to="/forget-password" variant="body2">
+          <Typography variant="" className="text-[#FF4B2B] italic">
+            Forgot your password?
+          </Typography>
         </Link>
         <Button
           type="submit"
@@ -154,7 +155,15 @@ const Signin = ({ rightPanelActive,handleSignUpClick }) => {
         >
           Sign In
         </Button>
-        <Typography variant="" className="text-sm md:hidden block pt-3">Don't have an account? <span className="text-red-500 font-semibold" onClick={handleSignUpClick}>SignUp</span></Typography>
+        <Typography variant="" className="text-sm md:hidden block pt-3">
+          Don't have an account?{" "}
+          <span
+            className="text-red-500 font-semibold"
+            onClick={handleSignUpClick}
+          >
+            SignUp
+          </span>
+        </Typography>
         <Typography className="pt-4 italic text-red-500">
           {errorMessage}
         </Typography>

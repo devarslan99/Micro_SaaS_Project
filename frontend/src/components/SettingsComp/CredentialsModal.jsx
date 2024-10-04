@@ -1,16 +1,46 @@
 import { Box, Modal, Stack } from "@mui/material";
 import React from "react";
 import { useForm } from "react-hook-form";
+import { BASE_URL } from "../../config";
+import axios from "axios";
 
-const CredentialsModal = ({ openModal, onCloseModal }) => {
+const CredentialsModal = ({ openModal, onCloseModal, clientId }) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => {
+  const token = localStorage.getItem("authToken");
+  const softwareToken = localStorage.getItem("softwareToken");
+
+  const onSubmit =async (data) => {
     console.log(data);
+    try {
+      // Make an API request to update the client name
+      const response = await axios.post(
+        `${BASE_URL}/client/credentials`, // Replace with the actual endpoint
+        {
+          clientId: clientId, // Sending clientId in the request body
+          email: data.username, // The new name from the form
+          password: data.password, // The new name from the form
+        },
+        {
+          headers: {
+            Authorization: token,
+            SoftwareAuthorization: softwareToken,
+          },
+        }
+      );
+
+      console.log("Client updated successfully:", response.data);
+      onCloseModal(); // Close the modal after successful update
+    } catch (error) {
+      console.error(
+        "Error updating client:",
+        error.response?.data || error.message
+      );
+    }
   };
   return (
     <Modal

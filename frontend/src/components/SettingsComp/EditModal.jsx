@@ -1,17 +1,47 @@
 import { Box, Modal, Stack } from "@mui/material";
 import React from "react";
 import { useForm } from "react-hook-form";
+import axios from "axios";
+import { BASE_URL } from "../../config";
 
-const EditModal = ({ openModal, onCloseModal }) => {
+const EditModal = ({ openModal, onCloseModal, clientId }) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
+  console.log("id: " , clientId)
 
-  const onSubmit = (data) => {
-    console.log(data);
+  const token = localStorage.getItem("authToken");
+  const softwareToken = localStorage.getItem("softwareToken");
+
+  const onSubmit = async (data) => {
+    try {
+      // Make an API request to update the client name
+      const response = await axios.post(
+        `${BASE_URL}/client/update`, // Replace with the actual endpoint
+        {
+          clientId: clientId, // Sending clientId in the request body
+          newSelectedName: data.new_name, // The new name from the form
+        },
+        {
+          headers: {
+            Authorization: token,
+            SoftwareAuthorization: softwareToken,
+          },
+        }
+      );
+
+      console.log("Client updated successfully:", response.data);
+      onCloseModal(); // Close the modal after successful update
+    } catch (error) {
+      console.error(
+        "Error updating client:",
+        error.response?.data || error.message
+      );
+    }
   };
+
   return (
     <Modal
       open={openModal}
@@ -33,17 +63,13 @@ const EditModal = ({ openModal, onCloseModal }) => {
               </label>
               <input
                 id="new_name"
-                type="name"
+                type="text"
                 className={`border border-neutral-400 p-2 focus:border-red-400 focus:outline-none mt-2 rounded-md w-full ${
                   errors.new_name ? "border-red-400" : ""
                 }`}
                 placeholder="Enter new name..."
                 {...register("new_name", {
-                  required: "name is required",
-                //   minLength: {
-                //     value: 6,
-                //     message: "name must be at least 6 characters",
-                //   },
+                  required: "Name is required",
                 })}
               />
               {errors.new_name && (
@@ -57,7 +83,7 @@ const EditModal = ({ openModal, onCloseModal }) => {
                 onClick={onCloseModal}
                 className="bg-transparent border-red-500 border py-1 text-lg rounded-md w-full"
               >
-                cancel
+                Cancel
               </button>
               <button
                 type="submit"

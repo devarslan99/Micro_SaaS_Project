@@ -36,6 +36,8 @@ const Topbar = ({ menuCollapse, pageTitle, onPageSelect }) => {
     // Remove the token from localStorage
     localStorage.removeItem("authToken");
     localStorage.removeItem("softwareToken");
+    localStorage.removeItem("clientId");
+    localStorage.removeItem("isClient");
     console.log("Token removed from localStorage.");
 
     // Redirect to the sign-in page

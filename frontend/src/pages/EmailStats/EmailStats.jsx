@@ -7,7 +7,7 @@ import {
   Select,
   Typography,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { HiRefresh } from "react-icons/hi";
 import CustomInput from "../../components/EmailStatComp/CustomInput";
 import EmailTable from "../../components/EmailStatComp/EmailsTable";
@@ -15,6 +15,7 @@ import { email_stats } from "../../data/mockData";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { BASE_URL } from "../../config";
+import MyContext from "../../hook/context";
 
 const EmailStats = ({ menuCollapse }) => {
   const [selectedClient, setSelectedClient] = useState(""); // Dropdown client selection
@@ -27,9 +28,13 @@ const EmailStats = ({ menuCollapse }) => {
   const [emailFetch, setEmailFetch] = useState(false); // Initialize data with mock data
   const [emailConnect, setEmailConnect] = useState(false); // Initialize data with mock data
   const [emailHealth, setEmailHealth] = useState("All");
-  const [filteredData, setFilteredData] = useState([])
+  const [filteredData, setFilteredData] = useState([]);
+
 
   const navigate = useNavigate();
+
+  const loggedInClientId = localStorage.getItem("clientId");
+  const isClientLoggedIn = Boolean(localStorage.getItem("isClient"))
 
   useEffect(() => {
     const token = localStorage.getItem("authToken");
@@ -115,15 +120,12 @@ const EmailStats = ({ menuCollapse }) => {
           return;
         }
 
-        const response = await axios.get(
-          `${BASE_URL}/selectedClients`,
-          {
-            headers: {
-              softwareToken: `${softwareToken}`,
-              authToken: `${authToken}`,
-            },
-          }
-        );
+        const response = await axios.get(`${BASE_URL}/selectedClients`, {
+          headers: {
+            softwareToken: `${softwareToken}`,
+            authToken: `${authToken}`,
+          },
+        });
 
         console.log("client data", response.data);
 
@@ -147,20 +149,18 @@ const EmailStats = ({ menuCollapse }) => {
       if (!selectedClient) return;
       console.log("email request send");
 
-      const response = await axios.get(
-        `${BASE_URL}/api/email/client-emails`,
-        {
-          headers: {
-            clientId: selectedClientId,
-          },
-        }
-      );
+      const response = await axios.get(`${BASE_URL}/api/email/client-emails`, {
+        headers: {
+          clientId:
+            isClientLoggedIn === false ? selectedClientId : loggedInClientId,
+        },
+      });
       console.log(typeof selectedClientId);
 
       if (response.status === 200) {
         setEmailData(response.data);
         console.log("Email data", response.data);
-        setFilteredData(response.data)
+        setFilteredData(response.data);
       }
     } catch (error) {
       console.error("Error fetching email data:", error);
@@ -170,31 +170,32 @@ const EmailStats = ({ menuCollapse }) => {
   useEffect(() => {
     fetchEmailData();
     console.log("Top function called"); // Fetch data when client or date changes
-  }, [selectedClient ]);
+  }, [selectedClient]);
 
   const handleFilter = () => {
     const filtered = emailData.filter((item) => {
       // Parse warmupReputation, handle if it's null or undefined
-      const reputationvalue = parseFloat(item?.warmupReputation?.replace("%", ""));
-  
+      const reputationvalue = parseFloat(
+        item?.warmupReputation?.replace("%", "")
+      );
+
       // Generate the email health based on the reputation value
       const generatedEmailHealth = getEmailHealth(reputationvalue);
-  
+
       // Filter by health: either "All" or a match with generatedEmailHealth
       const matchesHealth =
         emailHealth === "All" || generatedEmailHealth === emailHealth;
-  
+
       return matchesHealth;
     });
-  
+
     // Update filtered email data
     setFilteredData(filtered);
   };
-  
+
   useEffect(() => {
     handleFilter(); // Trigger filter when emailHealth changes
   }, [emailHealth]);
-  
 
   return (
     <Grid
@@ -209,42 +210,46 @@ const EmailStats = ({ menuCollapse }) => {
         <Box className="mt-4">
           <Box className="flex lg:flex-row flex-col justify-between lg:items-center my-10 items-start lg:gap-0 gap-5">
             <Box className="gap-3 flex lg:w-auto w-full sm:flex-row flex-col">
-              <Select
-                value={selectedClient}
-                onChange={(e) => {
-                  const selectedClient = clientData.find(
-                    (client) => client.selectedName == e.target.value
-                  );
-                  setSelectedClient(selectedClient.selectedName);
-                  setSelectedClientId(selectedClient.clientId);
-                }}
-                sx={{
-                  width: "100%",
-                  backgroundColor: "white",
-                  border: "1px solid #ccc",
-                  borderRadius: "5px",
-                  height: "38px",
-                  color: "#FF4B2B",
-                  "& .MuiSelect-icon": {
+              {isClientLoggedIn === false ? (
+                <Select
+                  value={selectedClient}
+                  onChange={(e) => {
+                    const selectedClient = clientData.find(
+                      (client) => client.selectedName == e.target.value
+                    );
+                    setSelectedClient(selectedClient.selectedName);
+                    setSelectedClientId(selectedClient.clientId);
+                  }}
+                  sx={{
+                    width: "100%",
+                    backgroundColor: "white",
+                    border: "1px solid #ccc",
+                    borderRadius: "5px",
+                    height: "38px",
                     color: "#FF4B2B",
-                  },
-                  "& .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "#FF4B2B",
-                  },
-                  "&:hover .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "#FF4B2B",
-                  },
-                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "#FF4B2B",
-                  },
-                }}
-              >
-                {clientData.map((client) => (
-                  <MenuItem key={client.clientId} value={client.selectedName}>
-                    {client.selectedName}
-                  </MenuItem>
-                ))}
-              </Select>
+                    "& .MuiSelect-icon": {
+                      color: "#FF4B2B",
+                    },
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#FF4B2B",
+                    },
+                    "&:hover .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#FF4B2B",
+                    },
+                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#FF4B2B",
+                    },
+                  }}
+                >
+                  {clientData.map((client) => (
+                    <MenuItem key={client.clientId} value={client.selectedName}>
+                      {client.selectedName}
+                    </MenuItem>
+                  ))}
+                </Select>
+              ) : (
+                <></>
+              )}
               <Select
                 value={emailHealth}
                 onChange={(e) => setEmailHealth(e.target.value)}

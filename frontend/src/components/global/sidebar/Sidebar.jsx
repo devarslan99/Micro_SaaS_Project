@@ -14,10 +14,13 @@ import { Link } from "react-router-dom";
 import "./sidebar.css";
 import { ImStatsBars } from "react-icons/im";
 import { RiMailSendLine } from "react-icons/ri";
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
+import MyContext from "../../../hook/context";
 
 const Sidebar = ({ menuCollapse, setMenuCollapse, onPageSelect }) => {
   const location = useLocation();
+  const isClientLoggedIn = Boolean(localStorage.getItem("isClient"));
+  console.log(isClientLoggedIn);
 
   const menuIconClick = () => {
     setMenuCollapse((prevMenuCollapse) => !prevMenuCollapse);
@@ -89,14 +92,19 @@ const Sidebar = ({ menuCollapse, setMenuCollapse, onPageSelect }) => {
             </Box>
           </Box>
           <Menu className="text-lg h-[320px] overflow-y-auto">
-            <Link to="/home">
-              <MenuItem
-                active={isMenuItemActive("/home")}
-                icon={<AiFillHome fontSize="22px" />}
-              >
-                Home
-              </MenuItem>
-            </Link>
+            {isClientLoggedIn === false ? (
+              <Link to="/home">
+                <MenuItem
+                  active={isMenuItemActive("/home")}
+                  icon={<AiFillHome fontSize="22px" />}
+                >
+                  Home
+                </MenuItem>
+              </Link>
+            ) : (
+              <></>
+            )}
+
             <Link to="/compaigns">
               <MenuItem
                 active={isMenuItemActive("/compaigns")}
@@ -113,14 +121,19 @@ const Sidebar = ({ menuCollapse, setMenuCollapse, onPageSelect }) => {
                 Email Stats
               </MenuItem>
             </Link>
-            <Link to="/settings">
-              <MenuItem
-                active={isMenuItemActive("/settings")}
-                icon={<IoSettingsOutline fontSize="22px" />}
-              >
-                Settings
-              </MenuItem>
-            </Link>
+            {isClientLoggedIn === false ? (
+              <Link to="/settings">
+                <MenuItem
+                  active={isMenuItemActive("/settings")}
+                  icon={<IoSettingsOutline fontSize="22px" />}
+                >
+                  Settings
+                </MenuItem>
+              </Link>
+            ) : (
+              <></>
+            )}
+
             {/* {menuCollapse ? (
               <MenuItem icon={<FaUsers fontSize="22px" />}>Feature#1</MenuItem>
             ) : (
