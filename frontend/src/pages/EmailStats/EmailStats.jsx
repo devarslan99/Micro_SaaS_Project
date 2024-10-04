@@ -34,7 +34,7 @@ const EmailStats = ({ menuCollapse }) => {
   const navigate = useNavigate();
 
   const loggedInClientId = localStorage.getItem("clientId");
-  const isClientLoggedIn = Boolean(localStorage.getItem("isClient"))
+  const isClientLoggedIn = localStorage.getItem("isClient") === "true";
 
   useEffect(() => {
     const token = localStorage.getItem("authToken");
@@ -144,6 +144,8 @@ const EmailStats = ({ menuCollapse }) => {
     fetchClients();
   }, []);
 
+  console.log(isClientLoggedIn);
+  console.log(selectedClientId);
   const fetchEmailData = async () => {
     try {
       if (!selectedClient) return;
@@ -155,7 +157,7 @@ const EmailStats = ({ menuCollapse }) => {
             isClientLoggedIn === false ? selectedClientId : loggedInClientId,
         },
       });
-      console.log(typeof selectedClientId);
+      
 
       if (response.status === 200) {
         setEmailData(response.data);
@@ -166,6 +168,7 @@ const EmailStats = ({ menuCollapse }) => {
       console.error("Error fetching email data:", error);
     }
   };
+  console.log("EMial page", loggedInClientId);
 
   useEffect(() => {
     fetchEmailData();

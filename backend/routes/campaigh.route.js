@@ -9,7 +9,7 @@ console.log('Request Recieved to /top-level-stats');
 let dbClientId=null
 // const clientId = null
 const clientId = req.header("clientId")
-if(clientId!=null){
+if(clientId!="null" || clientId!=null){
     dbClientId = Number(clientId)
 }
 console.log(typeof dbClientId,dbClientId);

@@ -19,7 +19,7 @@ import MyContext from "../../../hook/context";
 
 const Sidebar = ({ menuCollapse, setMenuCollapse, onPageSelect }) => {
   const location = useLocation();
-  const isClientLoggedIn = Boolean(localStorage.getItem("isClient"));
+  const isClientLoggedIn = localStorage.getItem("isClient") === "true";
   console.log(isClientLoggedIn);
 
   const menuIconClick = () => {

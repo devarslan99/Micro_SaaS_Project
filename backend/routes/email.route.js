@@ -8,14 +8,17 @@ const authMiddleware = require('../middleware/authMiddleware.js');
 
 router.get('/client-emails',async (req , res)=>{
     let dbClientId=null
-    // const clientId = null
     const clientId = req.header("clientId")
-    if(clientId!=null){
+    console.log("Loging the recieved the client Id",clientId);
+    // const clientId = null
+    if(clientId!="null" || clientId!=null){
+        console.log("convetung");
+        
         dbClientId = Number(clientId)
     }
     console.log(typeof dbClientId,dbClientId);
 console.log('Request Recieved to /client-emails');
-console.log(clientId);
+console.log(typeof clientId);
 const Email = require('../models/Email')
 try {
     const emails = await Email.find(

@@ -40,7 +40,7 @@ const CompaignAnalytics = ({ menuCollapse }) => {
   } = useContext(MyContext);
   const navigate = useNavigate();
   const loggedInClientId = localStorage.getItem("clientId");
-  const isClientLoggedIn = Boolean(localStorage.getItem("isClient"))
+  const isClientLoggedIn = localStorage.getItem("isClient") === "true";
 
   console.log(typeof isClientLoggedIn)
 
@@ -187,7 +187,7 @@ const CompaignAnalytics = ({ menuCollapse }) => {
   }, [selectedClient]);
 
   console.log(selectedClient);
-  console.log(selectedClientId);
+  console.log(loggedInClientId);
   return (
     <Grid
       container
