@@ -425,7 +425,7 @@ export const clientData = [
       ],
     },
     {
-      title: "Premium",
+      title: "Basic",
       desc: "Free access for 30 members",
       price: ["$", "299", "year"],
       options: [

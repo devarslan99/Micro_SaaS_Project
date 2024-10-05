@@ -87,7 +87,7 @@ export function Pricing({ menuCollapse }) {
       const response = await axios.post(
         `${BASE_URL}/payment/create-subscription`,
         {
-          plan: plan,
+          frontendPlan: plan,
         },
         {
           headers: {
@@ -98,6 +98,7 @@ export function Pricing({ menuCollapse }) {
       );
 
       const data = response.data;
+      console.log("Payment DAta",data);
       setSubscribedPlan(plan)
 
       if (data.sessionId) {
