@@ -98,6 +98,7 @@ export function Pricing({ menuCollapse }) {
       );
 
       const data = response.data;
+      setSubscribedPlan(plan)
 
       if (data.sessionId) {
         return stripe.redirectToCheckout({ sessionId: data.sessionId });
