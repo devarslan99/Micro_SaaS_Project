@@ -10,8 +10,12 @@ import { useContext } from "react";
 import MyContext from "../../hook/context";
 
 const Settings = ({ menuCollapse }) => {
-  const { clientData, selectedClientId, setSelectedClientId } =
-    useContext(MyContext);
+  const {
+    clientData,
+    selectedClientId,
+    setSelectedClientId,
+    subscriptionName,
+  } = useContext(MyContext);
   console.log("slected: ", clientData);
   const [openPasswordModal, setOpenPasswordModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
@@ -90,13 +94,17 @@ const Settings = ({ menuCollapse }) => {
               >
                 {client.selectedName}
               </Typography>
-              <Button
-                variant="contained"
-                onClick={() => handleOpenCredentialsModal(client.clientId)}
-                className="bg-gradient-to-r from-[#FF4B2B] to-[#FF416C] text-white font-Poppins"
-              >
-                Create Credentials
-              </Button>
+              {subscriptionName === "basic" ? (
+                <Button
+                  variant="contained"
+                  onClick={() => handleOpenCredentialsModal(client.clientId)}
+                  className="bg-gradient-to-r from-[#FF4B2B] to-[#FF416C] text-white font-Poppins"
+                >
+                  Create Credentials
+                </Button>
+              ) : (
+                <></>
+              )}
             </Box>
           </Grid>
         ))}

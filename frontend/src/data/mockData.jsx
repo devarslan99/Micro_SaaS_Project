@@ -398,7 +398,7 @@ export const clientData = [
 
   export const cards = [
     {
-      title: "Starter",
+      title: "free",
       desc: "Free access for 2 members",
       price: ["$", "0", "year"],
       options: [
@@ -425,7 +425,7 @@ export const clientData = [
       ],
     },
     {
-      title: "Basic",
+      title: "basic",
       desc: "Free access for 30 members",
       price: ["$", "299", "year"],
       options: [

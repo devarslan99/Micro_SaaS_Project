@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Typography, Box } from "@mui/material";
 import { cards } from "../../data/mockData";
 import axios from "axios";
 import { BASE_URL } from "../../config";
 import { loadStripe } from "@stripe/stripe-js";
+import MyContext from "../../hook/context";
+import { useNavigate } from "react-router-dom";
 const stripePromise = loadStripe(
   "pk_test_51Q5NafFvGDJipH8OiP2bp3RkyX9B5IXtEhQ6g68Rq7NgTTYtCXbKz9j4ufuudQbhtL1SvF4On3s7HEMiCafFSVbB00j2RI45Ee"
 );
@@ -76,10 +78,10 @@ function PricingCard({
 }
 
 export function Pricing({ menuCollapse }) {
-  const [subscribedPlan, setSubscribedPlan] = useState(null);
-
+  const { subscriptionName } = useContext(MyContext);
   const token = localStorage.getItem("authToken");
   const softwareToken = localStorage.getItem("softwareToken");
+  const navigate = useNavigate()
 
   const handleSubscribe = async (plan) => {
     try {
@@ -98,8 +100,7 @@ export function Pricing({ menuCollapse }) {
       );
 
       const data = response.data;
-      console.log("Payment DAta",data);
-      setSubscribedPlan(plan)
+      console.log("Payment DAta", data);
 
       if (data.sessionId) {
         return stripe.redirectToCheckout({ sessionId: data.sessionId });
@@ -111,14 +112,24 @@ export function Pricing({ menuCollapse }) {
 
   const handleUnsubscribe = async () => {
     try {
-      const response = await axios.post(`${BASE_URL}/api/user/unsubscribe`);
+      const response = await axios.post(
+        `${BASE_URL}/payment/cancel-subscription`,
+        {},
+        {
+          headers: {
+            Authorization: token,
+            softwareAuthorization: softwareToken,
+          },
+        }
+      );
       if (response.status === 200) {
         setSubscribedPlan(null);
-        alert("Unsubscribed successfully!");
       }
+      window.location.reload()
     } catch (error) {
+      // navigate("/home")
+      window.location.reload()
       console.error("Error unsubscribing:", error);
-      alert("Failed to unsubscribe. Please try again.");
     }
   };
 
@@ -158,7 +169,7 @@ export function Pricing({ menuCollapse }) {
               desc={desc}
               price={price}
               options={options}
-              isSubscribed={subscribedPlan === title}
+              isSubscribed={subscriptionName === title}
               onUnsubscribe={handleUnsubscribe}
               onSubscribe={() => handleSubscribe(title)} // Replace with actual subscription logic when implemented on the server-side
             />

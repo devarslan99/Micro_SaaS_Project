@@ -6,6 +6,7 @@ const MyProvider = ({ children }) => {
   const [selectedClientId, setSelectedClientId] = useState(undefined);
   const [loggedInClientId, setLoggedInClientId] = useState(undefined);
   const [isClientLoggedIn, setIsClientLoggedIn] = useState(null);
+  const [subscriptionName, setSubscriptionName] = useState("free");
   const [selectedClient, setSelectedClient] = useState("");
 
   return (
@@ -21,6 +22,7 @@ const MyProvider = ({ children }) => {
         setIsClientLoggedIn,
         selectedClient,
         setSelectedClient,
+        subscriptionName, setSubscriptionName,
       }}
     >
       {children}

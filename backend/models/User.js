@@ -17,7 +17,6 @@ const UserSchema = new mongoose.Schema({
   subscription: {
     plan: { 
       type: String, 
-      enum: ['free', 'basic'], 
       default: 'free' 
     }, // Plan types
     stripeCustomerId: { 
@@ -28,7 +27,6 @@ const UserSchema = new mongoose.Schema({
     }, // Stripe subscription ID
     subscriptionStatus: { 
       type: String, 
-      enum: ['active', 'inactive', 'canceled', 'expired'],
       default: 'inactive' 
     }, // Active, Canceled, Expired, etc.
     currentPeriodEnd: { 
