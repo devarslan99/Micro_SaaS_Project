@@ -3,6 +3,10 @@ import { Typography, Box } from "@mui/material";
 import { cards } from "../../data/mockData";
 import axios from "axios";
 import { BASE_URL } from "../../config";
+import { loadStripe } from "@stripe/stripe-js";
+const stripePromise = loadStripe(
+  "pk_test_51Q5NafFvGDJipH8OiP2bp3RkyX9B5IXtEhQ6g68Rq7NgTTYtCXbKz9j4ufuudQbhtL1SvF4On3s7HEMiCafFSVbB00j2RI45Ee"
+);
 
 function PricingCard({
   title,
@@ -75,27 +79,31 @@ export function Pricing({ menuCollapse }) {
   const [subscribedPlan, setSubscribedPlan] = useState(null);
 
   const token = localStorage.getItem("authToken");
+  const softwareToken = localStorage.getItem("softwareToken");
 
   const handleSubscribe = async (plan) => {
     try {
+      const stripe = await stripePromise;
       const response = await axios.post(
-        `${BASE_URL}/api/user/subscription`,
+        `${BASE_URL}/payment/create-subscription`,
         {
-          plan,
+          plan: plan,
         },
         {
           headers: {
             Authorization: token,
+            softwareAuthorization: softwareToken,
           },
         }
       );
-      if (response.status === 200) {
-        setSubscribedPlan(plan);
-        alert("Subscribed successfully!");
+
+      const data = response.data;
+
+      if (data.sessionId) {
+        return stripe.redirectToCheckout({ sessionId: data.sessionId });
       }
     } catch (error) {
-      console.error("Error subscribing:", error);
-      alert("Failed to subscribe. Please try again.");
+      console.error("Error:", error);
     }
   };
 
