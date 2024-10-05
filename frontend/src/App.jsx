@@ -11,6 +11,7 @@ import ResetPasswordSuccess from "./pages/PasswordSuccess/PasswordSuccess";
 import AuthSetter from './components/AuthSetter/AuthSetter ';
 import Settings from "./pages/Settings/Settings";
 import Pricing from "./pages/Pricing/Pricing";
+import Success from "./pages/PaymentSuccess/Success";
 
 function App() {
   const [menuCollapse, setMenuCollapse] = useState(false);  
@@ -76,6 +77,17 @@ function App() {
               setMenuCollapse={setMenuCollapse}
             >
               <Pricing menuCollapse={menuCollapse} />
+            </Layout>
+          }
+        />
+        <Route
+          path="/success"
+          element={
+            <Layout
+              menuCollapse={menuCollapse} 
+              setMenuCollapse={setMenuCollapse}
+            >
+              <Success menuCollapse={menuCollapse} />
             </Layout>
           }
         />
