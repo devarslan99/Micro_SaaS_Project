@@ -31,6 +31,8 @@ const TemporaryDrawer = ({ isOpen, toggleDrawer, onPageSelect }) => {
         return "Settings";
       case "/pricing":
         return "Plans";
+        case "/success":
+          return "Payment Success";
       default:
         return "Unknown Page";
     }

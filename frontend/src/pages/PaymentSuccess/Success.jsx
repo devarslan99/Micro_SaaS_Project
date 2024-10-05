@@ -1,9 +1,11 @@
 import { useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { BASE_URL } from "../../config";
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
+import { FaCheckCircle } from "react-icons/fa";
+import { IoMdArrowRoundBack } from "react-icons/io";
 
-const Success = () => {
+const Success = ({ menuCollapse }) => {
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get("session_id"); // Get session_id from query params
 
@@ -17,7 +19,6 @@ const Success = () => {
           if (data.paymentStatus === "succeeded") {
             console.log("Payment was successful");
           } else {
-            // Handle payment failure or incomplete payment
             console.error("Payment not successful");
           }
         });
@@ -25,10 +26,21 @@ const Success = () => {
   }, [sessionId]);
 
   return (
-    <Box className="flex items-center justify-center h-full">
-      <Box className="p-10 bg-white flex flex-col items-center">
-        <h1>Payment Success</h1>
-        <p>Your subscription payment was processed successfully!</p>
+    <Box
+      className="flex items-center justify-center h-[600px]"
+      sx={{ pl: { xs: 2, lg: menuCollapse ? 14 : 36 } }}
+    >
+      <Box className="p-10 shadow-xl flex rounded relative flex-col h-1/2 items-center justify-center gap-2">
+        <Link to={"/pricing"} className="self-start absolute top-6">
+          <IoMdArrowRoundBack size={32} />
+        </Link>
+        <FaCheckCircle size={60} color="green" />
+        <Typography variant="" className="text-3xl font-semibold font-Poppins">
+          Payment Success
+        </Typography>
+        <Typography variant="" className="text-xl font-Poppins">
+          Your subscription payment was processed successfully!
+        </Typography>
       </Box>
     </Box>
   );
