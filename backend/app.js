@@ -14,6 +14,7 @@ const clientsRouter = require('./routes/clients.js')
 const campaighsRoutes = require('./routes/campaigh.route.js')
 const emailRoutes = require('./routes/email.route.js')
 const refreshRoute = require('./routes/refreshRoute.route.js')
+const paymentRote = require('./routes/payment.js')
 const config=require('./config.json')
 const app = express();
 const cors = require('cors')
@@ -54,7 +55,7 @@ app.use('/api/otp', otpRoutes);
 app.use('/reset',resetPassRouter)
 app.use('/user',userUpdateRoute)
 app.use('/', clientsRouter)
-
+app.use('/payment',paymentRote )
 //Refresh Routes
 app.use('/refresh',refreshRoute)
 //Refresh Button Route

@@ -41,7 +41,7 @@ const authMiddleware = async (req, res, next) => {
     console.log('autheMiddleware.js:41 , Moving to Next Middleware');
     return next();
   } catch (err) {
-    res.status(402).json({ msg: 'Token is not valid' });
+    res.status(402).json({ msg: err });
   }
 };
 
