@@ -154,7 +154,13 @@ const EmailStats = ({ menuCollapse }) => {
       const response = await axios.get(`${BASE_URL}/api/email/client-emails`, {
         headers: {
           clientId:
-            isClientLoggedIn === false ? selectedClientId : loggedInClientId,
+            isClientLoggedIn === false
+              ? selectedClientId !== null
+                ? selectedClientId
+                : "null"
+              : loggedInClientId !== null
+              ? loggedInClientId
+              : "null",
         },
       });
       

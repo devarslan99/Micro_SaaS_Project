@@ -10,6 +10,7 @@ import ResetPassword from "./pages/ResetPassword/ResetPassword";
 import ResetPasswordSuccess from "./pages/PasswordSuccess/PasswordSuccess";
 import AuthSetter from './components/AuthSetter/AuthSetter ';
 import Settings from "./pages/Settings/Settings";
+import Pricing from "./pages/Pricing/Pricing";
 
 function App() {
   const [menuCollapse, setMenuCollapse] = useState(false);  
@@ -64,6 +65,17 @@ function App() {
               setMenuCollapse={setMenuCollapse}
             >
               <Settings menuCollapse={menuCollapse} />
+            </Layout>
+          }
+        />
+        <Route
+          path="/pricing"
+          element={
+            <Layout
+              menuCollapse={menuCollapse} 
+              setMenuCollapse={setMenuCollapse}
+            >
+              <Pricing menuCollapse={menuCollapse} />
             </Layout>
           }
         />

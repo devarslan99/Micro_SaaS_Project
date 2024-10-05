@@ -55,7 +55,7 @@ const Topbar = ({ menuCollapse, pageTitle, onPageSelect }) => {
   };
 
   return (
-    <Grid container sx={{ pl: { xs: 0, lg: menuCollapse ? 14 : 36 } }}>
+    <Grid container sx={{ pl: { xs: 2, lg: menuCollapse ? 14 : 36 } }}>
       <Grid item xs={12}>
         <Box
           display="flex"
@@ -67,7 +67,7 @@ const Topbar = ({ menuCollapse, pageTitle, onPageSelect }) => {
         >
           <Typography
             variant=""
-            className="sm:text-4xl text-3xl lg:pl-0 pl-3 font-bold text-neutral-800 font-Poppins sm:order-1 order-2"
+            className="sm:text-4xl text-3xl font-bold text-neutral-800 font-Poppins sm:order-1 order-2"
           >
             {pageTitle}
           </Typography>
@@ -107,13 +107,13 @@ const Topbar = ({ menuCollapse, pageTitle, onPageSelect }) => {
                 textAlign: "center",
               }}
             >
-              <IconButton onClick={() => setIsNotificationModalOpen(true)}>
+              {/* <IconButton onClick={() => setIsNotificationModalOpen(true)}>
                 <NotificationsOutlined
                   sx={{
                     color: "black",
                   }}
                 />
-              </IconButton>
+              </IconButton> */}
               <Box display="flex" flexDirection="column">
                 <Typography variant="subtitle2" fontWeight="bold">
                   Dylan Hunter

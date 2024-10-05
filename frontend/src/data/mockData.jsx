@@ -1,3 +1,5 @@
+import { AiFillCheckCircle, AiOutlineMinusCircle } from "react-icons/ai";
+
 export const clientData = [
     {
       id: 1,
@@ -393,3 +395,87 @@ export const clientData = [
     },
   ]
   
+
+  export const cards = [
+    {
+      title: "Starter",
+      desc: "Free access for 2 members",
+      price: ["$", "0", "year"],
+      options: [
+        {
+          icon: <AiFillCheckCircle color="#4CAF50" size={20} />,
+          info: "Complete documentation",
+        },
+        {
+          icon: <AiFillCheckCircle color="#4CAF50" size={20} />,
+          info: "Working materials in Sketch",
+        },
+        {
+          icon: <AiOutlineMinusCircle color="#FF416C" size={20} />,
+          info: "Integration help",
+        },
+        {
+          icon: <AiOutlineMinusCircle color="#FF416C" size={20} />,
+          info: "40GB Cloud storage",
+        },
+        {
+          icon: <AiOutlineMinusCircle color="#FF416C" size={20} />,
+          info: "Support team full assist",
+        },
+      ],
+    },
+    {
+      title: "Premium",
+      desc: "Free access for 30 members",
+      price: ["$", "299", "year"],
+      options: [
+        {
+          icon: <AiFillCheckCircle color="#4CAF50" size={20} />,
+          info: "Complete documentation",
+        },
+        {
+          icon: <AiFillCheckCircle color="#4CAF50" size={20} />,
+          info: "Working materials in Sketch",
+        },
+        {
+          icon: <AiFillCheckCircle color="#4CAF50" size={20} />,
+          info: "Integration help",
+        },
+        {
+          icon: <AiFillCheckCircle color="#4CAF50" size={20} />,
+          info: "40GB Cloud storage",
+        },
+        {
+          icon: <AiFillCheckCircle color="#4CAF50" size={20} />,
+          info: "Support team full assist",
+        },
+      ],
+    },
+    // {
+    //   title: "Company",
+    //   desc: "Free access for 200 members",
+    //   price: ["$", "399", "year"],
+    //   options: [
+    //     {
+    //       icon: <AiFillCheckCircle color="#4CAF50" size={20} />,
+    //       info: "Complete documentation",
+    //     },
+    //     {
+    //       icon: <AiFillCheckCircle color="#4CAF50" size={20} />,
+    //       info: "Working materials in Sketch",
+    //     },
+    //     {
+    //       icon: <AiFillCheckCircle color="#4CAF50" size={20} />,
+    //       info: "Integration help",
+    //     },
+    //     {
+    //       icon: <AiFillCheckCircle color="#4CAF50" size={20} />,
+    //       info: "40GB Cloud storage",
+    //     },
+    //     {
+    //       icon: <AiFillCheckCircle color="#4CAF50" size={20} />,
+    //       info: "Support team full assist",
+    //     },
+    //   ],
+    // },
+  ];

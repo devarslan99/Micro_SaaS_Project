@@ -10,11 +10,11 @@ import { Box, IconButton, Typography } from "@mui/material";
 import { ImStatsBars } from "react-icons/im";
 import { RiMailSendLine } from "react-icons/ri";
 import { IoSettingsOutline } from "react-icons/io5";
-import MyContext from "../../../hook/context";
+import { MdOutlinePriceCheck } from "react-icons/md";
 
 const TemporaryDrawer = ({ isOpen, toggleDrawer, onPageSelect }) => {
   const location = useLocation();
-  const isClientLoggedIn = Boolean(localStorage.getItem("isClient"));
+  const isClientLoggedIn = localStorage.getItem("isClient") === "true";
 
   const isMenuItemActive = (path) => {
     return location.pathname === path;
@@ -29,6 +29,8 @@ const TemporaryDrawer = ({ isOpen, toggleDrawer, onPageSelect }) => {
         return "Email Stats";
       case "/settings":
         return "Settings";
+      case "/pricing":
+        return "Plans";
       default:
         return "Unknown Page";
     }
@@ -103,11 +105,14 @@ const TemporaryDrawer = ({ isOpen, toggleDrawer, onPageSelect }) => {
                     <MenuItem
                       active={isMenuItemActive("/home")}
                       icon={<AiFillHome fontSize="22px" />}
+                      onClick={() => toggleDrawer(false)}
                     >
                       Home
                     </MenuItem>
                   </Link>
-                ) : (<></>)}
+                ) : (
+                  <></>
+                )}
                 <Link to="/compaigns">
                   <MenuItem
                     active={isMenuItemActive("/compaigns")}
@@ -127,15 +132,29 @@ const TemporaryDrawer = ({ isOpen, toggleDrawer, onPageSelect }) => {
                   </MenuItem>
                 </Link>
                 {isClientLoggedIn === false ? (
-                  <Link to="/settings">
-                    <MenuItem
-                      active={isMenuItemActive("/settings")}
-                      icon={<IoSettingsOutline fontSize="22px" />}
-                    >
-                      Settings
-                    </MenuItem>
-                  </Link>
-                ) : (<></>)}
+                  <>
+                    <Link to="/settings">
+                      <MenuItem
+                        active={isMenuItemActive("/settings")}
+                        icon={<IoSettingsOutline fontSize="22px" />}
+                        onClick={() => toggleDrawer(false)}
+                      >
+                        Settings
+                      </MenuItem>
+                    </Link>
+                    <Link to="/pricing">
+                      <MenuItem
+                        active={isMenuItemActive("/pricing")}
+                        icon={<MdOutlinePriceCheck fontSize="22px" />}
+                        onClick={() => toggleDrawer(false)}
+                      >
+                        Plans
+                      </MenuItem>
+                    </Link>
+                  </>
+                ) : (
+                  <></>
+                )}
                 {/* <SubMenu label="Members" icon={<FaUsers fontSize="22px" />}>
                   <Link to="/leaders">
                     <MenuItem

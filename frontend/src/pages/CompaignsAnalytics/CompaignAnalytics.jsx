@@ -132,8 +132,14 @@ const CompaignAnalytics = ({ menuCollapse }) => {
 
       const response = await axios.get(`${BASE_URL}/api/campaighs/daily`, {
         headers: {
-          clientID:
-            isClientLoggedIn === false ? selectedClientId : loggedInClientId,
+          clientId:
+          isClientLoggedIn === false
+            ? selectedClientId !== null
+              ? selectedClientId
+              : "null"
+            : loggedInClientId !== null
+            ? loggedInClientId
+            : "null",
           startDate: formattedStartDate,
           endDate: formattedEndDate,
           token: `${token}`,
@@ -166,7 +172,13 @@ const CompaignAnalytics = ({ menuCollapse }) => {
         {
           headers: {
             clientId:
-              isClientLoggedIn === false ? selectedClientId : loggedInClientId,
+              isClientLoggedIn === false
+                ? selectedClientId !== null
+                  ? selectedClientId
+                  : "null"
+                : loggedInClientId !== null
+                ? loggedInClientId
+                : "null",
           },
         }
       );
@@ -186,7 +198,7 @@ const CompaignAnalytics = ({ menuCollapse }) => {
     console.log("Top function called"); // Fetch data when client or date changes
   }, [selectedClient]);
 
-  console.log(selectedClient);
+  console.log(selectedClientId);
   console.log(loggedInClientId);
   return (
     <Grid

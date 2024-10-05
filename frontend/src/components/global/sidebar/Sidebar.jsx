@@ -15,7 +15,7 @@ import "./sidebar.css";
 import { ImStatsBars } from "react-icons/im";
 import { RiMailSendLine } from "react-icons/ri";
 import { useContext, useEffect } from "react";
-import MyContext from "../../../hook/context";
+import { MdOutlinePriceCheck } from "react-icons/md";
 
 const Sidebar = ({ menuCollapse, setMenuCollapse, onPageSelect }) => {
   const location = useLocation();
@@ -36,6 +36,8 @@ const Sidebar = ({ menuCollapse, setMenuCollapse, onPageSelect }) => {
         return "Email Stats";
       case "/settings":
         return "Settings";
+      case "/pricing":
+        return "Plans";
       default:
         return "Unknown Page";
     }
@@ -122,14 +124,24 @@ const Sidebar = ({ menuCollapse, setMenuCollapse, onPageSelect }) => {
               </MenuItem>
             </Link>
             {isClientLoggedIn === false ? (
-              <Link to="/settings">
-                <MenuItem
-                  active={isMenuItemActive("/settings")}
-                  icon={<IoSettingsOutline fontSize="22px" />}
-                >
-                  Settings
-                </MenuItem>
-              </Link>
+              <>
+                <Link to="/settings">
+                  <MenuItem
+                    active={isMenuItemActive("/settings")}
+                    icon={<IoSettingsOutline fontSize="22px" />}
+                  >
+                    Settings
+                  </MenuItem>
+                </Link>
+                <Link to="/pricing">
+                  <MenuItem
+                    active={isMenuItemActive("/pricing")}
+                    icon={<MdOutlinePriceCheck fontSize="22px" />}
+                  >
+                    Plans
+                  </MenuItem>
+                </Link>
+              </>
             ) : (
               <></>
             )}
