@@ -32,7 +32,6 @@ const CompaignAnalytics = ({ menuCollapse }) => {
   const [topLevelFilteredData, setTopLevelFilteredData] = useState({});
   const {
     clientData,
-    setClientData,
     selectedClientId,
     setSelectedClientId,
     selectedClient,
@@ -71,40 +70,6 @@ const CompaignAnalytics = ({ menuCollapse }) => {
       console.error("Error fetching client email:", error);
     }
   };
-
-  useEffect(() => {
-    const fetchClients = async () => {
-      try {
-        const softwareToken = localStorage.getItem("softwareToken");
-        const authToken = localStorage.getItem("authToken");
-        if (!softwareToken) {
-          navigate("/home"); // Redirect if no softwareToken found
-          return;
-        }
-
-        const response = await axios.get(`${BASE_URL}/selectedClients`, {
-          headers: {
-            softwareToken: `${softwareToken}`,
-            authToken: `${authToken}`,
-          },
-        });
-
-        console.log("client data", response.data);
-
-        if (response.status === 200 && response.data.length > 0) {
-          setClientData(response.data); // Set the fetched clients to state
-          setSelectedClient(response.data[0]?.selectedName); // Set default selected client
-          setSelectedClientId(response.data[0]?.clientId);
-        } else {
-          console.log("Failed to fetch clients");
-        }
-      } catch (error) {
-        console.error("Error fetching clients:", error);
-      }
-    };
-
-    fetchClients();
-  }, [navigate]);
 
   useEffect(() => {
     const token = localStorage.getItem("authToken");

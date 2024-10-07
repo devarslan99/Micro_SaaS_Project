@@ -97,9 +97,9 @@ router.post('/subscription', authMiddleware, async (req, res) => {
 
 // Cancel a subscription
 router.post('/cancel-subscription', authMiddleware, async (req, res) => {
+  console.log("Enter cancel subscription Controller");
   const { user } = req.body;
   const userId = user.id;
-  console.log("enter cancek");
  
   try {
     const user = await User.findById(userId);
@@ -110,10 +110,13 @@ router.post('/cancel-subscription', authMiddleware, async (req, res) => {
     console.log('The subscription id is ',user.subscription.stripeSubscriptionId );
     // Cancel the subscription on Stripe
     // await stripe.subscriptions.update(user.subscription.stripeSubscriptionId);
-    const deletedSubscription = await stripe.subscriptions.del(user.subscription.stripeSubscriptionId, {
-      at_period_end: false // Cancel the subscription immediately
-    });
-    console.log('Deleted Subscription:', deletedSubscription);
+    const subscription = await stripe.subscriptions.cancel(
+      user.subscription.stripeSubscriptionId
+    );
+    // const deletedSubscription = await stripe.subscriptions.del(user.subscription.stripeSubscriptionId, {
+    //   at_period_end: false // Cancel the subscription immediately
+    // });
+    console.log('Deleted Subscription:', subscription);
     // Update user subscription details
     user.subscription.plan = 'free';
     user.subscription.subscriptionStatus = 'canceled';

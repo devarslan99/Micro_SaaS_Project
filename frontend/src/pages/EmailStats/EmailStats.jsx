@@ -18,9 +18,6 @@ import { BASE_URL } from "../../config";
 import MyContext from "../../hook/context";
 
 const EmailStats = ({ menuCollapse }) => {
-  const [selectedClient, setSelectedClient] = useState(""); // Dropdown client selection
-  const [selectedClientId, setSelectedClientId] = useState(null);
-  const [clientData, setClientData] = useState([]);
   const [emailData, setEmailData] = useState([]);
   const [recovery, setRecovery] = useState(1);
   const [moderate, setModerate] = useState(8);
@@ -29,6 +26,13 @@ const EmailStats = ({ menuCollapse }) => {
   const [emailConnect, setEmailConnect] = useState(false); // Initialize data with mock data
   const [emailHealth, setEmailHealth] = useState("All");
   const [filteredData, setFilteredData] = useState([]);
+  const {
+    clientData,
+    selectedClientId,
+    setSelectedClientId,
+    selectedClient,
+    setSelectedClient,
+  } = useContext(MyContext);
 
 
   const navigate = useNavigate();
@@ -109,41 +113,7 @@ const EmailStats = ({ menuCollapse }) => {
     }
   };
 
-  useEffect(() => {
-    const fetchClients = async () => {
-      try {
-        const softwareToken = localStorage.getItem("softwareToken");
-        const authToken = localStorage.getItem("authToken");
-
-        if (!softwareToken) {
-          navigate("/home"); // Redirect if no softwareToken found
-          return;
-        }
-
-        const response = await axios.get(`${BASE_URL}/selectedClients`, {
-          headers: {
-            softwareToken: `${softwareToken}`,
-            authToken: `${authToken}`,
-          },
-        });
-
-        console.log("client data", response.data);
-
-        if (response.status === 200 && response.data.length > 0) {
-          setClientData(response.data); // Set the fetched clients to state
-          setSelectedClient(response.data[0]?.selectedName); // Set default selected client
-          setSelectedClientId(response.data[0]?.clientId);
-        } else {
-          console.log("Failed to fetch clients");
-        }
-      } catch (error) {
-        console.error("Error fetching clients:", error);
-      }
-    };
-
-    fetchClients();
-  }, []);
-
+ 
   console.log(isClientLoggedIn);
   console.log(selectedClientId);
   const fetchEmailData = async () => {

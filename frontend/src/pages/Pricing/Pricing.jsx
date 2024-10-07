@@ -123,12 +123,12 @@ export function Pricing({ menuCollapse }) {
         }
       );
       if (response.status === 200) {
-        setSubscribedPlan(null);
+        // setSubscribedPlan(null);
+        window.location.reload()
       }
-      window.location.reload()
     } catch (error) {
       // navigate("/home")
-      window.location.reload()
+      // window.location.reload()
       console.error("Error unsubscribing:", error);
     }
   };
