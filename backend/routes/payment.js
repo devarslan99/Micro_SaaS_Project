@@ -109,8 +109,11 @@ router.post('/cancel-subscription', authMiddleware, async (req, res) => {
     }
     console.log('The subscription id is ',user.subscription.stripeSubscriptionId );
     // Cancel the subscription on Stripe
-    await stripe.subscriptions.update(user.subscription.stripeSubscriptionId);
-        
+    // await stripe.subscriptions.update(user.subscription.stripeSubscriptionId);
+    const deletedSubscription = await stripe.subscriptions.del(user.subscription.stripeSubscriptionId, {
+      at_period_end: false // Cancel the subscription immediately
+    });
+    console.log('Deleted Subscription:', deletedSubscription);
     // Update user subscription details
     user.subscription.plan = 'free';
     user.subscription.subscriptionStatus = 'canceled';
