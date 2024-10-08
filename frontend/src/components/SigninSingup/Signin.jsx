@@ -8,7 +8,7 @@ import { BASE_URL } from "../../config";
 import MyContext from "../../hook/context";
 
 const Signin = ({ rightPanelActive, handleSignUpClick }) => {
-  const { setLoggedInClientId, setIsClientLoggedIn, isClientLoggedIn } =
+  const { setLoggedInClientId, setIsClientLoggedIn, isClientLoggedIn, setName } =
     useContext(MyContext);
   const {
     register,
@@ -36,7 +36,7 @@ const Signin = ({ rightPanelActive, handleSignUpClick }) => {
       setErrorMessage(
         response?.data?.msg || "An error occurred during sign up."
       );
-
+        setName(response.data.name)
       const token = response.data.token;
       const softwareToken = response.data.softwareToken;
       // setLoggedInClientId(response.data.clientId);

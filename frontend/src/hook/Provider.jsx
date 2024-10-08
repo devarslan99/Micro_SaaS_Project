@@ -8,6 +8,7 @@ const MyProvider = ({ children }) => {
   const [isClientLoggedIn, setIsClientLoggedIn] = useState(null);
   const [subscriptionName, setSubscriptionName] = useState("free");
   const [selectedClient, setSelectedClient] = useState("");
+  const [name, setName] = useState("Jhon Snow");
 
   return (
     <MyContext.Provider
@@ -23,6 +24,7 @@ const MyProvider = ({ children }) => {
         selectedClient,
         setSelectedClient,
         subscriptionName, setSubscriptionName,
+        name, setName
       }}
     >
       {children}

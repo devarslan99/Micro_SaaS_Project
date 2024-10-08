@@ -21,15 +21,18 @@ import Grid from "@mui/material/Grid";
 import MenuIcon from "@mui/icons-material/Menu";
 import { Link, useNavigate } from "react-router-dom";
 import TemporaryDrawer from "../Drawer/Drawer";
+import MyContext from "../../hook/context";
 //   import NotificationModal from "./NotificationModal";
 //   import ProfileModal from "./ProfileModal";
 
 const Topbar = ({ menuCollapse, pageTitle, onPageSelect }) => {
+  const { name} =
+    useContext(MyContext);
   const [anchorEl, setAnchorEl] = useState(null);
   // const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false)
   // const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
   const [isDrawerOpen, setDrawerOpen] = useState(false);
-
+console.log(name);
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -116,7 +119,8 @@ const Topbar = ({ menuCollapse, pageTitle, onPageSelect }) => {
               </IconButton> */}
               <Box display="flex" flexDirection="column">
                 <Typography variant="subtitle2" fontWeight="bold">
-                  Dylan Hunter
+                  {/* Dylan Hunter */}
+                  {name}
                 </Typography>
                 <Typography variant="caption">Admin Profile</Typography>
               </Box>

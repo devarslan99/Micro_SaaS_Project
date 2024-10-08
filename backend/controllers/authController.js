@@ -111,7 +111,8 @@ const loginUser = async (req, res) => {
             ...(softwareToken && { softwareToken }), // Include software token if it exists
             ...(apiKey && { apiKey }), // Include API key if it exists
             ...(software && { software }), // Include software name if it exists
-            isClient:false
+            isClient:false,
+            name:user.name
           });
         }
       );
@@ -133,7 +134,8 @@ const loginUser = async (req, res) => {
         token: client.authToken,
         softwareToken: client.SoftwareToken,
         clientId: client.clientId, // Return clientId if needed
-        isClient:true
+        isClient:true,
+        name:client.name
       });
     }
   } catch (err) {
