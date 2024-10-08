@@ -16,7 +16,7 @@ import {
   NotificationsOutlined,
   Search,
 } from "@mui/icons-material";
-import React, { useState } from "react";
+import React, { useState,useContext } from "react";
 import Grid from "@mui/material/Grid";
 import MenuIcon from "@mui/icons-material/Menu";
 import { Link, useNavigate } from "react-router-dom";
@@ -26,8 +26,7 @@ import MyContext from "../../../hook/context";
 //   import ProfileModal from "./ProfileModal";
 
 const Topbar = ({ menuCollapse, pageTitle, onPageSelect }) => {
-  const { name} =
-    useContext(MyContext);
+  const { name} =useContext(MyContext);
   const [anchorEl, setAnchorEl] = useState(null);
   // const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false)
   // const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
