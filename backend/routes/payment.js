@@ -4,7 +4,7 @@ const User = require('../models/User'); // Assuming you have a User model
 const authMiddleware = require('../middleware/authMiddleware'); // Auth middleware to protect routes
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY); // Stripe secret key
 
-// Create a subscription
+
 router.post('/create-subscription', authMiddleware, async (req, res) => {
   const { user, frontendPlan } = req.body; // user and plan from frontend
   console.log(frontendPlan);
