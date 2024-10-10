@@ -14,7 +14,7 @@ import { Link } from "react-router-dom";
 import "./sidebar.css";
 import { ImStatsBars } from "react-icons/im";
 import { RiMailSendLine } from "react-icons/ri";
-import { useContext, useEffect, useState } from "react"; // Import useState
+import {  useEffect, useState } from "react"; // Import useState
 import { MdOutlinePriceCheck } from "react-icons/md";
 
 const Sidebar = ({ menuCollapse, setMenuCollapse, onPageSelect }) => {
