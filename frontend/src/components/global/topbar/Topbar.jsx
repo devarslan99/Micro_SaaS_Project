@@ -3,35 +3,26 @@ import {
   Box,
   Divider,
   IconButton,
-  InputBase,
   ListItemIcon,
   Menu,
   MenuItem,
   Tooltip,
   Typography,
 } from "@mui/material";
-import {
-  List,
-  Logout,
-  NotificationsOutlined,
-  Search,
-} from "@mui/icons-material";
-import React, { useState,useContext } from "react";
+import { Logout } from "@mui/icons-material";
+import React, { useState, useContext } from "react";
 import Grid from "@mui/material/Grid";
 import MenuIcon from "@mui/icons-material/Menu";
-import { Link, useNavigate } from "react-router-dom";
+import {  useNavigate } from "react-router-dom";
 import TemporaryDrawer from "../Drawer/Drawer";
 import MyContext from "../../../hook/context";
-//   import NotificationModal from "./NotificationModal";
-//   import ProfileModal from "./ProfileModal";
 
 const Topbar = ({ menuCollapse, pageTitle, onPageSelect }) => {
-  const { name} =useContext(MyContext);
+  const { name, email } = useContext(MyContext);
   const [anchorEl, setAnchorEl] = useState(null);
-  // const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false)
-  // const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
+
   const [isDrawerOpen, setDrawerOpen] = useState(false);
-console.log(name);
+  console.log(name, email);
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -73,32 +64,11 @@ console.log(name);
           >
             {pageTitle}
           </Typography>
-          {/* <Box
-              display="flex"
-              borderRadius={2}
-              width={{ xs: "auto", sm: "400px" }}
-              padding={0.5}
-              mb={{ sm: 0, xs: 2 }}
-              className="bg-gray-100"
-            >
-              <IconButton type="button">
-                <Search
-                  sx={{
-                    color: "black",
-                    fontSize: "28px",
-                  }}
-                />
-              </IconButton>
-              <InputBase
-                sx={{ ml: 1, flex: 1, fontSize: "20px" }}
-                placeholder="Search..."
-              />
-            </Box> */}
           <Box
             display="flex"
             alignItems="center"
             gap={1}
-            mb={{sm:0 , xs : 3}}
+            mb={{ sm: 0, xs: 3 }}
             justifyContent="space-between"
             order={{ sm: 2, xs: 1 }}
           >
@@ -109,16 +79,8 @@ console.log(name);
                 textAlign: "center",
               }}
             >
-              {/* <IconButton onClick={() => setIsNotificationModalOpen(true)}>
-                <NotificationsOutlined
-                  sx={{
-                    color: "black",
-                  }}
-                />
-              </IconButton> */}
               <Box display="flex" flexDirection="column">
                 <Typography variant="subtitle2" fontWeight="bold">
-                  {/* Dylan Hunter */}
                   {name}
                 </Typography>
                 <Typography variant="caption">Admin Profile</Typography>
@@ -178,30 +140,22 @@ console.log(name);
                 />{" "}
                 <Box display="flex" flexDirection="column">
                   <Typography variant="subtitle2" fontWeight="bold">
-                    Dylan Hunter
+                    {name}
                   </Typography>
-                  <Typography variant="caption">
-                    Dylan.hunter@gmail.com
-                  </Typography>
+                  <Typography variant="caption">{email}</Typography>
                 </Box>
               </MenuItem>
               <Divider />
-              {/* <Link to="/tasks">
-                <MenuItem onClick={handleClose}>
-                  <ListItemIcon>
-                    <List fontSize="small" />
-                  </ListItemIcon>{" "}
-                  My Task
-                </MenuItem>
-              </Link> */}
-              {/* <Divider /> */}
-              {/* <Link to="/signin"> */}
-                <MenuItem onClick={() => {handleLogout(), handleClose()}}>
-                  <ListItemIcon>
-                    <Logout fontSize="small" />
-                  </ListItemIcon>
-                  Signout
-                </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  handleLogout(), handleClose();
+                }}
+              >
+                <ListItemIcon>
+                  <Logout fontSize="small" />
+                </ListItemIcon>
+                Signout
+              </MenuItem>
               {/* </Link> */}
             </Menu>
             <IconButton
@@ -215,9 +169,11 @@ console.log(name);
           </Box>
         </Box>
       </Grid>
-      <TemporaryDrawer isOpen={isDrawerOpen} toggleDrawer={setDrawerOpen} onPageSelect={onPageSelect}/>
-        {/* <NotificationModal isOpen={isNotificationModalOpen} closeModal={() => setIsNotificationModalOpen(false)} />
-        <ProfileModal isOpen={isProfileModalOpen} closeModal={() => setIsProfileModalOpen(false)} /> */}
+      <TemporaryDrawer
+        isOpen={isDrawerOpen}
+        toggleDrawer={setDrawerOpen}
+        onPageSelect={onPageSelect}
+      />
     </Grid>
   );
 };
