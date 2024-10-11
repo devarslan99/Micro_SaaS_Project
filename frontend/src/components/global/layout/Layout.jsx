@@ -1,4 +1,3 @@
-
 import React, { useContext, useEffect, useState } from "react";
 import Sidebar from "../sidebar/Sidebar";
 import Topbar from "../topbar/Topbar";
@@ -7,38 +6,72 @@ import { BASE_URL } from "../../../config";
 import MyContext from "../../../hook/context";
 import { useNavigate } from "react-router-dom";
 
-const Layout = ({ menuCollapse, setMenuCollapse,children }) => {
+const Layout = ({ menuCollapse, setMenuCollapse, children }) => {
   const [pageTitle, setPageTitle] = useState("");
-  const {  setSubscriptionName,    clientData,
+  const {
+    setSubscriptionName,
+    clientData,
     setClientData,
     setSelectedClientId,
-    setSelectedClient,} = useContext(MyContext)
-    const navigate = useNavigate();
+    setSelectedClient,
+    setName,
+    setEmail
+  } = useContext(MyContext);
+  const navigate = useNavigate();
 
   const handlePageSelect = (title) => {
     setPageTitle(title);
   };
 
-  
   const token = localStorage.getItem("authToken");
   const softwareToken = localStorage.getItem("softwareToken");
 
+  const fetchUserName = async () => {
+    console.log('Token being sent:', token);
+    const response = await axios.get(`${BASE_URL}/api/auth/user-info`, {
+      headers: {
+        Authorization: token,
+      },
+    });
+
+    console.log(response.data.user);
+    const userName = response.data.user.name;
+    console.log(userName);
+
+    // Capitalize the name
+    const capitalized = userName
+      .split(' ') // Split the name into words
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalize each word
+      .join(' '); // Join the words back into a single string
+
+    setName(capitalized)
+    setEmail(response.data.user.email);
+  };
+
+  useEffect(() => {
+    fetchUserName();
+  }, []);
 
   const fetchSubsName = async () => {
-    const response = await axios.post(`${BASE_URL}/payment/subscription`,{},{
-      headers:{
-        Authorization:token,
-        softwareAuthorization: softwareToken
+    const response = await axios.post(
+      `${BASE_URL}/payment/subscription`,
+      {},
+      {
+        headers: {
+          Authorization: token,
+          softwareAuthorization: softwareToken,
+        },
       }
-    })
-    const plan = response.data.plan
-    setSubscriptionName(plan)
-    console.log(plan)
-  }
-  
+    );
+    const plan = response.data.plan;
+    setSubscriptionName(plan);
+    console.log(plan);
+  };
+
   useEffect(() => {
-    fetchSubsName()
-  }, [])
+    fetchSubsName();  
+  }, []);
+
 
   useEffect(() => {
     const fetchClients = async () => {
@@ -73,12 +106,20 @@ const Layout = ({ menuCollapse, setMenuCollapse,children }) => {
 
     fetchClients();
   }, [navigate]);
-  
+
   return (
     <>
-      <Sidebar menuCollapse={menuCollapse} setMenuCollapse={setMenuCollapse} onPageSelect={handlePageSelect} />
+      <Sidebar
+        menuCollapse={menuCollapse}
+        setMenuCollapse={setMenuCollapse}
+        onPageSelect={handlePageSelect}
+      />
       <div className="">
-        <Topbar menuCollapse={menuCollapse}  pageTitle={pageTitle} onPageSelect={handlePageSelect} />
+        <Topbar
+          menuCollapse={menuCollapse}
+          pageTitle={pageTitle}
+          onPageSelect={handlePageSelect}
+        />
         {children}
       </div>
     </>

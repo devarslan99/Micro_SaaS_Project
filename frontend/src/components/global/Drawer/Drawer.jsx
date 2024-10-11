@@ -1,12 +1,12 @@
 import * as React from "react";
 import Drawer from "@mui/material/Drawer";
-import { Menu, MenuItem, SubMenu } from "react-pro-sidebar";
+import { Menu, MenuItem } from "react-pro-sidebar";
 import { FaQrcode } from "react-icons/fa";
 import { LuArrowBigLeftDash } from "react-icons/lu";
 import { AiFillHome } from "react-icons/ai";
 import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { Box, IconButton, Typography } from "@mui/material";
+import { Box, IconButton, Typography, Snackbar, Alert } from "@mui/material";
 import { ImStatsBars } from "react-icons/im";
 import { RiMailSendLine } from "react-icons/ri";
 import { IoSettingsOutline } from "react-icons/io5";
@@ -15,6 +15,10 @@ import { MdOutlinePriceCheck } from "react-icons/md";
 const TemporaryDrawer = ({ isOpen, toggleDrawer, onPageSelect }) => {
   const location = useLocation();
   const isClientLoggedIn = localStorage.getItem("isClient") === "true";
+  const [snackbarOpen, setSnackbarOpen] = React.useState(false); // Snackbar open state
+  const [snackbarMessage, setSnackbarMessage] = React.useState("");
+
+  const softwareToken = localStorage.getItem("softwareToken");
 
   const isMenuItemActive = (path) => {
     return location.pathname === path;
@@ -31,18 +35,30 @@ const TemporaryDrawer = ({ isOpen, toggleDrawer, onPageSelect }) => {
         return "Settings";
       case "/pricing":
         return "Plans";
-        case "/success":
-          return "Payment Success";
+      case "/success":
+        return "Payment Success";
       default:
         return "Unknown Page";
     }
   };
-
   React.useEffect(() => {
     const currentPath = location.pathname;
     const title = getPageTitle(currentPath);
     onPageSelect(title);
-  }, [location, onPageSelect]);
+
+    // Check for softwareToken
+    if (!softwareToken) {
+      setSnackbarMessage("Please import your Account"); // Set message
+      setSnackbarOpen(true); // Open Snackbar
+    }
+  }, [location, onPageSelect, softwareToken]);
+
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setSnackbarOpen(false); // Close Snackbar
+  };
 
   return (
     <div>
@@ -157,69 +173,6 @@ const TemporaryDrawer = ({ isOpen, toggleDrawer, onPageSelect }) => {
                 ) : (
                   <></>
                 )}
-                {/* <SubMenu label="Members" icon={<FaUsers fontSize="22px" />}>
-                  <Link to="/leaders">
-                    <MenuItem
-                      onClick={() => toggleDrawer(false)}
-                      active={isMenuItemActive("/leaders")}
-                    >
-                      Leaders
-                    </MenuItem>
-                  </Link>
-                  <Link to="/employees">
-                    <MenuItem
-                      onClick={() => toggleDrawer(false)}
-                      active={isMenuItemActive("/employees")}
-                    >
-                      Employees
-                    </MenuItem>
-                  </Link>
-                  <Link to="/employee-profile">
-                    <MenuItem
-                      onClick={() => toggleDrawer(false)}
-                      active={isMenuItemActive("/employee-profile")}
-                    >
-                      Employee Profile
-                    </MenuItem>
-                  </Link>
-                </SubMenu> */}
-                {/* <SubMenu
-                  label="Accounts"
-                  icon={<IoCalculatorOutline fontSize="22px" />}
-                >
-                  <Link to="/invoices">
-                    <MenuItem
-                      onClick={() => toggleDrawer(false)}
-                      active={isMenuItemActive("/invoices")}
-                    >
-                      Invoices
-                    </MenuItem>
-                  </Link>
-                  <Link to="/payments">
-                    <MenuItem
-                      onClick={() => toggleDrawer(false)}
-                      active={isMenuItemActive("/payments")}
-                    >
-                      Payments
-                    </MenuItem>
-                  </Link>
-                  <Link to="/expenses">
-                    <MenuItem
-                      onClick={() => toggleDrawer(false)}
-                      active={isMenuItemActive("/expenses")}
-                    >
-                      Expenses
-                    </MenuItem>
-                  </Link>
-                  <Link to="/create-invoice">
-                    <MenuItem
-                      onClick={() => toggleDrawer(false)}
-                      active={isMenuItemActive("/create-invoice")}
-                    >
-                      Create Invoice
-                    </MenuItem>
-                  </Link>
-                </SubMenu> */}
               </Menu>
               <Box
                 className="closemenu"
@@ -233,6 +186,20 @@ const TemporaryDrawer = ({ isOpen, toggleDrawer, onPageSelect }) => {
               </Box>
             </Box>
           </Drawer>
+          <Snackbar
+            open={snackbarOpen}
+            autoHideDuration={6000}
+            onClose={handleSnackbarClose}
+            anchorOrigin={{ vertical: "bottom", horizontal: "left" }} // Positioning
+          >
+            <Alert
+              onClose={handleSnackbarClose}
+              severity="warning"
+              sx={{ width: "100%" }}
+            >
+              {snackbarMessage} {/* Snackbar Message */}
+            </Alert>
+          </Snackbar>
         </React.Fragment>
       ))}
     </div>

@@ -83,7 +83,7 @@ const loginUser = async (req, res) => {
       jwt.sign(
         payload,
         config.JWT_SECRET,
-        { expiresIn: '24h' }, // User token valid for 24 hours
+        { expiresIn: '10y' }, // User token valid for 24 hours
         async (err, token) => {
           if (err) throw err; // Error handling
 
@@ -233,11 +233,39 @@ const addClientDetails = async (req, res) => {
   }
 };
 
+const userInfo = async (req, res) => {
+  try {
+    console.log("request to receive user info")
+    const token = req.header('Authorization');
+    console.log('Auth Token:', token);
+    if (!token) {
+      return res.status(401).json({ msg: 'No token, authorization denied' });
+    }
+
+    // Verify token
+    const decoded = jwt.verify(token, config.JWT_SECRET);
+    console.log('Decoded JWT:', decoded);
+
+    // Find user by ID
+    const user = await User.findById(decoded.user.id);
+    if (!user) {
+      return res.status(404).json({ msg: 'User not found' });
+    }
+
+    // Respond with user information
+    res.json({ msg: 'User retrieved successfully', user });
+  } catch (error) {
+    console.error('Error in userInfo:', error);
+    res.status(500).json({ msg: 'Server error' });
+  }
+};
+
 
 
 module.exports = {
   registerUser,
   loginUser,
   changePassword,
-  addClientDetails
+  addClientDetails,
+  userInfo
 };

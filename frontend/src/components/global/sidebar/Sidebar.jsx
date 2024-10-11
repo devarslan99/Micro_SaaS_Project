@@ -9,12 +9,12 @@ import { FaQrcode } from "react-icons/fa";
 import { LuArrowBigRightDash, LuArrowBigLeftDash } from "react-icons/lu";
 import { IoSettingsOutline } from "react-icons/io5";
 import { AiFillHome } from "react-icons/ai";
-import { Box, IconButton, Typography } from "@mui/material";
+import { Box, IconButton, Typography, Snackbar, Alert } from "@mui/material"; // Import Snackbar and Alert
 import { Link } from "react-router-dom";
 import "./sidebar.css";
 import { ImStatsBars } from "react-icons/im";
 import { RiMailSendLine } from "react-icons/ri";
-import { useContext, useEffect } from "react";
+import {  useEffect, useState } from "react"; // Import useState
 import { MdOutlinePriceCheck } from "react-icons/md";
 
 const Sidebar = ({ menuCollapse, setMenuCollapse, onPageSelect }) => {
@@ -22,9 +22,14 @@ const Sidebar = ({ menuCollapse, setMenuCollapse, onPageSelect }) => {
   const isClientLoggedIn = localStorage.getItem("isClient") === "true";
   console.log(isClientLoggedIn);
 
+  const [snackbarOpen, setSnackbarOpen] = useState(false); // Snackbar open state
+  const [snackbarMessage, setSnackbarMessage] = useState(""); // Snackbar message
+
   const menuIconClick = () => {
     setMenuCollapse((prevMenuCollapse) => !prevMenuCollapse);
   };
+
+  const softwareToken = localStorage.getItem('softwareToken');
 
   const getPageTitle = (path) => {
     switch (path) {
@@ -49,7 +54,20 @@ const Sidebar = ({ menuCollapse, setMenuCollapse, onPageSelect }) => {
     const currentPath = location.pathname;
     const title = getPageTitle(currentPath);
     onPageSelect(title);
-  }, [location, onPageSelect]);
+
+    // Check for softwareToken
+    if (!softwareToken) {
+      setSnackbarMessage("Please import your Account"); // Set message
+      setSnackbarOpen(true); // Open Snackbar
+    }
+  }, [location, onPageSelect, softwareToken]);
+
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setSnackbarOpen(false); // Close Snackbar
+  };
 
   const isMenuItemActive = (path) => {
     return location.pathname === path;
@@ -147,59 +165,6 @@ const Sidebar = ({ menuCollapse, setMenuCollapse, onPageSelect }) => {
             ) : (
               <></>
             )}
-
-            {/* {menuCollapse ? (
-              <MenuItem icon={<FaUsers fontSize="22px" />}>Feature#1</MenuItem>
-            ) : (
-              <SubMenu label="Feature#1" icon={<FaUsers fontSize="22px" />}>
-                <Link to="/leaders">
-                  <MenuItem active={isMenuItemActive("/leaders")}>
-                    Compains
-                  </MenuItem>
-                </Link>
-                <Link to="/employees">
-                  <MenuItem active={isMenuItemActive("/employees")}>
-                    Analytics
-                  </MenuItem>
-                </Link> */}
-            {/* <Link to="/employee-profile">
-                  <MenuItem active={isMenuItemActive("/employee-profile")}>
-                    Employee Profile
-                  </MenuItem>
-                </Link> */}
-            {/* </SubMenu>
-            )}
-            {menuCollapse ? (
-              <MenuItem icon={<IoCalculatorOutline fontSize="22px" />}>
-                Feature#2
-              </MenuItem>
-            ) : (
-              <SubMenu
-                label="Feature#2"
-                icon={<IoCalculatorOutline fontSize="22px" />}
-              >
-                <Link to="/invoices">
-                  <MenuItem active={isMenuItemActive("/invoices")}>
-                    Email Stats
-                  </MenuItem>
-                </Link> */}
-            {/* <Link to="/payments">
-                  <MenuItem active={isMenuItemActive("/payments")}>
-                    Payments
-                  </MenuItem>
-                </Link>
-                <Link to="/expenses">
-                  <MenuItem active={isMenuItemActive("/expenses")}>
-                    Expenses
-                  </MenuItem>
-                </Link>
-                <Link to="/create-invoice">
-                  <MenuItem active={isMenuItemActive("/create-invoice")}>
-                    Create Invoice
-                  </MenuItem>
-                </Link> */}
-            {/* </SubMenu>
-            )} */}
           </Menu>
           <Box
             className="closemenu"
@@ -216,6 +181,18 @@ const Sidebar = ({ menuCollapse, setMenuCollapse, onPageSelect }) => {
             )}
           </Box>
         </ProSidebar>
+
+        {/* Snackbar Component */}
+        <Snackbar
+          open={snackbarOpen}
+          autoHideDuration={6000}
+          onClose={handleSnackbarClose}
+          anchorOrigin={{ vertical: "bottom", horizontal: "left" }} // Positioning
+        >
+          <Alert onClose={handleSnackbarClose} severity="warning" sx={{ width: "100%" }}>
+            {snackbarMessage} {/* Snackbar Message */}
+          </Alert>
+        </Snackbar>
       </Box>
     </>
   );
