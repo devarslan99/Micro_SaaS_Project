@@ -113,10 +113,10 @@ const Signin = ({ rightPanelActive, handleSignUpClick }) => {
           margin="normal"
           {...register("signInEmail", {
             required: "Email is required",
-            pattern: {
-              value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-              message: "Invalid email address",
-            },
+            // pattern: {
+            //   value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+            //   message: "Invalid email address",
+            // },
           })}
           error={!!errors.signInEmail}
           helperText={errors.signInEmail?.message}
