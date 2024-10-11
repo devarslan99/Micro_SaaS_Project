@@ -56,10 +56,10 @@ const loginUser = async (req, res) => {
   }
 
   // Validate email format
-  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  if (!emailRegex.test(email)) {
-    return res.json({ msg: "Invalid email format." });
-  }
+  // const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  // if (!emailRegex.test(email)) {
+  //   return res.json({ msg: "Invalid email format." });
+  // }
 
   try {
     // First, search for the user in the User collection
