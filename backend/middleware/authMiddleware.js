@@ -33,7 +33,7 @@ const authMiddleware = async (req, res, next) => {
     const softwareData =user.softwareKeys.find(
       (item) => item.software === decodeSoftwareToken.software
     )
-    console.log(softwareData);
+    console.log("Software DAta",softwareData);
       req.body.apiKey= softwareData.apiKey
       req.body.software = softwareData.software
       console.log('Api key after Setting',req.body.apiKey);

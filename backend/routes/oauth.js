@@ -11,7 +11,7 @@ router.get('/auth/google', passport.authenticate('google', {
 }));
 
 router.get('/auth/google/callback', passport.authenticate('google', {
-  failureRedirect: 'https://micro-saa-s-project.vercel.app/' // Redirect to the frontend home or login page on failure
+  failureRedirect: 'http://localhost:5173/' // Redirect to the frontend home or login page on failure
 }), async (req, res) => {
   try {
     // Check if user already exists in the database
@@ -41,12 +41,12 @@ router.get('/auth/google/callback', passport.authenticate('google', {
       (err, token) => {
         if (err) throw err;
         // Send token in response to store it in localStorage on the client-side
-        res.redirect(`https://micro-saas-nu.vercel.app/authsetter?token=${token}`);
+        res.redirect(`http://localhost:5173/authsetter?token=${token}`);
       }
     );
   } catch (error) {
     console.error('Error during authentication callback:', error);
-    res.redirect('https://micro-saa-s-project.vercel.app/'); // Redirect to an error page or handle error accordingly
+    res.redirect('http://localhost:5173/'); // Redirect to an error page or handle error accordingly
   }
 });
 

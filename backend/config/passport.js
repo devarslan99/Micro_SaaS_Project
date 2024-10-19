@@ -9,7 +9,7 @@ const User = require('../models/User')
 passport.use(new GoogleStrategy({
   clientID: config.GOOGLE_CLIENT_ID,
   clientSecret: config.GOOGLE_CLIENT_SECRET,
-  callbackURL: 'https:/micro-saas-nu.vercel.app/auth/google/callback'
+  callbackURL: 'https:/localhost:5000/auth/google/callback'
 }, async (accessToken, refreshToken, profile, done) => {
   try {
     // Generate a JWT token

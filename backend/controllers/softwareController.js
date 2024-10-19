@@ -136,8 +136,8 @@ exports.addApiKey = async (req, res) => {
         // Only save the API key if valid responses are received
         // if (!keyExists) {
         //   // Only save the API key if it doesn't already exist
-        //   user.softwareKeys.push({ software, apiKey });
-        //   await user.save();
+          user.softwareKeys.push({ software, apiKey });
+          await user.save();
         //   console.log('API key added and data fetched:', softwareToken);
         // } else {
         //   console.log('API key already exists. Data fetched successfully.');

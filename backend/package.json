@@ -31,7 +31,6 @@
     "p-queue": "^8.0.1",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
-    "redis": "^4.7.0",
     "stripe": "^17.1.0"
   }
 }

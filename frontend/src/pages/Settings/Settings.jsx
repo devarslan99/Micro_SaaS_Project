@@ -1,5 +1,5 @@
 import { Avatar, Box, Button, Grid, Typography } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaRegEdit } from "react-icons/fa";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import ChangePasswordModal from "../../components/SettingsComp/ChangePasswordModal";
@@ -8,6 +8,7 @@ import EditModal from "../../components/SettingsComp/EditModal";
 import CredentialsModal from "../../components/SettingsComp/CredentialsModal";
 import { useContext } from "react";
 import MyContext from "../../hook/context";
+import { useNavigate } from "react-router-dom";
 
 const Settings = ({ menuCollapse }) => {
   const {
@@ -21,6 +22,14 @@ const Settings = ({ menuCollapse }) => {
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
   const [openCredentialsModal, setOpenCredentialsModal] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      navigate("/"); // Redirect to / if authToken is not present
+    }
+  }, [navigate]);
 
   const handleClosePasswordModal = () => {
     setOpenPasswordModal(false);
@@ -100,7 +109,9 @@ const Settings = ({ menuCollapse }) => {
                   onClick={() => handleOpenCredentialsModal(client.clientId)}
                   className="bg-gradient-to-r from-[#FF4B2B] to-[#FF416C] text-white font-Poppins"
                 >
-                  Create Credentials
+                  {client.email && client.password
+                    ? "Update Credentials"
+                    : "Create Credentials"}
                 </Button>
               ) : (
                 <></>

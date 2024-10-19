@@ -1,8 +1,9 @@
 import { Box, Modal, Stack } from "@mui/material";
-import React from "react";
+import React, { useContext } from "react";
 import { useForm } from "react-hook-form";
 import { BASE_URL } from "../../config";
 import axios from "axios";
+import MyContext from "../../hook/context";
 
 const CredentialsModal = ({ openModal, onCloseModal, clientId }) => {
   const {
@@ -14,7 +15,7 @@ const CredentialsModal = ({ openModal, onCloseModal, clientId }) => {
   const token = localStorage.getItem("authToken");
   const softwareToken = localStorage.getItem("softwareToken");
 
-  const onSubmit =async (data) => {
+  const onSubmit = async (data) => {
     console.log(data);
     try {
       // Make an API request to update the client name
@@ -70,10 +71,10 @@ const CredentialsModal = ({ openModal, onCloseModal, clientId }) => {
                 placeholder="Enter username..."
                 {...register("username", {
                   required: "username is required",
-                  //   minLength: {
-                  //     value: 6,
-                  //     message: "username must be at least 6 characters",
-                  //   },
+                  pattern: {
+                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, // Basic email pattern
+                    message: "Please enter a valid email address",
+                  },
                 })}
               />
               {errors.username && (
@@ -98,6 +99,10 @@ const CredentialsModal = ({ openModal, onCloseModal, clientId }) => {
                 placeholder="Enter password..."
                 {...register("password", {
                   required: "Password is required",
+                  minLength: {
+                    value: 6,
+                    message: "Password must be at least 6 characters",
+                  },
                 })}
               />
               {errors.password && (

@@ -7,6 +7,8 @@ import {
   Typography,
   CircularProgress,
   Button,
+  Checkbox,
+  ListItemText,
 } from "@mui/material";
 import React, { useContext, useEffect, useState } from "react";
 import { clientData, gradients, statGraphItems } from "../../data/mockData";
@@ -23,13 +25,15 @@ import MyContext from "../../hook/context";
 const CompaignAnalytics = ({ menuCollapse }) => {
   const [startDate, setStartDate] = useState(subDays(new Date(), 7));
   const [endDate, setEndDate] = useState(new Date());
-  const [showOpenCount, setShowOpenCount] = useState(false);
+  // const [showOpenCount, setShowOpenCount] = useState(false);
+  // const [showClickCount, setShowClickCount] = useState(false);
   const [compaignFetch, setCompaignFetch] = useState(false);
-  const [showClickCount, setShowClickCount] = useState(false);
   const [showTopOpenCount, setShowTopOpenCount] = useState(false);
   const [showTopClickCount, setShowTopClickCount] = useState(false);
   const [dailyFilteredData, setDailyFilteredData] = useState({});
   const [topLevelFilteredData, setTopLevelFilteredData] = useState({});
+  const [selectedStats, setSelectedStats] = useState("");
+  const [selectedTopStats, setSelectedTopStats] = useState("");
   const {
     clientData,
     selectedClientId,
@@ -41,9 +45,7 @@ const CompaignAnalytics = ({ menuCollapse }) => {
   const loggedInClientId = localStorage.getItem("clientId");
   const isClientLoggedIn = localStorage.getItem("isClient") === "true";
 
-  console.log(typeof isClientLoggedIn)
-
-
+  console.log(typeof isClientLoggedIn);
 
   const handleRefresh = async () => {
     const token = localStorage.getItem("authToken");
@@ -98,13 +100,13 @@ const CompaignAnalytics = ({ menuCollapse }) => {
       const response = await axios.get(`${BASE_URL}/api/campaighs/daily`, {
         headers: {
           clientId:
-          isClientLoggedIn === false
-            ? selectedClientId !== null
-              ? selectedClientId
-              : "null"
-            : loggedInClientId !== null
-            ? loggedInClientId
-            : "null",
+            isClientLoggedIn === false
+              ? selectedClientId !== null
+                ? selectedClientId
+                : "null"
+              : loggedInClientId !== null
+              ? loggedInClientId
+              : "null",
           startDate: formattedStartDate,
           endDate: formattedEndDate,
           token: `${token}`,
@@ -163,6 +165,44 @@ const CompaignAnalytics = ({ menuCollapse }) => {
     console.log("Top function called"); // Fetch data when client or date changes
   }, [selectedClient]);
 
+  const statsOptions = [
+    { value: "sent_count", label: "Sent Count" },
+    { value: "unique_sent_count", label: "Unique Sent Count" },
+    { value: "open_count", label: "Open Count" },
+    { value: "unique_open_count", label: "Unique Open Count" },
+    { value: "click_count", label: "Click Count" },
+    { value: "unique_click_count", label: "Unique Click Count" },
+    { value: "reply_count", label: "Reply Count" },
+    { value: "bounce_count", label: "Bounce Count" },
+  ];
+  const topStatsOptions = [
+    ...statsOptions,
+    { value: "total", label: "Total" },
+    { value: "inprogress", label: "Inprogress" },
+    { value: "intrested", label: "Interested" },
+    { value: "notStarted", label: "Not Started" },
+  ];
+
+  const handleStatChange = (event) => {
+    const value = event.target.value;
+    console.log("value", value);
+    if (selectedStats.indexOf(value) === -1) {
+      setSelectedStats([...selectedStats, value]);
+    } else {
+      setSelectedStats(selectedStats.filter((stat) => stat !== value));
+    }
+  };
+
+  const handleTopStatChange = (event) => {
+    const value = event.target.value;
+    console.log("value", value);
+
+    if (selectedTopStats.indexOf(value) === -1) {
+      setSelectedTopStats([...selectedTopStats, value]);
+    } else {
+      setSelectedTopStats(selectedTopStats.filter((stat) => stat !== value));
+    }
+  };
   console.log(selectedClientId);
   console.log(loggedInClientId);
   return (
@@ -184,18 +224,49 @@ const CompaignAnalytics = ({ menuCollapse }) => {
           </Typography>
           <Box className="flex sm:flex-row flex-col justify-between sm:items-center items-start sm:gap-0 gap-5 bg-white border-0 py-3">
             <Box className="flex md:flex-row w-full flex-col gap-3 md:items-center justify-between">
-              <Box className="flex gap-2">
-                <CustomCheckBtn
-                  showOpenCount={showOpenCount}
-                  setShowOpenCount={setShowOpenCount}
-                  label="Open Count"
-                />
-                <CustomCheckBtn
-                  showOpenCount={showClickCount}
-                  setShowOpenCount={setShowClickCount}
-                  label="Click Count"
-                />
-              </Box>
+              <Select
+                // multiple
+                value={selectedStats} // Ensure this holds the array of selected values
+                onChange={handleStatChange}
+                displayEmpty
+                sx={{
+                  width: { md: 200, xs: "100%" },
+                  backgroundColor: "white",
+                  border: "1px solid #ccc",
+                  borderRadius: "5px",
+                  height: "38px",
+                  color: "#FF4B2B",
+                  "& .MuiSelect-icon": { color: "#FF4B2B" },
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#FF4B2B",
+                  },
+                  "&:hover .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#FF4B2B",
+                  },
+                  "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "#FF4B2B",
+                  },
+                }}
+                renderValue={(selected) => {
+                  if (Array.isArray(selected) && selected.length > 0) {
+                    return `Counts : ${selected.length} selected`;
+                  } else {
+                    return "Select Stat";
+                  }
+                }}
+              >
+                <MenuItem className="hidden" value="">
+                  Select Stat
+                </MenuItem>
+                {statsOptions.map((stat) => (
+                  <MenuItem key={stat.value} value={stat.value}>
+                    <CustomCheckBtn
+                      checked={selectedStats.indexOf(stat.value) > -1}
+                    />
+                    <ListItemText primary={stat.label} />
+                  </MenuItem>
+                ))}
+              </Select>
               <Box className="flex  gap-3 sm:flex-row flex-col">
                 <Button
                   variant="contained"
@@ -219,7 +290,6 @@ const CompaignAnalytics = ({ menuCollapse }) => {
                       );
                       setSelectedClient(selectedClient.selectedName);
                       setSelectedClientId(selectedClient.clientId);
-                      // fetchDailyData()
                     }}
                     sx={{
                       width: { md: 200, xs: "100%" },
@@ -274,25 +344,15 @@ const CompaignAnalytics = ({ menuCollapse }) => {
         <>
           {Object.keys(dailyFilteredData).length > 0 ? (
             <>
-              {/* <Grid container spacing={3}> */}
-              {/* Iterate through dailyFilteredData */}
               {(() => {
                 const renderedStats = [];
                 for (const statName in dailyFilteredData) {
-                  if (dailyFilteredData.hasOwnProperty(statName)) {
+                  if (
+                    dailyFilteredData.hasOwnProperty(statName) &&
+                    (selectedStats.length < 0 ||
+                      selectedStats.includes(statName)) // Check if statName is in selectedStats
+                  ) {
                     const statValue = dailyFilteredData[statName];
-
-                    if (
-                      (statName === "open_count" && !showOpenCount) ||
-                      (statName === "click_count" && !showClickCount) ||
-                      statName === "total" ||
-                      statName === "inprogress" ||
-                      statName === "not_interested" ||
-                      statName === "interested"
-                    ) {
-                      continue;
-                    }
-
                     const gradient =
                       gradients[renderedStats.length % gradients.length];
 
@@ -315,42 +375,47 @@ const CompaignAnalytics = ({ menuCollapse }) => {
                 }
                 return renderedStats;
               })()}
-              {/* </Grid> */}
               <Grid item xs={12}>
-                <Grid container spacing={3}>
-                  {statGraphItems.map((item, index) => {
-                    if (
-                      (item.title === "Open Count" && !showOpenCount) ||
-                      (item.title === "Click Count" && !showClickCount) ||
-                      item.title === "Total" ||
-                      item.title === "Inprogress" ||
-                      item.title === "Not Interested" ||
-                      item.title === "Interested"
-                    ) {
-                      return null;
-                    }
+                {selectedStats.length > 0 ? (
+                  <Grid container spacing={3}>
+                    {statGraphItems.map((item, index) => {
+                      const itemKey = item.title
+                        .replace(/ /g, "_")
+                        .toLowerCase();
 
-                    return (
-                      <Grid item md={4} sm={6} xs={12} key={index}>
-                        <Box className="border border-red-500 sm:p-5 p-3 rounded-md shadow-md">
-                          <Typography
-                            variant="h6"
-                            className="text-2xl font-semibold"
-                          >
-                            {item.title}
-                          </Typography>
-                          <Typography
-                            variant="subtitle2"
-                            className="text-base text-neutral-600"
-                          >
-                            {item.subtitle}
-                          </Typography>
-                          <CompaignCharts color={item.color} />
-                        </Box>
-                      </Grid>
-                    );
-                  })}
-                </Grid>
+                        console.log(item.title .replace(/ /g, "_")
+                        .toLowerCase())
+
+                      if (!selectedStats.includes(itemKey)) {
+                        return null; // If not, skip rendering this item
+                      }
+
+                      return (
+                        <Grid item md={4} sm={6} xs={12} key={index}>
+                          <Box className="border border-red-500 sm:p-5 p-3 rounded-md shadow-md">
+                            <Typography
+                              variant="h6"
+                              className="text-2xl font-semibold"
+                            >
+                              {item.title}
+                            </Typography>
+                            <Typography
+                              variant="subtitle2"
+                              className="text-base text-neutral-600"
+                            >
+                              {item.subtitle}
+                            </Typography>
+                            <CompaignCharts color={item.color} />
+                          </Box>
+                        </Grid>
+                      );
+                    })}
+                  </Grid>
+                ) : (
+                  <Box className="flex justify-center mt-5 mb-5">
+                    <Typography variant="h5">No graph available</Typography>
+                  </Box>
+                )}
               </Grid>
             </>
           ) : (
@@ -379,16 +444,49 @@ const CompaignAnalytics = ({ menuCollapse }) => {
           <Box className="flex sm:flex-row flex-col justify-between sm:items-center items-start sm:gap-0 gap-5 bg-white border-0 py-3">
             <Box className="flex md:flex-row w-full flex-col gap-3 md:items-center justify-between">
               <Box className="flex gap-2">
-                <CustomCheckBtn
-                  showOpenCount={showTopOpenCount}
-                  setShowOpenCount={setShowTopOpenCount}
-                  label="Open Count"
-                />
-                <CustomCheckBtn
-                  showOpenCount={showTopClickCount}
-                  setShowOpenCount={setShowTopClickCount}
-                  label="Click Count"
-                />
+                <Select
+                  // multiple
+                  value={selectedTopStats} // Ensure this holds the array of selected values
+                  onChange={handleTopStatChange}
+                  displayEmpty
+                  sx={{
+                    width: { md: 200, xs: "100%" },
+                    backgroundColor: "white",
+                    border: "1px solid #ccc",
+                    borderRadius: "5px",
+                    height: "38px",
+                    color: "#FF4B2B",
+                    "& .MuiSelect-icon": { color: "#FF4B2B" },
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#FF4B2B",
+                    },
+                    "&:hover .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#FF4B2B",
+                    },
+                    "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "#FF4B2B",
+                    },
+                  }}
+                  renderValue={(selected) => {
+                    if (Array.isArray(selected) && selected.length > 0) {
+                      return `Counts : ${selected.length} selected`;
+                    } else {
+                      return "Select Stat";
+                    }
+                  }}
+                >
+                  <MenuItem className="hidden" value="">
+                    Select Stat
+                  </MenuItem>
+                  {topStatsOptions.map((stat) => (
+                    <MenuItem key={stat.value} value={stat.value}>
+                      <CustomCheckBtn
+                        checked={selectedTopStats.indexOf(stat.value) > -1}
+                      />
+                      <ListItemText primary={stat.label} />
+                    </MenuItem>
+                  ))}
+                </Select>
               </Box>
             </Box>
           </Box>
@@ -413,23 +511,15 @@ const CompaignAnalytics = ({ menuCollapse }) => {
               {(() => {
                 const renderedStats = [];
                 for (const statName in topLevelFilteredData) {
-                  if (topLevelFilteredData.hasOwnProperty(statName)) {
+                  if (
+                    topLevelFilteredData.hasOwnProperty(statName) &&
+                    (selectedTopStats.length < 0 ||
+                      selectedTopStats.includes(statName))
+                  ) {
                     const statValue = topLevelFilteredData[statName];
 
-                    // Conditionally render Open Count and Click Count based on toggles
-                    if (
-                      (statName === "open_count" && !showTopOpenCount) ||
-                      (statName === "click_count" && !showTopClickCount) ||
-                      statName === "_id"
-                    ) {
-                      continue; // Skip rendering if toggled off
-                    }
-
-                    // Create gradient index to style the box
                     const gradient =
                       gradients[renderedStats.length % gradients.length];
-
-                    // Add the rendered element to the array
                     renderedStats.push(
                       <Grid item md={4} sm={6} xs={12} key={statName}>
                         <Box
@@ -464,38 +554,6 @@ const CompaignAnalytics = ({ menuCollapse }) => {
           )}
         </>
       )}
-
-      {/* 
-      <Grid item xs={12}>
-        <Grid container spacing={3}>
-          {statGraphItems.map((item, index) => {
-            // Hide "Open Count" and "Click Count"
-            if (
-              (item.title === "Open Count" && !showTopOpenCount) ||
-              (item.title === "Click Count" && !showTopClickCount)
-            ) {
-              return null; // Skip rendering if not toggled
-            }
-
-            return (
-              <Grid item md={4} sm={6} xs={12} key={index}>
-                <Box className="border border-red-500 sm:p-5 p-3 rounded-md shadow-md">
-                  <Typography variant="h6" className="text-2xl font-semibold">
-                    {item.title}
-                  </Typography>
-                  <Typography
-                    variant="subtitle2"
-                    className="text-base text-neutral-600"
-                  >
-                    {item.subtitle}
-                  </Typography>
-                  <CompaignCharts color={item.color} />
-                </Box>
-              </Grid>
-            );
-          })}
-        </Grid>
-      </Grid> */}
     </Grid>
   );
 };

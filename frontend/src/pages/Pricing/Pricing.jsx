@@ -83,6 +83,13 @@ export function Pricing({ menuCollapse }) {
   const softwareToken = localStorage.getItem("softwareToken");
   const navigate = useNavigate()
 
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      navigate("/"); // Redirect to / if authToken is not present
+    }
+  }, [navigate]);
+
   const handleSubscribe = async (plan) => {
     try {
       const stripe = await stripePromise;

@@ -13,12 +13,12 @@ import { Logout } from "@mui/icons-material";
 import React, { useState, useContext } from "react";
 import Grid from "@mui/material/Grid";
 import MenuIcon from "@mui/icons-material/Menu";
-import {  useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import TemporaryDrawer from "../Drawer/Drawer";
 import MyContext from "../../../hook/context";
 
 const Topbar = ({ menuCollapse, pageTitle, onPageSelect }) => {
-  const { name, email } = useContext(MyContext);
+  const { name, email, isClientLoggedIn } = useContext(MyContext);
   const [anchorEl, setAnchorEl] = useState(null);
 
   const [isDrawerOpen, setDrawerOpen] = useState(false);
@@ -83,7 +83,9 @@ const Topbar = ({ menuCollapse, pageTitle, onPageSelect }) => {
                 <Typography variant="subtitle2" fontWeight="bold">
                   {name}
                 </Typography>
-                <Typography variant="caption">Admin Profile</Typography>
+                <Typography variant="caption">
+                  {isClientLoggedIn ? "User Profile" : "Admin Profile"}
+                </Typography>
               </Box>
               <Tooltip title="Profile">
                 <IconButton onClick={handleClick} size="small" sx={{ ml: 1 }}>

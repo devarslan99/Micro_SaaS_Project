@@ -39,6 +39,14 @@ const Home = ({ menuCollapse }) => {
   const navigate = useNavigate();
 
   // Check for softwareToken in localStorage on component mount
+
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (!token) {
+      navigate("/"); // Redirect to / if authToken is not present
+    }
+  }, [navigate]);
+  
   useEffect(() => {
     const token = localStorage.getItem("softwareToken");
     if (token) {
@@ -180,7 +188,7 @@ const Home = ({ menuCollapse }) => {
 
   };
   const handleClientDetailsSave = async (changedClient) => {
-    console.log(changedClient);
+    console.log("Changed",changedClient);
     try {
     const response =   await axios.post(
         `${BASE_URL}/save-client-data`,

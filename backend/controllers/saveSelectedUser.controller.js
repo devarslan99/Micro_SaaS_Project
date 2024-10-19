@@ -1,7 +1,10 @@
 const SelectedClient = require('../models/SelectedClient.js'); 
 
 exports.saveUserSelectedClients = async (req, res) => {
+  console.log("Enter the save client controller");
+  
   const { clients, user } = req.body;
+  console.log("Clients", clients);
   const user_logged_id = user.id; // User ID from request
   
   // Validate clients input
