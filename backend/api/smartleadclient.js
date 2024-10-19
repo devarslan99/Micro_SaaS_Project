@@ -1,13 +1,13 @@
 const axios = require('axios');
 const Client = require('../models/Client');
+const { makeSmartleadApiRequest } = require('../utils/smartleadApiManager'); // Import centralized request manager
 
 const authenticateAndFetchClients = async (apiKey, user, software) => {
   const url = `https://server.smartlead.ai/api/v1/client/?api_key=${apiKey}`;
 
   try {
     // Make the HTTP request to fetch clients
-    const response = await axios.get(url, { headers: { accept: 'application/json' } });
-    const clientsData = response.data;
+    const clientsData = await makeSmartleadApiRequest(url, { headers: { accept: 'application/json' } });
     console.log('Fetched Clients:', clientsData);
 
     // Delete existing clients for this user and software
@@ -55,7 +55,7 @@ const authenticateAndFetchClients = async (apiKey, user, software) => {
       }
     }
 
-    return response.data;
+    return clientsData;
   } catch (err) {
     console.error('Error fetching clients:', err.message);
     throw new Error('An error occurred while fetching clients');

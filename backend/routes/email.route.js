@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { emailUpdate } = require("../controllers/emailUpdate.controller.js");
+// const { emailUpdate } = require("../controllers/emailUpdate.controller.js");
 const {
   reconnetEmails,
 } = require("../controllers/reconnectEmail.controller.js");
@@ -44,7 +44,7 @@ router.get("/client-emails", async (req, res) => {
   }
 });
 
-router.post("/update-email", emailUpdate);
+// router.post("/update-email", emailUpdate);
 router.post("/reconnect", authMiddleware, reconnetEmails);
 router.post("/max-day", authMiddleware, updateSetMaxDay);
 

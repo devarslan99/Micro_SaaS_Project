@@ -134,14 +134,14 @@ exports.addApiKey = async (req, res) => {
         const campaigns = await FetchAllCampaigns(apiKey, user, software);
        
         // Only save the API key if valid responses are received
-        if (!keyExists) {
-          // Only save the API key if it doesn't already exist
-          user.softwareKeys.push({ software, apiKey });
-          await user.save();
-          console.log('API key added and data fetched:', softwareToken);
-        } else {
-          console.log('API key already exists. Data fetched successfully.');
-        }
+        // if (!keyExists) {
+        //   // Only save the API key if it doesn't already exist
+        //   user.softwareKeys.push({ software, apiKey });
+        //   await user.save();
+        //   console.log('API key added and data fetched:', softwareToken);
+        // } else {
+        //   console.log('API key already exists. Data fetched successfully.');
+        // }
     
         return res.status(200).json({
           message: 'API key added and data fetched successfully',

@@ -1,4 +1,5 @@
 const axios = require('axios');
+const { makeSmartleadApiRequest } = require('../utils/smartleadApiManager'); // Centralized request manager
 const Email = require('../models/Email'); // Assuming you already have this schema
 
 const authenticateAndFetchEmailAccounts = async (apiKey, user, software) => {
@@ -6,9 +7,8 @@ const authenticateAndFetchEmailAccounts = async (apiKey, user, software) => {
   const url = `https://server.smartlead.ai/api/v1/email-accounts/?api_key=${apiKey}&offset=0&limit=100`;
 
   try {
-    // Make the HTTP request to fetch email accounts
-    const response = await axios.get(url, { headers: { accept: 'application/json' } });
-    const emailAccountsData = response.data;
+ // Fetch email accounts using the centralized request manager
+ const emailAccountsData = await makeSmartleadApiRequest(url, { headers: { accept: 'application/json' } });
 
     // Clear existing email accounts for the user
     await Email.deleteMany({ user_logged_id: user.id, software });

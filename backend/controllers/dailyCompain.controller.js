@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const axios = require('axios');
 const Campaign = require('../models/Campaigns'); // Assuming Campaign model is in models folder
+const { makeSmartleadApiRequest } = require('../utils/smartleadApiManager'); // Use request manager
 
 exports.dailyCompaighs = async (req, res) => {
   const token = req.header("token");
@@ -49,11 +50,8 @@ exports.dailyCompaighs = async (req, res) => {
       const url = `https://server.smartlead.ai/api/v1/campaigns/${campaignId}/analytics-by-date?api_key=${API_KEY}&start_date=${startDate}&end_date=${endDate}`;
       
       try {
-        const response = await axios.get(url, { headers: { accept: 'application/json' } });
-        return {
-          campaignId,
-          data: response.data
-        };
+        const data = await makeSmartleadApiRequest(url, { headers: { accept: 'application/json' } });
+        return { campaignId, data };
       } catch (err) {
         console.error(`Error fetching data for campaign ID ${campaignId}:`, err);
         return { campaignId, error: err.message }; // Return error information if the request fails

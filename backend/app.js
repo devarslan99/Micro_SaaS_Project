@@ -2,7 +2,6 @@ require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
 const passport = require('passport');
-const otpRoutes = require('./routes/otpRouter');
 require('./config/passport');
 const connectDB = require('./config/db');
 const auth=require('./routes/auth');
@@ -51,7 +50,6 @@ app.use('/api/campaighs',campaighsRoutes)
 //Api for Emails 
 app.use('/api/email',emailRoutes)
 // otp routes
-app.use('/api/otp', otpRoutes);
 app.use('/reset',resetPassRouter)
 app.use('/user',userUpdateRoute)
 app.use('/', clientsRouter)

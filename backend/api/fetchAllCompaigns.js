@@ -2,21 +2,22 @@ const axios = require('axios');
 const Campaign = require('../models/Campaigns');
 const Dailylevel = require('../models/Dailylevel'); // Assuming you have a model for storing campaign stats
 const TopLevelStats = require('../models/TopLevelStats');
+const { makeSmartleadApiRequest } = require('../utils/smartleadApiManager');
 
 const FetchAllCampaigns = async (apiKey, user, software) => {
   const url = `https://server.smartlead.ai/api/v1/campaigns/?api_key=${apiKey}`;
 
   try {
     // Make the HTTP request to fetch campaigns
-    const response = await axios.get(url, { headers: { accept: 'application/json' } });
-    const campaignsData = response.data;
+    const campaignsData = await makeSmartleadApiRequest(url, { headers: { accept: 'application/json' } });
     console.log(campaignsData);
-    
+    let counter = 0;
     // Clear previous campaign data
     await Campaign.deleteMany({ user_logged_id: user.id, software });
     await TopLevelStats.deleteMany({ user_logged_id: user.id, software });
-
+    
     for (const campaign of campaignsData) {
+      counter++;
       try {
         // Save campaign data
         const newCampaign = new Campaign({
@@ -41,8 +42,7 @@ const FetchAllCampaigns = async (apiKey, user, software) => {
         await newCampaign.save();
 
         const topLevelAnalyticsUrl = `https://server.smartlead.ai/api/v1/campaigns/${campaign.id}/analytics?api_key=${apiKey}`;
-        const topLevelResponse = await axios.get(topLevelAnalyticsUrl, { headers: { accept: 'application/json' } });
-        const topLevelData = topLevelResponse.data;
+        const topLevelData = await makeSmartleadApiRequest(topLevelAnalyticsUrl, { headers: { accept: 'application/json' } });
 
         // Save top-level analytics data
         const newTopLevelStats = new TopLevelStats({
@@ -75,14 +75,14 @@ const FetchAllCampaigns = async (apiKey, user, software) => {
         });
 
         await newTopLevelStats.save();
-        console.log(`Saved top-level stats for campaign ${campaign.id}`);
+        console.log(`Saved top-level stats for campaign ${campaign.id} , Count for api call is:${counter}`);
       } catch (err) {
         console.error(`Error processing campaign ${campaign.id}:`, err.message);
         // Continue to the next campaign without stopping
       }
     }
 
-    return response.data;
+    return campaignsData;
   } catch (err) {
     console.error('Error fetching campaigns:', err.message);
     throw new Error('An error occurred while fetching campaigns');
