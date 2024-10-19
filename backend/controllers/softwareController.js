@@ -71,7 +71,7 @@ exports.addApiKey = async (req, res) => {
     console.log("Software Controller, addApiKey: req.body.user.id -->", req.body.user.id);
     
     // Check if the API key exists for any other user
-    const otherUserWithApiKey = await User.findOne({ 'softwareKeys.apiKey': apiKey });
+    // const otherUserWithApiKey = await User.findOne({ 'softwareKeys.apiKey': apiKey });
     
     const softwareToken = jwt.sign(
       { software },
@@ -79,32 +79,32 @@ exports.addApiKey = async (req, res) => {
       { expiresIn: '10y' } // Adjust the token expiration as needed
     );
 
-    if (otherUserWithApiKey) {
-      console.log('API key found for another user, updating current user...');
+    // if (otherUserWithApiKey) {
+    //   console.log('API key found for another user, updating current user...');
       
-      // Find the current user by ID
-      const user = await User.findById(req.body.user.id);
-      if (!user) {
-        return res.status(404).json({ message: 'User not found' });
-      }
+    //   // Find the current user by ID
+    //   const user = await User.findById(req.body.user.id);
+    //   if (!user) {
+    //     return res.status(404).json({ message: 'User not found' });
+    //   }
 
-      // Check if the API key already exists for the current user
-      const existingSoftware = user.softwareKeys.find(
-        (item) => item.apiKey === apiKey
-      );
+    //   // Check if the API key already exists for the current user
+    //   const existingSoftware = user.softwareKeys.find(
+    //     (item) => item.apiKey === apiKey
+    //   );
 
-      if (!existingSoftware) {
-        // Add the same API key to this user if it doesn't already exist
-        user.softwareKeys.push({ software, apiKey });
-        await user.save();
-        console.log('API key added to current user');
-      }
+    //   if (!existingSoftware) {
+    //     // Add the same API key to this user if it doesn't already exist
+    //     user.softwareKeys.push({ software, apiKey });
+    //     await user.save();
+    //     console.log('API key added to current user');
+    //   }
 
-      return res.status(200).json({
-        message: 'API key already exists for another user and added to current user',
-        softwareToken: softwareToken
-      });
-    }
+    //   return res.status(200).json({
+    //     message: 'API key already exists for another user and added to current user',
+    //     softwareToken: softwareToken
+    //   });
+    // }
 
     // If no other user has the API key, proceed to check for the current user
     const user = await User.findById(req.body.user.id);
@@ -114,17 +114,17 @@ exports.addApiKey = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    const existingSoftware = user.softwareKeys.find(
-      (item) => item.apiKey === apiKey
-    );
+    // const existingSoftware = user.softwareKeys.find(
+    //   (item) => item.apiKey === apiKey
+    // );
 
-    if (existingSoftware) {
-      console.log('API key already exists for this software and user');
-      return res.status(200).json({
-        message: 'API key already exists for this software',
-        softwareToken: softwareToken
-      });
-    }
+    // if (existingSoftware) {
+    //   console.log('API key already exists for this software and user');
+    //   return res.status(200).json({
+    //     message: 'API key already exists for this software',
+    //     softwareToken: softwareToken
+    //   });
+    // }
 
     if (software === 'Smart lead.ai') {
       try {
@@ -134,14 +134,19 @@ exports.addApiKey = async (req, res) => {
         const campaigns = await FetchAllCampaigns(apiKey, user, software);
        
         // Only save the API key if valid responses are received
-        user.softwareKeys.push({ software, apiKey });
-        await user.save();
-
-        console.log('API key added and data fetched:', softwareToken);
+        if (!keyExists) {
+          // Only save the API key if it doesn't already exist
+          user.softwareKeys.push({ software, apiKey });
+          await user.save();
+          console.log('API key added and data fetched:', softwareToken);
+        } else {
+          console.log('API key already exists. Data fetched successfully.');
+        }
+    
         return res.status(200).json({
-          message: 'API key added successfully',
+          message: 'API key added and data fetched successfully',
           software: software,
-          softwareToken: softwareToken
+          softwareToken: softwareToken,
         });
 
       } catch (apiError) {
