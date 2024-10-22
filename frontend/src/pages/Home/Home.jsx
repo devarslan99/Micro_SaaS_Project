@@ -22,6 +22,8 @@ import { BASE_URL } from "../../config";
 import SmartLeadLogo from '../../assets/Smart_Lead_logo.svg'
 
 const Home = ({ menuCollapse }) => {
+  const navigate = useNavigate();
+  const navigateAuth = useNavigate();
   const [openModal, setOpenModal] = useState(false);
   const [secretKey, setSecretKey] = useState("");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -36,16 +38,18 @@ const Home = ({ menuCollapse }) => {
   const [clientModalOpen, setClientModalOpen] = useState(false); // State for client selection modal
   const [clientDetailsModalOpen, setClientDetailsModalOpen] = useState(false);
 
-  const navigate = useNavigate();
-
+  
   // Check for softwareToken in localStorage on component mount
-
+  
   useEffect(() => {
     const token = localStorage.getItem("authToken");
-    if (!token) {
-      navigate("/"); // Redirect to / if authToken is not present
+    console.log('Auth token:',token); // Check if it's null or undefined
+    if (!token ) {
+      // navigateAuth("/");
+      window.location.assign('/');// Redirect to / if authToken is not present
+      console.log('Rerouting home page');
     }
-  }, [navigate]);
+  }, [navigateAuth]);
   
   useEffect(() => {
     const token = localStorage.getItem("softwareToken");

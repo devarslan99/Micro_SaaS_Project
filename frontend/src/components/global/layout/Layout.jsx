@@ -78,6 +78,9 @@ const Layout = ({ menuCollapse, setMenuCollapse, children }) => {
       try {
         const softwareToken = localStorage.getItem("softwareToken");
         const authToken = localStorage.getItem("authToken");
+        if(!authToken){
+          navigate('/')
+        }
         if (!softwareToken) {
           navigate("/home"); // Redirect if no softwareToken found
           return;
